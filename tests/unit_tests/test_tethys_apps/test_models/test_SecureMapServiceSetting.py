@@ -58,7 +58,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
 
         self.map_service_with_oauth_no_proxy = SecureMapService(
             name="oauth_no_proxy",
-            legend_title="Map Service with OAuth No Proxy",
+            legend_title="Map Service with OAuth2 No Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="oauth",
             oauth_provider="test_oauth_provider",
@@ -70,7 +70,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
 
         self.map_service_with_oauth_with_proxy = SecureMapService(
             name="oauth_with_proxy",
-            legend_title="Map Service with OAuth With Proxy",
+            legend_title="Map Service with OAuth2 With Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="oauth",
             oauth_provider="test_oauth_provider",
@@ -263,7 +263,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         )
 
     @mock.patch(
-        "tethys_services.models.SecureMapService.get_oauth_token",
+        "tethys_services.models.SecureMapService._get_oauth_token",
         return_value="test_oauth_token",
     )
     def test__build_Layer_oauth(self, mock_got):
@@ -351,7 +351,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.assertEqual(response.status_code, 200)
 
     @mock.patch(
-        "tethys_apps.models.SecureMapService.get_oauth_token",
+        "tethys_apps.models.SecureMapService._get_oauth_token",
         return_value="test_oauth_token",
     )
     @mock.patch("tethys_apps.models.requests.get")
@@ -380,7 +380,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
 
     @mock.patch("tethys_apps.models.log")
     @mock.patch(
-        "tethys_apps.models.SecureMapService.get_oauth_token",
+        "tethys_apps.models.SecureMapService._get_oauth_token",
         return_value="test_oauth_token",
     )
     @mock.patch("tethys_apps.models.requests.get")
@@ -420,7 +420,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.assertIn("Forbidden access message", logged)
 
     @mock.patch(
-        "tethys_apps.models.SecureMapService.get_oauth_token",
+        "tethys_apps.models.SecureMapService._get_oauth_token",
         return_value="test_oauth_token",
     )
     @mock.patch("tethys_apps.models.requests.get")
@@ -637,7 +637,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
             TethysAppSettingNotAssigned,
             SecureMapServiceSetting.objects.get(
                 name="secure_map_service"
-            ).update_params,
+            )._update_params,
             {"param1": "new_value"},
         )
 
@@ -649,7 +649,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         setting.save()
 
         new_params = {"param1": "new_value", "param3": "value3"}
-        SecureMapServiceSetting.objects.get(name="secure_map_service").update_params(
+        SecureMapServiceSetting.objects.get(name="secure_map_service")._update_params(
             new_params
         )
 

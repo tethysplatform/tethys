@@ -17,7 +17,7 @@ In addition, requests can optionally be routed through a proxy endpoint provided
 Two authentication methods are supported:
 
 * **API Key**: a key is stored (encrypted) with the service and added to each request as a query parameter.
-* **OAuth**: an OAuth2 access token is retrieved from the requesting user's linked social auth account and added to each request as a ``Bearer`` token.
+* **OAuth2**: an OAuth2 access token is retrieved from the requesting user's linked social auth account and added to each request as a ``Bearer`` token.
 
 .. important::
 
@@ -89,9 +89,9 @@ Field                       Description
 **Name**                    Unique name used to identify the service.
 **Endpoint**                The URL of the map service.
 **Legend Title**            The title to use for the legend when the service is added to a map as a layer.
-**Authentication Method**   One of **API Key** or **OAuth**. The fields that apply to the other method are hidden in the admin form.
+**Authentication Method**   One of **API Key** or **OAuth2**. The fields that apply to the other method are hidden in the admin form.
 **API Key**                 The API key to use when the authentication method is **API Key**. The value is encrypted before it is stored in the database.
-**OAuth Provider**          The social auth backend to retrieve the access token from when the authentication method is **OAuth**. The options are populated from the authentication backends that are enabled for the portal (see :ref:`single_sign_on_config`).
+**OAuth2 Provider**         The social auth backend to retrieve the access token from when the authentication method is **OAuth2**. The options are populated from the authentication backends that are enabled for the portal (see :ref:`single_sign_on_config`).
 **Service Type**            The type of service: **WMS** (``ImageWMS``), **GML**, **GeoJSON**, or **REST/JSON API** (``REST``). For the map service types, the stored value is used as the ``source`` of the ``MVLayer`` that is created when the service is retrieved with ``as_layer=True``. Use **REST/JSON API** for services that are consumed with ``as_response=True`` or with ``as_endpoint=True`` rather than rendered as a map layer.
 **Use Proxy for Requests**  When checked, requests are routed through a Tethys Portal proxy endpoint so that credentials are never exposed to the browser. See :ref:`secure_map_services_proxy`.
 **Parameters**              A JSON object of additional query parameters to include with each request to the service. See :ref:`secure_map_services_params`.
@@ -174,7 +174,7 @@ Pass ``as_layer=True`` to get an :ref:`MVLayer <gizmo_mvlayer>` for the service 
 
     layer = App.get_secure_map_service('primary_secure_map_service', as_layer=True)
 
-If the service uses OAuth authentication and is not proxied, the access token must be retrieved from the user making the request, so the ``request_user`` argument is required:
+If the service uses OAuth2 authentication and is not proxied, the access token must be retrieved from the user making the request, so the ``request_user`` argument is required:
 
 .. code-block:: python
 
@@ -202,7 +202,7 @@ Pass ``as_response=True`` to perform the request server-side and get the resulti
 
 .. note::
 
-    As with ``as_layer``, ``request_user`` is required when the service uses OAuth authentication. An exception is raised if the request is not successful.
+    As with ``as_layer``, ``request_user`` is required when the service uses OAuth2 authentication. An exception is raised if the request is not successful.
 
 .. _secure_map_services_params:
 
@@ -274,7 +274,7 @@ Proxying Requests
 
 When the **Use Proxy for Requests** option is enabled on a ``SecureMapService``, the endpoint that is returned by ``get_secure_map_service()`` is not the endpoint of the map service, but rather a URL to a proxy view provided by Tethys Portal (``secure-map-proxy/<id>/``). The browser makes its requests against the proxy, which then adds the credentials and parameters of the service server-side and streams the response back. As a result, the API key or access token is never sent to the browser.
 
-The proxy view requires the user to be logged in, and for OAuth services it uses the access token of the logged in user making the request.
+The proxy view requires the user to be logged in, and for OAuth2 services it uses the access token of the logged in user making the request.
 
 .. tip::
 
@@ -282,14 +282,14 @@ The proxy view requires the user to be logged in, and for OAuth services it uses
 
 .. _secure_map_services_oauth:
 
-Requiring an OAuth Provider
+Requiring an OAuth2 Provider
 ===========================
 
-Services that use OAuth authentication require the user to have linked the corresponding social auth account to their Tethys Portal account. To require users to link an account before they can access an app, add the app package and provider name to the ``OAUTH_REQUIREMENTS`` portal setting:
+Services that use OAuth2 authentication require the user to have linked the corresponding social auth account to their Tethys Portal account. To require users to link an account before they can access an app, add the app package and provider name to the ``OAUTH2_REQUIREMENTS`` portal setting:
 
 .. code-block:: bash
 
-    tethys settings --set OAUTH_REQUIREMENTS.my_first_app my_provider
+    tethys settings --set OAUTH2_REQUIREMENTS.my_first_app my_provider
 
 Users who access the app without having linked an account for the given provider are redirected to their user settings page with a message prompting them to link it.
 

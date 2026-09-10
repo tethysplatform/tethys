@@ -171,7 +171,7 @@ def send_beta_feedback_email(request):
 @login_required()
 def secure_map_proxy(request, setting_id):
     """
-    Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth.
+    Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth2.
     """
     from tethys_services.models import SecureMapService
 
@@ -181,14 +181,14 @@ def secure_map_proxy(request, setting_id):
         return HttpResponse("Service setting not found.", status=404)
 
     browser_params = {key: value for key, value in request.GET.items()}
-    service_params = service.get_resolved_params()
+    service_params = service._get_resolved_params()
     params = {**service_params, **browser_params}
 
     headers = {}
-    if service.authentication_method == "oauth":
-        access_token = service.get_oauth_token(request.user)
+    if service.authentication_method == "oauth2":
+        access_token = service._get_oauth_token(request.user)
         if not access_token:
-            return HttpResponse("Failed to retrieve OAuth token.", status=500)
+            return HttpResponse("Failed to retrieve OAuth2 token.", status=500)
         headers["Authorization"] = f"Bearer {access_token}"
 
     if request.content_type:
@@ -241,7 +241,7 @@ def secure_map_proxy(request, setting_id):
             proxy_response[header] = value
 
     # Prevent shared caches from storing OAuth2 responses fetched with user credentials.
-    if service.authentication_method == "oauth":
+    if service.authentication_method == "oauth2":
         proxy_response["Cache-Control"] = "private, no-store"
 
     return proxy_response

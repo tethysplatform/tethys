@@ -159,10 +159,10 @@ class TethysMfaRequiredMiddleware:
         return response
 
 
-class TethysOauthRequiredMiddleware:
+class TethysOauth2RequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.requirements = getattr(settings, "OAUTH_REQUIREMENTS", {})
+        self.requirements = getattr(settings, "OAUTH2_REQUIREMENTS", {})
 
     def __call__(self, request):
         if not self.requirements:
@@ -177,7 +177,7 @@ class TethysOauthRequiredMiddleware:
         if not required_provider:
             return self.get_response(request)
 
-        # If the user is trying to access an app and there is a required OAuth provider for that app, check if the user is authenticated.
+        # If the user is trying to access an app and there is a required OAuth2 provider for that app, check if the user is authenticated.
         if not request.user.is_authenticated:
             next_param = urlencode({"next": request.get_full_path()})
             login_url = reverse("accounts:login")

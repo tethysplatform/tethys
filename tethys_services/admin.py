@@ -100,7 +100,7 @@ class SecureMapServiceForm(ModelForm):
             "name": _("Name"),
             "endpoint": _("Endpoint"),
             "api_key": _("API Key"),
-            "oauth_provider": _("OAuth Provider"),
+            "oauth2_provider": _("OAuth2 Provider"),
             "params": _("Parameters"),
             "legend_title": _("Legend Title"),
             "service_type": _("Service Type"),
@@ -130,7 +130,7 @@ class SecureMapServiceForm(ModelForm):
                 backend_class = import_string(backend)
                 if hasattr(backend_class, "name"):
                     choices.append((backend_class.name, backend_class.name))
-        self.fields["oauth_provider"] = ChoiceField(
+        self.fields["oauth2_provider"] = ChoiceField(
             choices=choices,
             required=False,
         )
@@ -209,7 +209,7 @@ class SecureMapServiceAdmin(admin.ModelAdmin):
         "legend_title",
         "authentication_method",
         "api_key",
-        "oauth_provider",
+        "oauth2_provider",
         "service_type",
         "use_proxy",
         "params",

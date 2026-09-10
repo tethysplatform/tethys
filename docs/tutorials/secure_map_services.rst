@@ -18,7 +18,7 @@ The following topics are covered:
 * Adding a secure service to a Map Layout as a layer and as a basemap
 * Proxying requests so credentials never reach the browser
 * Changing service parameters at runtime
-* Requiring users to link an OAuth account before being able to access the app.
+* Requiring users to link an OAuth2 account before being able to access the app.
 * Utilizing a Secure Map Service as a response to retrieve data from a service and format it for use in your app.
 * Utilizing a Secure Map Service as an endpoint to make requests to a service from your app using JavaScript.
 
@@ -206,7 +206,7 @@ Then configure your portal to require users to link their GRiD account before be
 
 .. code-block:: bash
 
-    tethys settings --set OAUTH_REQUIREMENTS.secure_map_tutorial grid
+    tethys settings --set OAUTH2_REQUIREMENTS.secure_map_tutorial grid
 
 The last step required to configure your application to work with GRiD is to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and setting up a new application with the following settings:
 
@@ -294,8 +294,8 @@ Use the following configurations for your new Secure Map Service:
 - **Name:** GRiD Secure Map Service
 - **Endpoint:** https://grid.nga.mil/grid/api/ogcservices
 - **Legend Title:** GRiD
-- **Authentication Method:** OAuth
-- **OAuth Provider:** grid
+- **Authentication Method:** OAuth2
+- **OAuth2 Provider:** grid
 - **Service Type:** GML
 - **Use Proxy for Requests:** True
 - **Parameters:**
@@ -347,7 +347,15 @@ Now just go ahead and refresh your app and you should see the GRiD layer on your
 ============================
 Now that you have data from GRiD displaying on your map in the form of a layer, you may want to change the parameters of the service to display different data. You can do this by going into the service settings and manually updating the parameters field. But you can also do this in your app dynamically using the ``update_secure_map_service_params()`` method in your app code.
 
+.. warning::
+
+    Using the ``update_secure_map_service_params`` method writes to the service setting itself, which is shared by every 
+    user and any app(s) using the service. Use it only for persistent changes to a service's parameters.
+    
+    To change parameters for a single request, pass the ``param_overrides`` argument when calling ``get_secure_map_service``.
+
 In order to demonstrate how this can be done dynamically in your app, we'll add a form to the app that will allow the user to select which GRiD layer they want to display on the map. We'll then use the ``update_secure_map_service_params()`` method to update the parameters of the GRiD service based on the user's selection.
+
 
 We'll begin by adding a custom map tab to your MapLayout that will contain this form. Open ``home.html`` and add the following code:
 
@@ -495,8 +503,8 @@ Use these configurations for the new Secure Map Service:
 - **Name:** GRiD AOI Secure Map Service
 - **Endpoint:** https://grid.nga.mil/grid/api/v3/aois
 - **Legend Title:** GRiD AOIs
-- **Authentication Method:** OAuth
-- **OAuth Provider:** grid
+- **Authentication Method:** OAuth2
+- **OAuth2 Provider:** grid
 - **Service Type:** REST/JSON API
 - **Use Proxy for Requests:** True
 - **Parameters:**

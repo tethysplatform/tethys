@@ -1899,6 +1899,7 @@ class TethysAppBase(TethysBase):
         as_endpoint=False,
         as_layer=False,
         as_response=False,
+        as_token=False,
         param_overrides=None,
         request_user=None,
     ):
@@ -1910,6 +1911,7 @@ class TethysAppBase(TethysBase):
             as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
             as_layer(bool): Returns an MVLayer object if True, Defaults to False.
             as_response(bool): Returns requests.Response object if True, Defaults to False.
+            as_token(bool): Returns an OAuth2 token string if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
             request_user(User): Django User object to use for the request. Defaults to None.
 
@@ -1931,6 +1933,7 @@ class TethysAppBase(TethysBase):
             name,
             as_layer=as_layer,
             as_response=as_response,
+            as_token=as_token,
             param_overrides=param_overrides,
             request_user=request_user,
         )
@@ -1942,6 +1945,7 @@ class TethysAppBase(TethysBase):
         as_endpoint=False,
         as_layer=False,
         as_response=False,
+        as_token=False,
         param_overrides=None,
         request_user=None,
     ):
@@ -1955,6 +1959,7 @@ class TethysAppBase(TethysBase):
             as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
             as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
             as_response(bool): Returns requests.Response object if True, Defaults to False.
+            as_token(bool): Returns OAuth2 token if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
             request_user(User): Django User object to use for the request. Defaults to None.
 
@@ -1963,6 +1968,7 @@ class TethysAppBase(TethysBase):
             str: lazy endpoint url when ``as_endpoint`` is True
             MVLayer: map layer when ``as_layer`` is True
             requests.Response: response object when ``as_response`` is True
+            str: OAuth2 token when ``as_token`` is True
 
         """
         from tethys_apps.models import TethysApp
@@ -1982,6 +1988,7 @@ class TethysAppBase(TethysBase):
             as_endpoint=as_endpoint,
             as_layer=as_layer,
             as_response=as_response,
+            as_token=as_token,
             param_overrides=param_overrides,
             request_user=request_user,
         )
@@ -2011,7 +2018,7 @@ class TethysAppBase(TethysBase):
                 "SecureMapServiceSetting", name, cls.name
             )
 
-        secure_map_service_setting.update_params(params)
+        secure_map_service_setting._update_params(params)
 
     def sync_all_settings(self, db_app):
         # custom settings

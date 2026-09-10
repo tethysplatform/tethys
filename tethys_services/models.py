@@ -415,10 +415,10 @@ class SecureMapService(models.Model):
     legend_title = models.CharField(max_length=100, blank=True)
     endpoint = models.CharField(max_length=1024, validators=[validate_url])
     authentication_method = models.CharField(
-        max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")]
+        max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth2", "OAuth2")]
     )
     api_key = EncryptedTextField(blank=True, null=True)
-    oauth_provider = models.CharField(max_length=100, blank=True)
+    oauth2_provider = models.CharField(max_length=100, blank=True)
     service_type = models.CharField(
         max_length=50,
         choices=[
@@ -445,43 +445,43 @@ class SecureMapService(models.Model):
         if self.params is not None and not isinstance(self.params, dict):
             raise ValidationError({"params": "Parameters must be a JSON object (e.g. {\"key\": \"value\"})"})
 
-    def get_oauth_token(self, user):
+    def _get_oauth_token(self, user):
         """
-        Retrieve the OAuth token for the given user.
+        Retrieve the OAuth2 token for the given user.
         Args:
-            user (User): The user for whom to retrieve the OAuth token.
+            user (User): The user for whom to retrieve the OAuth2 token.
 
         Returns:
-            str: The OAuth token for the user.
+            str: The OAuth2 token for the user.
         """
         from social_django.utils import load_strategy
         from social_core.exceptions import AuthException
 
-        if self.authentication_method != "oauth":
+        if self.authentication_method != "oauth2":
             raise ValueError(
-                "Authentication method must be 'oauth' to retrieve an OAuth token."
+                "Authentication method must be 'oauth2' to retrieve an OAuth2 token."
             )
-        if not self.oauth_provider:
+        if not self.oauth2_provider:
             raise ValueError(
-                "OAuth provider must be specified to retrieve an OAuth token."
+                "OAuth2 provider must be specified to retrieve an OAuth2 token."
             )
 
         try:
-            auth = user.social_auth.get(provider=self.oauth_provider)
+            auth = user.social_auth.get(provider=self.oauth2_provider)
         except ObjectDoesNotExist:
-            raise ValueError(f"User not linked to {self.oauth_provider}.")
+            raise ValueError(f"User not linked to {self.oauth2_provider} for OAuth2 authentication.")
 
         try:
             access_token = auth.get_access_token(load_strategy())
         except AuthException as e:
-            raise ValueError(f"Failed to retrieve access token for {self.oauth_provider}: {e}")
+            raise ValueError(f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {e}")
 
         if not access_token:
             raise ValueError("No access token found for user.")
 
         return access_token
 
-    def get_resolved_params(self):
+    def _get_resolved_params(self):
         """
         Resolve template variables in the service parameters using the model's attributes.
 
@@ -515,7 +515,7 @@ class SecureMapService(models.Model):
 
         return resolved_params
 
-    def update_params(self, new_params):
+    def _update_params(self, new_params):
         """
         Merge the given parameters into the parameters of the service and save.
 

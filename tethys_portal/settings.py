@@ -296,7 +296,7 @@ MIDDLEWARE = portal_config_settings.pop(
         "tethys_portal.middleware.TethysMfaRequiredMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "tethys_portal.middleware.TethysAppAccessMiddleware",
-        "tethys_portal.middleware.TethysOauthRequiredMiddleware",
+        "tethys_portal.middleware.TethysOauth2RequiredMiddleware",
     ],
 )
 if has_module("corsheaders"):
@@ -605,7 +605,7 @@ OAUTH2_PROVIDER_URL_NAMESPACE = OAUTH_CONFIG.get(
 
 # Mapping of app package to the social auth provider users must be linked to
 # before they can access that app (e.g. {"my_first_app": "my_provider"})
-OAUTH_REQUIREMENTS = portal_config_settings.pop("OAUTH_REQUIREMENTS", {})
+OAUTH2_REQUIREMENTS = portal_config_settings.pop("OAUTH2_REQUIREMENTS", {})
 
 # MFA Settings
 # See: https://github.com/mkalioby/django-mfa2

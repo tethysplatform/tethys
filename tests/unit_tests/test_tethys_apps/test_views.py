@@ -310,14 +310,14 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_request = mock.MagicMock()
         mock_setting_id = 1
         mock_service = mock.MagicMock()
-        mock_service.authentication_method = "oauth"
-        mock_service.get_oauth_token.return_value = None
+        mock_service.authentication_method = "oauth2"
+        mock_service._get_oauth_token.return_value = None
         mock_get.return_value = mock_service
 
         ret = secure_map_proxy(mock_request, mock_setting_id)
 
         assert ret.status_code == 500
-        assert ret.content == b"Failed to retrieve OAuth token."
+        assert ret.content == b"Failed to retrieve OAuth2 token."
 
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
@@ -325,8 +325,8 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_request = mock.MagicMock()
         mock_setting_id = 1
         mock_service = mock.MagicMock()
-        mock_service.authentication_method = "oauth"
-        mock_service.get_oauth_token.return_value = "test_oauth_token123"
+        mock_service.authentication_method = "oauth2"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
         mock_get.return_value = mock_service
 
         mock_request_func.return_value = mock.MagicMock(status_code=304, content=b"")
@@ -337,13 +337,13 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_oauth_no_extra_headers(self, mock_get, mock_request_func):
+    def test_secure_map_proxy_oauth2_no_extra_headers(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
         mock_setting_id = 1
         mock_service = mock.MagicMock()
-        mock_service.authentication_method = "oauth"
+        mock_service.authentication_method = "oauth2"
         mock_service.endpoint = "http://example.com/service"
-        mock_service.get_oauth_token.return_value = "test_oauth_token123"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
         mock_get.return_value = mock_service
 
         mock_response = mock.MagicMock(status_code=200)
@@ -371,7 +371,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
-        mock_service.get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
         mock_get.return_value = mock_service
 
         mock_response = mock.MagicMock(status_code=200)
@@ -391,7 +391,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_oauth_with_extra_headers(
+    def test_secure_map_proxy_oauth2_with_extra_headers(
         self, mock_get, mock_request_func
     ):
         mock_request = mock.MagicMock(method="GET", body=None)
@@ -401,9 +401,9 @@ class TethysAppsViewsTest(unittest.TestCase):
         }
         mock_setting_id = 1
         mock_service = mock.MagicMock()
-        mock_service.authentication_method = "oauth"
+        mock_service.authentication_method = "oauth2"
         mock_service.endpoint = "http://example.com/service"
-        mock_service.get_oauth_token.return_value = "test_oauth_token123"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
         mock_get.return_value = mock_service
 
         mock_response = mock.MagicMock(status_code=200)
@@ -438,7 +438,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
-        mock_service.get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
         mock_get.return_value = mock_service
 
         mock_response = mock.MagicMock(status_code=200)
