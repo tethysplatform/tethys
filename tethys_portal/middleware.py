@@ -162,34 +162,44 @@ class TethysMfaRequiredMiddleware:
 class TethysOauth2RequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.requirements = getattr(settings, "OAUTH2_REQUIREMENTS", {})
 
     def __call__(self, request):
-        if not self.requirements:
-            return self.get_response(request)
-
         app = get_active_app(request)
         if app is None:
             return self.get_response(request)
 
-        app_name = app.package
-        required_provider = self.requirements.get(app_name)
-        if not required_provider:
+        required_providers = app.required_oauth2_providers
+        if not required_providers:
             return self.get_response(request)
-
+    
         # If the user is trying to access an app and there is a required OAuth2 provider for that app, check if the user is authenticated.
         if not request.user.is_authenticated:
             next_param = urlencode({"next": request.get_full_path()})
             login_url = reverse("accounts:login")
             return redirect(f"{login_url}?{next_param}")
+        
+        missing_providers = []
+        for required_provider in required_providers:
+            if not request.user.social_auth.filter(provider=required_provider).exists():
+                missing_providers.append(required_provider)
 
-        if request.user.social_auth.filter(provider=required_provider).exists():
+        if not missing_providers:
             return self.get_response(request)
 
-        messages.info(
-            request,
-            f"This application requires authenticating with {required_provider}. Please link your {required_provider} account.",
-        )
+        # Format the missing provider names for displaying to the user
+        if len(missing_providers) == 1:
+            provider_names_string = missing_providers[0]
+        elif len(missing_providers) == 2:
+            provider_names_string = " and ".join(missing_providers)
+        else:
+            provider_names_string = ", ".join(missing_providers[:-1]) + f", and {missing_providers[-1]}"
+
+        if len(missing_providers) == 1:
+            message = "This application requires authenticating with " + missing_providers[0] + ". Please link your account."
+        else:
+            message = "This application requires authenticating with " + provider_names_string + ". Please link your accounts."
+
+        messages.info(request, message)
         next_param = urlencode({"next": request.get_full_path()})
 
         settings_url = reverse("user:settings")

@@ -78,6 +78,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     show_in_apps_library = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
     back_url = models.CharField(max_length=512, default="", blank=True)
+    required_oauth2_providers = models.JSONField(default=list, blank=True)
 
     # Developer first attributes
     index = models.CharField(max_length=200, default="")

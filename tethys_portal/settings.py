@@ -603,10 +603,6 @@ OAUTH2_PROVIDER_URL_NAMESPACE = OAUTH_CONFIG.get(
     "OAUTH2_PROVIDER", portal_config_settings.get("OAUTH2_PROVIDER", {})
 ).pop("URL_NAMESPACE", "o")
 
-# Mapping of app package to the social auth provider users must be linked to
-# before they can access that app (e.g. {"my_first_app": "my_provider"})
-OAUTH2_REQUIREMENTS = portal_config_settings.pop("OAUTH2_REQUIREMENTS", {})
-
 # MFA Settings
 # See: https://github.com/mkalioby/django-mfa2
 # Methods that shouldn't be allowed for the user, U2F, FIDO2, TOTP, Trusted_Devices, Email

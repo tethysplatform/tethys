@@ -10,6 +10,7 @@ import sys
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.module_loading import import_string
 
 from tethys_cli.cli_colors import (
     write_msg,
@@ -909,9 +910,31 @@ def install_command(args):
 
     call(["tethys", "db", "sync"])
 
+    # Check for missing authentication backends
+    setup_django()
+    from tethys_apps.models import TethysApp
+    app = TethysApp.objects.get(package=app_name)
+    if app.required_oauth2_providers:
+        authentication_backend_names = []
+        for backend in settings.AUTHENTICATION_BACKENDS:
+            backend_class = import_string(backend)
+            if hasattr(backend_class, "name"):
+                authentication_backend_names.append(backend_class.name)
+
+        missing_backends = [
+            provider for provider in app.required_oauth2_providers 
+            if provider not in authentication_backend_names
+        ]
+        if missing_backends:
+            write_warning(
+                f"The following OAuth2 providers are required by '{app_name}' but are not configured in your Tethys Portal as AUTHENTICATION_BACKENDS:\n"
+                f"{'- ' + '\n- '.join(missing_backends)}\n"
+                "Run: tethys settings --set AUTHENTICATION_BACKENDS \"['tethys_services.backends.<provider>.<BackendClass>']\" "
+                "to add the missing backend configurations."
+            )
     # Run Portal Level Config if present
     if not skip_config:
-        setup_django()
+
         if args.force_services:
             run_services(app_name, args)
         else:

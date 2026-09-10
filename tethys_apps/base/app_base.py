@@ -600,6 +600,7 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
+    required_oauth2_providers = []
 
     def __str__(self):
         """
@@ -2078,6 +2079,7 @@ class TethysAppBase(TethysBase):
                     tags=self.tags,
                     enabled=self.enabled,
                     show_in_apps_library=self.show_in_apps_library,
+                    required_oauth2_providers=self.required_oauth2_providers,
                 )
                 db_app.save()
                 self.sync_all_settings(db_app)
@@ -2100,6 +2102,7 @@ class TethysAppBase(TethysBase):
                     db_app.feedback_emails = self.feedback_emails
                     db_app.enabled = self.enabled
                     db_app.show_in_apps_library = self.show_in_apps_library
+                    db_app.required_oauth2_providers = self.required_oauth2_providers
 
                     db_app.save()
 
