@@ -11,9 +11,11 @@
 import logging
 from urllib.error import HTTPError, URLError
 from functools import wraps
+from urllib.parse import urlencode
 
 import requests.exceptions
 
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -45,10 +47,17 @@ def ensure_oauth2(provider):
     """
     Decorator to ensure a user has been authenticated with the given oauth2 provider.
 
+    If the user is not authenticated or not linked to
+    the provider, they will be redirected to the appropriate page with a message.
+
+    The access token is stored on ``request.social_access_token`` for use in the
+    decorated controller.
+
     Usage:
 
         from tethys_sdk.services import ensure_oauth2, get_dataset_engine
 
+        @controller
         @ensure_oauth2('hydroshare-oauth2')
         def controller(request):
             engine = get_dataset_engine('default_hydroshare', request=request)
@@ -62,34 +71,47 @@ def ensure_oauth2(provider):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
             user = request.user
-            # Assemble redirect response
-            redirect_url = reverse(
-                "social:begin", args=[provider]
-            ) + "?next={0}".format(request.path)
-            redirect_response = redirect(redirect_url)
 
-            try:
-                social = user.social_auth.get(provider=provider)
-            except ObjectDoesNotExist:
-                # User is not associated with that provider
-                return redirect_response
-            except AttributeError:
+            # Assemble redirect responses for settings and login pages
+            next_param = urlencode({"next": request.get_full_path()})
+
+            settings_url = reverse("user:settings")
+            settings_redirect_response = redirect(f"{settings_url}?{next_param}")
+
+            login_url = reverse("accounts:login")
+            login_redirect_response = redirect(f"{login_url}?{next_param}")
+
+            if not user.is_authenticated:
                 # Anonymous User needs to be logged in and associated with that provider
-                return redirect_response
-            except AuthAlreadyAssociated as e:
-                # Another user has already used the account to associate...
-                raise e
-            else:
-                strategy = load_strategy()
-                try:
-                    access_token = social.get_access_token(strategy)
-                except requests.exceptions.HTTPError:
-                    logger.debug(
-                        "there was an error refreshing the token - redirecting user to re-authenticate"
-                    )
-                    return redirect_response
+                messages.info(
+                    request,
+                    f"This application requires authenticating with an account linked to {provider}. Please log in to continue.",
+                )
+                return login_redirect_response
 
-                request.social_access_token = access_token
+            social = user.social_auth.filter(provider=provider).first()
+            if not social:
+                # User is not associated with that provider
+                messages.info(
+                    request,
+                    f"This application requires authenticating with {provider}. Please link your {provider} account.",
+                )
+                return settings_redirect_response
+
+            strategy = load_strategy()
+            try:
+                access_token = social.get_access_token(strategy)
+            except requests.exceptions.HTTPError:
+                logger.debug(
+                    "there was an error refreshing the token - redirecting user to re-authenticate"
+                )
+                messages.info(
+                    request,
+                    f"There was an error refreshing your {provider} access token. Please re-authenticate.",
+                )
+                return settings_redirect_response
+
+            request.social_access_token = access_token
 
             return func(request, *args, **kwargs)
 
