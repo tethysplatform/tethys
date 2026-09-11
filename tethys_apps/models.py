@@ -8,20 +8,26 @@
 ********************************************************************************
 """
 
+from urllib.parse import urlencode
+
 from django.dispatch import receiver
 import logging
 import uuid
 import json
+import requests
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.urls import reverse
+from django.utils.functional import lazy
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
     PersistentStoreInitializerError,
 )
+from tethys_sdk.gizmos import MVLayer
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
@@ -48,6 +54,7 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
+        SecureMapService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -71,6 +78,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     show_in_apps_library = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
     back_url = models.CharField(max_length=512, default="", blank=True)
+    required_oauth2_providers = models.JSONField(default=list, blank=True)
 
     # Developer first attributes
     index = models.CharField(max_length=200, default="")
@@ -164,6 +172,12 @@ class TethysApp(models.Model, TethysBaseMixin):
         return self.settings_set.exclude(
             persistentstoredatabasesetting__isnull=True
         ).select_subclasses("persistentstoredatabasesetting")
+
+    @property
+    def secure_map_service_settings(self):
+        return self.settings_set.exclude(
+            securemapservicesetting__isnull=True
+        ).select_subclasses("securemapservicesetting")
 
     @property
     def configured(self):
@@ -1102,6 +1116,216 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         self.initialized = True
         self.save()
+
+
+class SecureMapServiceSetting(TethysAppSetting):
+    """
+    Used to define a Secure Map Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        legend_title(str): The title to use for the legend when this service is added as a layer on a map.
+        endpoint(str): The endpoint URL for the secure map service.
+        authentication_method(str): The method used for authentication (e.g., "API Key", "OAuth2").
+        api_key(str): The API key used for authentication with the secure map service.
+        oauth2_provider(str): The OAuth2 provider to use for authentication if the secure map service uses OAuth2 for authentication.
+        service_type(str): The type of map service (e.g., "WMS", "GML").
+        params(dict): Additional parameters to include in requests to the secure map service.
+        use_proxy(bool): Whether to route requests through a proxy endpoint to handle authentication instead of sending credentials directly from the client.
+        connection_timeout(int): The timeout value (in seconds) for establishing a connection to the secure map service.
+        read_timeout(int): The timeout value (in seconds) for reading data from the secure map service.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SecureMapServiceSetting
+
+        secure_map_service_setting = SecureMapServiceSetting(
+            name='secure_map_service',
+            description='Secure Map service for app to use',
+            required=True,
+        )
+
+    """
+
+    secure_map_service = models.ForeignKey(
+        SecureMapService, on_delete=models.CASCADE, blank=True, null=True
+    )
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.secure_map_service and self.required:
+            raise ValidationError("Required.")
+
+    def _generate_request(self, param_overrides=None):
+        """
+        Generate a URL for making requests to the secure map service.
+        
+        For services using API key authentication, the API key is included in the returned URL as a query parameter. 
+        
+        For services using OAuth2 authentication, the return URL does not include the access token. 
+        You must retrieve the access token separately and include the token as a Authorization: Bearer <token> header in your request. 
+        You can retrieve the access token by calling ``App.get_secure_map_service('setting_name', as_token=True, request_user=request.user)``.
+        Another option is to use ``as_layer=True`` when calling ``App.get_secure_map_service`` to get a map layer object that handles the token automatically.
+
+        For services with a proxy endpoint enabled, the returned URL points to Tethys's secure map proxy endpoint, which handles authentication server-side. 
+        """
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot generate request for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+
+        service = self.secure_map_service
+        if service.use_proxy:
+            # Use lazy URL resolution so the proxy endpoint is resolved at
+            # runtime. This allows the url to be referenced before apps are
+            # fully loaded and the urls are registered. This helps in cases
+            # like using a map service for a MapLayout basemap
+            def build_proxy_url():
+                url = reverse("secure_map_proxy", kwargs={"setting_id": service.pk})
+                if param_overrides:
+                    return f"{url}?{urlencode(param_overrides)}"
+                return url
+
+            return lazy(build_proxy_url, str)()
+
+        endpoint = service.endpoint
+        params = service._get_resolved_params()
+        if param_overrides:
+            params.update(param_overrides)
+
+        query_string = urlencode(params)
+        separator = "&" if "?" in endpoint else "?"
+        url = f"{endpoint}{separator}{query_string}" if query_string else endpoint
+        return url
+
+    def _build_layer(self, param_overrides=None, request_user=None):
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot build layer for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+
+        endpoint = self._generate_request(param_overrides=param_overrides)
+        service = self.secure_map_service
+        options = {"url": endpoint}
+        if not service.use_proxy and service.authentication_method == "oauth2":
+            if not request_user:
+                raise ValueError(
+                    "Request user must be provided to build layer for OAuth2 authenticated service."
+                )
+
+            options["token"] = service._get_oauth_token(request_user)
+
+        return MVLayer(
+            source=service.service_type,
+            layer_options={"visible": True},
+            options=options,
+            legend_title=service.legend_title,
+            data={"show_legend": True, "layer_id": service.pk},
+        )
+
+    def _fetch_response(self, param_overrides=None, request_user=None):
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot fetch response for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+        service = self.secure_map_service
+        params = dict(service._get_resolved_params() or {})
+        if param_overrides:
+            params.update(param_overrides)
+
+        headers = {}
+        if service.authentication_method == "oauth2":
+            if not request_user:
+                raise ValueError(
+                    "Request user must be provided to fetch response for OAuth2 authenticated service."
+                )
+            headers["Authorization"] = f"Bearer {service._get_oauth_token(request_user)}"
+
+        connection_timeout = (
+            service.connection_timeout if service.connection_timeout is not None else 10
+        )
+        read_timeout = service.read_timeout if service.read_timeout is not None else 30
+        try:
+            resp = requests.get(
+                service.endpoint,
+                params=params,
+                headers=headers,
+                timeout=(connection_timeout, read_timeout),
+            )
+
+        except requests.Timeout:
+            log.error(
+                f"SecureMapService with name {service.name} request timed out. "
+                f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+            )
+            raise
+
+        if not resp.ok:
+            log.error(
+                f"SecureMapService with name {service.name} request failed: \n"
+                f"code: {resp.status_code}\n"
+            )
+        resp.raise_for_status()
+        return resp
+
+    def get_value(
+        self,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        as_token=False,
+        param_overrides=None,
+        request_user=None,
+    ):
+        secure_map_service = None
+        if self.secure_map_service:
+            secure_map_service = self.secure_map_service
+
+        if secure_map_service is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+        if as_token:
+            if not request_user:
+                raise ValueError(
+                    "request_user must be provided to retrieve an OAuth2 token."
+                )
+            return self.secure_map_service._get_oauth_token(request_user)
+        if as_endpoint:
+            return self._generate_request(param_overrides=param_overrides)
+        elif as_layer:
+            return self._build_layer(
+                param_overrides=param_overrides, request_user=request_user
+            )
+        elif as_response:
+            return self._fetch_response(
+                param_overrides=param_overrides, request_user=request_user
+            )
+
+        return secure_map_service
+
+    def _update_params(self, new_params):
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot update params for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+        self.secure_map_service._update_params(new_params)
 
 
 class SchedulerSetting(TethysAppSetting):

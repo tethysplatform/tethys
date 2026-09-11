@@ -12,6 +12,8 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
 import os
+from encrypted_fields.fields import EncryptedTextField
+from string import Template
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -402,3 +404,130 @@ class SQLitePersistentStoreService(PersistentStoreServiceBase):
     def get_url(self):
         db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")
         return f"sqlite:///{db_file}"
+
+
+class SecureMapService(models.Model):
+    """
+    ORM for Secure Map Service settings.
+    """
+
+    name = models.CharField(max_length=30, unique=True)
+    legend_title = models.CharField(max_length=100, blank=True)
+    endpoint = models.CharField(max_length=1024, validators=[validate_url])
+    authentication_method = models.CharField(
+        max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth2", "OAuth2")]
+    )
+    api_key = EncryptedTextField(blank=True, null=True)
+    oauth2_provider = models.CharField(max_length=100, blank=True)
+    service_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("ImageWMS", "WMS"),
+            ("GML", "GML"),
+            ("GeoJSON", "GeoJSON"),
+            ("REST", "REST/JSON API"),
+        ],
+        default="ImageWMS",
+    )
+    params = models.JSONField(blank=True, null=True, default=dict)
+    use_proxy = models.BooleanField(default=False)  # Hide API key in requests
+    connection_timeout = models.IntegerField(default=10, null=True, blank=True)
+    read_timeout = models.IntegerField(default=30, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Secure Map Service"
+        verbose_name_plural = "Secure Map Services"
+
+    def __str__(self):
+        return self.name
+
+    def clean(self):
+        if self.params is not None and not isinstance(self.params, dict):
+            raise ValidationError({"params": "Parameters must be a JSON object (e.g. {\"key\": \"value\"})"})
+
+    def _get_oauth_token(self, user):
+        """
+        Retrieve the OAuth2 token for the given user.
+        Args:
+            user (User): The user for whom to retrieve the OAuth2 token.
+
+        Returns:
+            str: The OAuth2 token for the user.
+        """
+        from social_django.utils import load_strategy
+        from social_core.exceptions import AuthException
+
+        if self.authentication_method != "oauth2":
+            raise ValueError(
+                "Authentication method must be 'oauth2' to retrieve an OAuth2 token."
+            )
+        if not self.oauth2_provider:
+            raise ValueError(
+                "OAuth2 provider must be specified to retrieve an OAuth2 token."
+            )
+
+        try:
+            auth = user.social_auth.get(provider=self.oauth2_provider)
+        except ObjectDoesNotExist:
+            raise ValueError(f"User not linked to {self.oauth2_provider} for OAuth2 authentication.")
+
+        try:
+            access_token = auth.get_access_token(load_strategy())
+        except AuthException as e:
+            raise ValueError(f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {e}")
+
+        if not access_token:
+            raise ValueError("No access token found for user.")
+
+        return access_token
+
+    def _get_resolved_params(self):
+        """
+        Resolve template variables in the service parameters using the model's attributes.
+
+        Returns:
+            dict: A dictionary of resolved parameters.
+        """
+        if not self.params:
+            return {}
+        if not isinstance(self.params, dict):
+            raise ValueError(
+                f"SecureMapService '{self.name}': params must be a JSON object, "
+                f"got {type(self.params).__name__}."
+            )
+
+        safe_attribute_names = {
+            f.name: str(getattr(self, f.name, "") or "") for f in self._meta.fields
+        }
+
+        resolved_params = {}
+        for key, value in self.params.items():
+            if isinstance(value, str):
+                value = Template(value).safe_substitute(safe_attribute_names)
+            resolved_params[key] = value
+
+        if (
+            self.authentication_method == "api_key"
+            and self.api_key
+            and self.api_key not in resolved_params.values()
+        ):
+            resolved_params["api_key"] = self.api_key
+
+        return resolved_params
+
+    def _update_params(self, new_params):
+        """
+        Merge the given parameters into the parameters of the service and save.
+
+        Note that a SecureMapService may be shared by multiple settings and apps,
+        so updating its parameters affects every app that uses it.
+
+        Args:
+            new_params (dict): The parameters to merge into the service parameters.
+        """
+        if not isinstance(new_params, dict):
+            raise ValueError("new_params must be a JSON object (dict).")
+        params = self.params or {}
+        params.update(new_params)
+        self.params = params
+        self.save()

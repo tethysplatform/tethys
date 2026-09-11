@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
-from django.utils.functional import classproperty
+from django.utils.functional import classproperty, lazy
 from django.shortcuts import render, redirect, reverse
 from django.template.loader import render_to_string
 
@@ -600,6 +600,7 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
+    required_oauth2_providers = []
 
     def __str__(self):
         """
@@ -843,6 +844,37 @@ class TethysAppBase(TethysBase):
                     )
 
                     return wps_services
+        """
+        return None
+
+    def secure_map_service_settings(self):
+        """
+        Override this method to define secure map service connections for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``SecureMapServiceSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.app_settings import SecureMapServiceSetting
+
+            class MyFirstApp(TethysAppBase):
+
+                def secure_map_service_settings(self):
+                    \"""
+                    Example secure_map_service_settings method.
+                    \"""
+                    secure_map_services = (
+                        SecureMapServiceSetting(
+                            name='primary_secure_map_service',
+                            description='Secure Map Service for app to use',
+                            required=True,
+                        ),
+                    )
+
+                    return secure_map_services
         """
         return None
 
@@ -1861,6 +1893,134 @@ class TethysAppBase(TethysBase):
         ps_database_setting.persistent_store_database_exists()
         return True
 
+    @classmethod
+    def get_secure_map_service(
+        cls,
+        name,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        as_token=False,
+        param_overrides=None,
+        request_user=None,
+    ):
+        """
+        Retrieves secure map service assigned to named SecureMapServiceSetting for the app.
+
+        Args:
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
+            as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
+            as_layer(bool): Returns an MVLayer object if True, Defaults to False.
+            as_response(bool): Returns requests.Response object if True, Defaults to False.
+            as_token(bool): Returns an OAuth2 token string if True, Defaults to False.
+            param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
+            request_user(User): Django User object to use for the request. Defaults to None.
+
+        Returns:
+            SecureMapService: SecureMapService assigned to setting.
+
+        **NOTE:** When ``as_endpoint`` is True a lazy string is returned. This ensures the
+        endpoint reflects the current state of the map service's settings every time it is used.
+
+        """
+        if as_endpoint:
+            return lazy(cls._resolve_secure_map_service, str)(
+                name,
+                as_endpoint=True,
+                param_overrides=param_overrides,
+            )
+
+        return cls._resolve_secure_map_service(
+            name,
+            as_layer=as_layer,
+            as_response=as_response,
+            as_token=as_token,
+            param_overrides=param_overrides,
+            request_user=request_user,
+        )
+
+    @classmethod
+    def _resolve_secure_map_service(
+        cls,
+        name,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        as_token=False,
+        param_overrides=None,
+        request_user=None,
+    ):
+        """
+        Resolve the named SecureMapServiceSetting.
+
+        This function is kept separate from ``get_secure_map_service`` to allow for lazy evaluation of the endpoint url.
+
+        Args:
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
+            as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
+            as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
+            as_response(bool): Returns requests.Response object if True, Defaults to False.
+            as_token(bool): Returns OAuth2 token if True, Defaults to False.
+            param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
+            request_user(User): Django User object to use for the request. Defaults to None.
+
+        Returns:
+            SecureMapService: when no 'as' option is specified
+            str: lazy endpoint url when ``as_endpoint`` is True
+            MVLayer: map layer when ``as_layer`` is True
+            requests.Response: response object when ``as_response`` is True
+            str: OAuth2 token when ``as_token`` is True
+
+        """
+        from tethys_apps.models import TethysApp
+
+        db_app = TethysApp.objects.get(package=cls.package)
+        secure_map_service_settings = db_app.secure_map_service_settings
+
+        try:
+            secure_map_service_setting = secure_map_service_settings.get(name=name)
+
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                "SecureMapServiceSetting", name, cls.name
+            )
+
+        return secure_map_service_setting.get_value(
+            as_endpoint=as_endpoint,
+            as_layer=as_layer,
+            as_response=as_response,
+            as_token=as_token,
+            param_overrides=param_overrides,
+            request_user=request_user,
+        )
+
+    @classmethod
+    def update_secure_map_service_params(cls, name, params):
+        """
+        Update the params for a given SecureMapServiceSetting's assigned SecureMapService.
+
+        **NOTE**: This method will not update the params for the SecureMapServiceSetting itself.
+        It will only update the params for the assigned SecureMapService.
+
+        Args:
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
+            params(dict): dictionary of params to update for the service.
+        """
+        from tethys_apps.models import TethysApp
+
+        db_app = TethysApp.objects.get(package=cls.package)
+        secure_map_service_settings = db_app.secure_map_service_settings
+
+        try:
+            secure_map_service_setting = secure_map_service_settings.get(name=name)
+
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                "SecureMapServiceSetting", name, cls.name
+            )
+
+        secure_map_service_setting._update_params(params)
+
     def sync_all_settings(self, db_app):
         # custom settings
         db_app.sync_settings(self.custom_settings(), db_app.custom_settings)
@@ -1882,6 +2042,10 @@ class TethysAppBase(TethysBase):
             self.persistent_store_settings(),
             list(db_app.persistent_store_connection_settings)
             + list(db_app.persistent_store_database_settings),
+        )
+        # secure map service settings
+        db_app.sync_settings(
+            self.secure_map_service_settings(), db_app.secure_map_service_settings
         )
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
@@ -1915,9 +2079,9 @@ class TethysAppBase(TethysBase):
                     tags=self.tags,
                     enabled=self.enabled,
                     show_in_apps_library=self.show_in_apps_library,
+                    required_oauth2_providers=self.required_oauth2_providers,
                 )
                 db_app.save()
-
                 self.sync_all_settings(db_app)
 
             # If the app is in the database, update developer priority attributes
@@ -1925,7 +2089,6 @@ class TethysAppBase(TethysBase):
                 db_app = db_apps[0]
                 db_app.index = self.index
                 db_app.root_url = self.root_url
-
                 self.sync_all_settings(db_app)
 
                 # In debug mode, update all fields, not just developer priority attributes
@@ -1939,6 +2102,7 @@ class TethysAppBase(TethysBase):
                     db_app.feedback_emails = self.feedback_emails
                     db_app.enabled = self.enabled
                     db_app.show_in_apps_library = self.show_in_apps_library
+                    db_app.required_oauth2_providers = self.required_oauth2_providers
 
                     db_app.save()
 

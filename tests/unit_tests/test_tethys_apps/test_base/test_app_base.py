@@ -1424,6 +1424,87 @@ class TestTethysAppBase(unittest.TestCase):
         # Check if result False
         self.assertFalse(result)
 
+    @mock.patch("tethys_apps.base.app_base.TethysAppBase._resolve_secure_map_service")
+    def test_get_secure_map_service(self, mock_rms):
+        result = TethysAppChild.get_secure_map_service(name=self.fake_name)
+        mock_rms.assert_called_once_with(
+            self.fake_name,
+            as_layer=False,
+            as_response=False,
+            param_overrides=None,
+            request_user=None,
+        )
+        self.assertEqual(mock_rms(), result)
+
+    @mock.patch("tethys_apps.base.app_base.TethysAppBase._resolve_secure_map_service")
+    def test_get_secure_map_service_as_endpoint(self, mock_rms):
+        mock_rms.return_value = "/apps/test-app/map-service/fake_name/"
+        result = TethysAppChild.get_secure_map_service(
+            name=self.fake_name, as_endpoint=True
+        )
+        mock_rms.assert_not_called()
+        self.assertEqual("/apps/test-app/map-service/fake_name/", str(result))
+        mock_rms.assert_called_once_with(
+            self.fake_name,
+            as_endpoint=True,
+            param_overrides=None,
+        )
+
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test__resolve_secure_map_service(self, mock_ta):
+        mock_get_value = (
+            mock_ta.objects.get().secure_map_service_settings.get().get_value
+        )
+        mock_get_value.return_value = "test_secure_map_service"
+
+        result = TethysAppChild._resolve_secure_map_service(name=self.fake_name)
+        mock_ta.objects.get.assert_called_with(package=TethysAppChild.package)
+
+        mock_ta.objects.get().secure_map_service_settings.get.assert_called_with(
+            name=self.fake_name
+        )
+        self.assertEqual("test_secure_map_service", result)
+
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test__resolve_secure_map_service_object_does_not_exist(self, mock_ta):
+        mock_get = mock_ta.objects.get().secure_map_service_settings.get
+        mock_get.side_effect = ObjectDoesNotExist
+
+        self.assertRaises(
+            TethysAppSettingDoesNotExist,
+            TethysAppChild._resolve_secure_map_service,
+            name=self.fake_name,
+        )
+
+    @mock.patch("tethys_apps.models.SecureMapServiceSetting._update_params")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_update_secure_map_service_params(self, mock_ta, mock_update_params):
+        mock_setting = (
+            mock_ta.objects.get().secure_map_service_settings.get.return_value
+        )
+
+        fake_params = {"param1": "value1"}
+        TethysAppChild.update_secure_map_service_params(
+            name=self.fake_name, params=fake_params
+        )
+        mock_ta.objects.get.assert_called_with(package=TethysAppChild.package)
+        mock_ta.objects.get().secure_map_service_settings.get.assert_called_with(
+            name=self.fake_name
+        )
+        mock_setting._update_params.assert_called_with(fake_params)
+
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_update_secure_map_service_params_object_does_not_exist(self, mock_ta):
+        mock_get = mock_ta.objects.get().secure_map_service_settings.get
+        mock_get.side_effect = ObjectDoesNotExist
+
+        self.assertRaises(
+            TethysAppSettingDoesNotExist,
+            TethysAppChild.update_secure_map_service_params,
+            name=self.fake_name,
+            params={"param1": "value1"},
+        )
+
     @mock.patch("tethys_apps.base.app_base.files")
     @mock.patch("tethys_apps.base.app_base.TethysPath")
     @mock.patch("tethys_apps.base.app_base.sync_cookies_from_yaml")
@@ -1472,7 +1553,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_ta().save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_ta().sync_settings.call_count == 6)
+        self.assertTrue(mock_ta().sync_settings.call_count == 7)
         mock_sync_cookies.assert_called_once_with(
             mock_path().path.__truediv__(), "p", "n"
         )
@@ -1492,7 +1573,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_app.save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_app.sync_settings.call_count == 6)
+        self.assertTrue(mock_app.sync_settings.call_count == 7)
 
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")

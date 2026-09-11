@@ -127,3 +127,119 @@ class TestSettingsCommands(TestCase):
         mock_args = mock.MagicMock(set_kwargs=None, get_key=None, rm_key=rm_key)
         cmds.settings_command(mock_args)
         mock_remove_setting.assert_called_with({}, rm_key[0])
+
+    @mock.patch("tethys_cli.settings_commands.generate_salt_key_setting")
+    @mock.patch(
+        "tethys_cli.settings_commands.read_settings",
+        return_value={"SALT_KEY": "existing_salt_key"},
+    )
+    def test_settings_command_gsk(self, _, mock_gsk):
+        mock_args = mock.MagicMock(
+            set_kwargs=None,
+            get_key=None,
+            rm_key=None,
+            generate_salt_key=True,
+            overwrite=True,
+        )
+        cmds.settings_command(mock_args)
+        mock_gsk.assert_called_with({"SALT_KEY": "existing_salt_key"}, True)
+
+    @mock.patch("tethys_cli.settings_commands.generate_salt_key")
+    @mock.patch("tethys_cli.settings_commands.write_success")
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    def test_generate_salt_key_setting_no_salt_key(
+        self, mock_write_settings, mock_write_success, mock_gsk
+    ):
+        tethys_settings = {}
+        mock_gsk.return_value = "mock_salt_key123"
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=False)
+        mock_write_settings.assert_called_with({"SALT_KEY": "mock_salt_key123"})
+        mock_write_success.assert_called_with("Successfully generated a new SALT_KEY.")
+
+    @mock.patch("tethys_cli.settings_commands.generate_salt_key")
+    @mock.patch("tethys_cli.settings_commands.write_success")
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    def test_generate_salt_key_setting_existing_salt_key_overwrite_true(
+        self, mock_write_settings, mock_write_success, mock_gsk
+    ):
+        tethys_settings = {"SALT_KEY": "existing_salt_key"}
+        mock_gsk.return_value = "mock_salt_key123"
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=True)
+        mock_write_settings.assert_called_with({"SALT_KEY": "mock_salt_key123"})
+        mock_write_success.assert_called_with("Successfully generated a new SALT_KEY.")
+
+    @mock.patch("builtins.input")
+    @mock.patch("tethys_cli.settings_commands.generate_salt_key")
+    @mock.patch("tethys_cli.settings_commands.write_success")
+    @mock.patch(
+        "tethys_cli.settings_commands.write_warning"
+    )  # Mocked to avoid actual warning output during test
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    def test_generate_salt_key_setting_existing_salt_key_invalid_then_yes(
+        self, mock_write_settings, mock_ww, mock_write_success, mock_gsk, mock_input
+    ):
+        tethys_settings = {"SALT_KEY": "existing_salt_key"}
+        mock_gsk.return_value = "mock_salt_key123"
+        mock_input.side_effect = ["invalid", "maybe", "y"]
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=False)
+        mock_input.assert_has_calls(
+            [
+                mock.call("Overwrite? (y/n): "),
+                mock.call("Invalid option. Overwrite? (y/n): "),
+                mock.call("Invalid option. Overwrite? (y/n): "),
+            ]
+        )
+        self.assertEqual(mock_input.call_count, 3)
+        mock_write_settings.assert_called_with({"SALT_KEY": "mock_salt_key123"})
+        mock_write_success.assert_called_with("Successfully generated a new SALT_KEY.")
+
+    @mock.patch("builtins.input")
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    @mock.patch("tethys_cli.settings_commands.write_warning")
+    def test_generate_salt_key_setting_existing_salt_key_no(
+        self, mock_ww, mock_ws, mock_input
+    ):
+        tethys_settings = {"SALT_KEY": "existing_salt_key"}
+        mock_input.return_value = "n"
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=False)
+        mock_ww.assert_called_with("Generation of SALT_KEY cancelled.")
+        mock_input.assert_called_once_with("Overwrite? (y/n): ")
+        mock_ws.assert_not_called()
+
+    @mock.patch("builtins.input")
+    @mock.patch("tethys_cli.settings_commands.generate_salt_key")
+    @mock.patch("tethys_cli.settings_commands.write_success")
+    @mock.patch(
+        "tethys_cli.settings_commands.write_warning"
+    )  # Mocked to avoid actual warning output during test
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    def test_generate_salt_key_setting_existing_salt_key_yes(
+        self, mock_write_settings, mock_ww, mock_write_success, mock_gsk, mock_input
+    ):
+        tethys_settings = {"SALT_KEY": "existing_salt_key"}
+        mock_gsk.return_value = "mock_salt_key123"
+        mock_input.return_value = "y"
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=False)
+        mock_input.assert_called_once_with("Overwrite? (y/n): ")
+        mock_write_settings.assert_called_with({"SALT_KEY": "mock_salt_key123"})
+        mock_write_success.assert_called_with("Successfully generated a new SALT_KEY.")
+
+    @mock.patch("builtins.input")
+    @mock.patch("tethys_cli.settings_commands.write_settings")
+    @mock.patch("tethys_cli.settings_commands.write_warning")
+    def test_generate_salt_key_setting_existing_salt_key_invalid_then_no(
+        self, mock_ww, mock_ws, mock_input
+    ):
+        tethys_settings = {"SALT_KEY": "existing_salt_key"}
+        mock_input.side_effect = ["invalid", "maybe", "n"]
+        cmds.generate_salt_key_setting(tethys_settings, overwrite=False)
+        mock_input.assert_has_calls(
+            [
+                mock.call("Overwrite? (y/n): "),
+                mock.call("Invalid option. Overwrite? (y/n): "),
+                mock.call("Invalid option. Overwrite? (y/n): "),
+            ]
+        )
+        self.assertEqual(mock_input.call_count, 3)
+        mock_ww.assert_called_with("Generation of SALT_KEY cancelled.")
+        mock_ws.assert_not_called()
