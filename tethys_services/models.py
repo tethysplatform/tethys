@@ -415,7 +415,9 @@ class SecureMapService(models.Model):
     legend_title = models.CharField(max_length=100, blank=True)
     endpoint = models.CharField(max_length=1024, validators=[validate_url])
     authentication_method = models.CharField(
-        max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth2", "OAuth2")]
+        max_length=100,
+        blank=True,
+        choices=[("api_key", "API Key"), ("oauth2", "OAuth2")],
     )
     api_key = EncryptedTextField(blank=True, null=True)
     oauth2_provider = models.CharField(max_length=100, blank=True)
@@ -443,7 +445,9 @@ class SecureMapService(models.Model):
 
     def clean(self):
         if self.params is not None and not isinstance(self.params, dict):
-            raise ValidationError({"params": "Parameters must be a JSON object (e.g. {\"key\": \"value\"})"})
+            raise ValidationError(
+                {"params": 'Parameters must be a JSON object (e.g. {"key": "value"})'}
+            )
 
     def _get_oauth_token(self, user):
         """
@@ -469,12 +473,16 @@ class SecureMapService(models.Model):
         try:
             auth = user.social_auth.get(provider=self.oauth2_provider)
         except ObjectDoesNotExist:
-            raise ValueError(f"User not linked to {self.oauth2_provider} for OAuth2 authentication.")
+            raise ValueError(
+                f"User not linked to {self.oauth2_provider} for OAuth2 authentication."
+            )
 
         try:
             access_token = auth.get_access_token(load_strategy())
         except AuthException as e:
-            raise ValueError(f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {e}")
+            raise ValueError(
+                f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {e}"
+            )
 
         if not access_token:
             raise ValueError("No access token found for user.")

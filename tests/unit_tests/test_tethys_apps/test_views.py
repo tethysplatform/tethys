@@ -337,7 +337,9 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_oauth2_no_extra_headers(self, mock_get, mock_request_func):
+    def test_secure_map_proxy_oauth2_no_extra_headers(
+        self, mock_get, mock_request_func
+    ):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
         mock_setting_id = 1
         mock_service = mock.MagicMock()

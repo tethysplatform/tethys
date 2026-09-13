@@ -147,6 +147,7 @@ def get_setting_type_from_setting(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
     )
 
     if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(
@@ -174,6 +175,11 @@ def get_setting_type_from_setting(setting):
     ):
         return "wps"
 
+    elif setting.__class__ == SecureMapServiceSetting or isinstance(
+        setting, SecureMapServiceSetting
+    ):
+        return "secure_map"
+
     raise RuntimeError(f"Could not determine setting type for setting: {setting}")
 
 
@@ -184,6 +190,7 @@ def get_service_type_from_setting(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
     )
 
     if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(
@@ -210,6 +217,11 @@ def get_service_type_from_setting(setting):
         setting, WebProcessingServiceSetting
     ):
         return "wps"
+
+    elif setting.__class__ == SecureMapServiceSetting or isinstance(
+        setting, SecureMapServiceSetting
+    ):
+        return "secure_map"
 
     raise RuntimeError(f"Could not determine service type for setting: {setting}")
 
@@ -265,6 +277,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
         CustomSettingBase,
         CustomSetting,
         SecretCustomSetting,
@@ -277,6 +290,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
+        SecureMapServiceSetting: "secure_map",
         CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
         SecretCustomSetting: "secret_custom_setting",
@@ -452,7 +466,7 @@ def run_interactive_services(app_name):
             # List existing services
             args = Namespace()
 
-            for conf in ["spatial", "persistent", "wps", "dataset"]:
+            for conf in ["spatial", "persistent", "wps", "dataset", "secure_map"]:
                 setattr(args, conf, False)
 
             setattr(args, get_setting_type(setting), True)
@@ -487,7 +501,13 @@ def run_interactive_services(app_name):
                             break
 
                         # Validate the given service id
-                        valid_service = validate_service_id(service_type, service_id)
+                        try:
+                            valid_service = validate_service_id(
+                                service_type, service_id
+                            )
+                        except ValueError as e:
+                            write_error(str(e))
+                            break
 
                         if valid_service:
                             link_service_to_app_setting(
@@ -512,9 +532,14 @@ def run_interactive_services(app_name):
 
 
 def find_and_link(service_type, setting_name, service_id, app_name, setting):
-    valid_service = validate_service_id(service_type, service_id)
-    setting_type = get_setting_type_from_setting(setting)
+    try:
+        valid_service = validate_service_id(service_type, service_id)
+    except ValueError as e:
+        write_error(str(e))
+        return
+
     if valid_service:
+        setting_type = get_setting_type_from_setting(setting)
         link_service_to_app_setting(
             service_type, service_id, app_name, setting_type, setting_name
         )
@@ -913,6 +938,7 @@ def install_command(args):
     # Check for missing authentication backends
     setup_django()
     from tethys_apps.models import TethysApp
+
     app = TethysApp.objects.get(package=app_name)
     if app.required_oauth2_providers:
         authentication_backend_names = []
@@ -922,7 +948,8 @@ def install_command(args):
                 authentication_backend_names.append(backend_class.name)
 
         missing_backends = [
-            provider for provider in app.required_oauth2_providers 
+            provider
+            for provider in app.required_oauth2_providers
             if provider not in authentication_backend_names
         ]
         if missing_backends:

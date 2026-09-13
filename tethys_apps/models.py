@@ -1165,15 +1165,15 @@ class SecureMapServiceSetting(TethysAppSetting):
     def _generate_request(self, param_overrides=None):
         """
         Generate a URL for making requests to the secure map service.
-        
-        For services using API key authentication, the API key is included in the returned URL as a query parameter. 
-        
-        For services using OAuth2 authentication, the return URL does not include the access token. 
-        You must retrieve the access token separately and include the token as a Authorization: Bearer <token> header in your request. 
+
+        For services using API key authentication, the API key is included in the returned URL as a query parameter.
+
+        For services using OAuth2 authentication, the return URL does not include the access token.
+        You must retrieve the access token separately and include the token as a Authorization: Bearer <token> header in your request.
         You can retrieve the access token by calling ``App.get_secure_map_service('setting_name', as_token=True, request_user=request.user)``.
         Another option is to use ``as_layer=True`` when calling ``App.get_secure_map_service`` to get a map layer object that handles the token automatically.
 
-        For services with a proxy endpoint enabled, the returned URL points to Tethys's secure map proxy endpoint, which handles authentication server-side. 
+        For services with a proxy endpoint enabled, the returned URL points to Tethys's secure map proxy endpoint, which handles authentication server-side.
         """
         if not self.secure_map_service:
             raise TethysAppSettingNotAssigned(
@@ -1251,7 +1251,9 @@ class SecureMapServiceSetting(TethysAppSetting):
                 raise ValueError(
                     "Request user must be provided to fetch response for OAuth2 authenticated service."
                 )
-            headers["Authorization"] = f"Bearer {service._get_oauth_token(request_user)}"
+            headers["Authorization"] = (
+                f"Bearer {service._get_oauth_token(request_user)}"
+            )
 
         connection_timeout = (
             service.connection_timeout if service.connection_timeout is not None else 10
