@@ -851,7 +851,6 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_settings.OAUTH2_REQUIREMENTS = {"test_key": "test_value"}
         obj = TethysOauth2RequiredMiddleware(mock_get_response)
         self.assertEqual(obj.get_response, mock_get_response)
-        self.assertEqual(obj.requirements, mock_settings.OAUTH2_REQUIREMENTS)
 
     @mock.patch("tethys_portal.middleware.settings")
     def test_oauth_required_no_requirements(self, mock_settings):
@@ -885,11 +884,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch("tethys_portal.middleware.settings")
     def test_oauth_required_has_provider(self, mock_settings, mock_gap):
         mock_get_response = mock.MagicMock()
-        mock_settings.OAUTH2_REQUIREMENTS = {"test_package": "test_value"}
-        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_gap.return_value = mock.MagicMock(package="test_package", required_oauth2_providers=["test_value"])
         mock_request = mock.MagicMock()
         mock_request.user.social_auth.filter.return_value.exists.return_value = True
-
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_get_response.assert_called_once_with(mock_request)
         mock_request.user.social_auth.filter.assert_called_once_with(
@@ -912,8 +909,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_urlencode,
     ):
         mock_get_response = mock.MagicMock()
-        mock_settings.OAUTH2_REQUIREMENTS = {"test_package": "test_provider"}
-        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_gap.return_value = mock.MagicMock(package="test_package", required_oauth2_providers=["test_provider"])
         mock_request = mock.MagicMock()
         mock_request.get_full_path.return_value = "/apps/test_package/test_path"
         mock_request.user.social_auth.filter.return_value.exists.return_value = False
@@ -922,7 +918,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_messages.assert_called_once_with(
             mock_request,
-            "This application requires authenticating with test_provider. Please link your test_provider account.",
+            "This application requires authenticating with test_provider. Please link your account.",
         )
         mock_reverse.assert_called_once_with("user:settings")
         mock_redirect.assert_called_once_with(

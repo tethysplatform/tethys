@@ -1277,7 +1277,8 @@ class SecureMapServiceSetting(TethysAppSetting):
         if not resp.ok:
             log.error(
                 f"SecureMapService with name {service.name} request failed: \n"
-                f"code: {resp.status_code}\n"
+                f"status_code: {resp.status_code}\n"
+                f"response text: {resp.text[:200]}"
             )
         resp.raise_for_status()
         return resp
