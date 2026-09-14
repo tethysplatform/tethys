@@ -953,9 +953,10 @@ def install_command(args):
             if provider not in authentication_backend_names
         ]
         if missing_backends:
+            backend_list = "\n- ".join(missing_backends)
             write_warning(
                 f"The following OAuth2 providers are required by '{app_name}' but are not configured in your Tethys Portal as AUTHENTICATION_BACKENDS:\n"
-                f"{'- ' + '\n- '.join(missing_backends)}\n"
+                f"{'- ' + backend_list}\n"
                 "Run: tethys settings --set AUTHENTICATION_BACKENDS \"['tethys_services.backends.<provider>.<BackendClass>']\" "
                 "to add the missing backend configurations."
             )
