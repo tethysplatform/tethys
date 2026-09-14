@@ -100,8 +100,8 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertEqual("__all__", ret.Meta.fields)
         self.assertTrue("api_key" in ret.Meta.widgets)
 
-        oauth_provider_field = ret.fields.get("oauth_provider")
-        self.assertEqual([], oauth_provider_field.choices)
+        oauth2_provider_field = ret.fields.get("oauth2_provider")
+        self.assertEqual([], oauth2_provider_field.choices)
 
     @override_settings(AUTHENTICATION_BACKENDS=["this_is_a_backend"])
     @mock.patch("tethys_services.admin.import_string")
@@ -115,8 +115,8 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertEqual("__all__", ret.Meta.fields)
         self.assertTrue("api_key" in ret.Meta.widgets)
 
-        oauth_provider_field = ret.fields.get("oauth_provider")
-        self.assertEqual([], oauth_provider_field.choices)
+        oauth2_provider_field = ret.fields.get("oauth2_provider")
+        self.assertEqual([], oauth2_provider_field.choices)
 
     @override_settings(AUTHENTICATION_BACKENDS=["this_is_a_backend"])
     @mock.patch("tethys_services.admin.import_string")
@@ -130,9 +130,9 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertEqual("__all__", ret.Meta.fields)
         self.assertTrue("api_key" in ret.Meta.widgets)
 
-        oauth_provider_field = ret.fields.get("oauth_provider")
+        oauth2_provider_field = ret.fields.get("oauth2_provider")
         self.assertEqual(
-            [("fake_backend_name", "fake_backend_name")], oauth_provider_field.choices
+            [("fake_backend_name", "fake_backend_name")], oauth2_provider_field.choices
         )
 
     def test_DatasetServiceAdmin(self):

@@ -44,7 +44,7 @@ class SecureMapServiceTests(TethysTestCase):
             name="test_secure_map_service",
             endpoint="http://example.com",
             authentication_method="oauth2",
-            oauth_provider="test_provider",
+            oauth2_provider="test_provider",
         )
 
         mock_user = mock.MagicMock()
@@ -61,7 +61,7 @@ class SecureMapServiceTests(TethysTestCase):
             name="test_secure_map_service",
             endpoint="http://example.com",
             authentication_method="oauth2",
-            oauth_provider="test_provider",
+            oauth2_provider="test_provider",
         )
 
         mock_user = mock.MagicMock()
@@ -76,7 +76,7 @@ class SecureMapServiceTests(TethysTestCase):
             name="test_secure_map_service",
             endpoint="http://example.com",
             authentication_method="oauth2",
-            oauth_provider="test_provider",
+            oauth2_provider="test_provider",
         )
 
         mock_user = mock.MagicMock()
