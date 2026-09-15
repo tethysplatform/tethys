@@ -1,4 +1,5 @@
 import unittest
+import warnings
 from unittest import mock
 import tethys_gizmos.gizmo_options.plotly_view as gizmo_plotly_view
 import plotly.graph_objs as go
@@ -30,8 +31,16 @@ class TestPlotlyView(unittest.TestCase):
         with mock.patch.object(
             gizmo_plotly_view.opy, "plot", return_value="<div></div>"
         ) as mock_plot:
-            result = gizmo_plotly_view.PlotlyView([], show_link=True)
+            with warnings.catch_warnings(record=True) as caught_warnings:
+                warnings.simplefilter("always")
+                result = gizmo_plotly_view.PlotlyView([], show_link=True)
 
         self.assertEqual("<div></div>", result["plotly_div"])
         _, kwargs = mock_plot.call_args
         self.assertNotIn("show_link", kwargs)
+        self.assertTrue(
+            any(item.category == DeprecationWarning for item in caught_warnings)
+        )
+        self.assertTrue(
+            any("show_link" in str(item.message) for item in caught_warnings)
+        )

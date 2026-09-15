@@ -1,4 +1,6 @@
 # coding=utf-8
+import warnings
+
 from .base import TethysGizmoOptions
 from tethys_portal.optional_dependencies import optional_import
 
@@ -220,6 +222,13 @@ class PlotlyView(TethysGizmoOptions):
         """
         # Initialize the super class
         super().__init__()
+
+        if show_link:
+            warnings.warn(
+                "The 'show_link' argument is deprecated and will be removed in a future tethys version.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         self.plotly_div = opy.plot(
             plot_input,
