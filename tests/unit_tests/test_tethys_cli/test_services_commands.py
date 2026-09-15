@@ -589,7 +589,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Web Processing"
+        mock_service._meta.verbose_name = "Web Processing"
 
         mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -618,7 +618,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Spatial Dataset"
+        mock_service._meta.verbose_name = "Spatial Dataset Service"
 
         mock_args.force = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -652,7 +652,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Spatial Dataset"
+        mock_service._meta.verbose_name = "Spatial Dataset Service"
 
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -695,7 +695,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Spatial Dataset"
+        mock_service._meta.verbose_name = "Spatial Dataset Service"
 
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -710,7 +710,7 @@ class ServicesCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn(
-            "Successfully removed Spatial Dataset Service", po_call_args[0][0][0]
+            "Successfully removed Spatial Dataset Service 1", po_call_args[0][0][0]
         )
 
         po_call_args = mock_input.call_args_list
@@ -745,6 +745,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.persistent = False
         mock_args.dataset = False
         mock_args.wps = False
+        mock_args.secure_map = False
         mock_spatial.objects.order_by("id").all.return_value = [
             mock.MagicMock(),
             mock.MagicMock(),
@@ -757,7 +758,6 @@ class ServicesCommandsTest(unittest.TestCase):
             mock.MagicMock(),
             mock.MagicMock(),
         ]
-
         services_list_command(mock_args)
 
         # Check expected pretty_output
@@ -1158,7 +1158,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Dataset"
+        mock_service._meta.verbose_name = "Dataset Service"
 
         mock_args.force = False
         mock_exit.side_effect = SystemExit

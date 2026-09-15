@@ -800,7 +800,7 @@ def remove_service(serviceType, args):
                 service.delete()
                 with pretty_output(FG_GREEN) as p:
                     p.write(
-                        "Successfully removed {0} {1}!".format(
+                        "Successfully removed {0} service {1}!".format(
                             service_label, service_id
                         )
                     )
