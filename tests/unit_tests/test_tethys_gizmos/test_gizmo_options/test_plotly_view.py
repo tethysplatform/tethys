@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 import tethys_gizmos.gizmo_options.plotly_view as gizmo_plotly_view
 import plotly.graph_objs as go
 
@@ -24,3 +25,13 @@ class TestPlotlyView(unittest.TestCase):
 
         self.assertIn(".js", gizmo_plotly_view.PlotlyView.get_vendor_js()[0])
         self.assertNotIn(".css", gizmo_plotly_view.PlotlyView.get_vendor_js()[0])
+
+    def test_PlotlyView_show_link_backward_compatible(self):
+        with mock.patch.object(
+            gizmo_plotly_view.opy, "plot", return_value="<div></div>"
+        ) as mock_plot:
+            result = gizmo_plotly_view.PlotlyView([], show_link=True)
+
+        self.assertEqual("<div></div>", result["plotly_div"])
+        _, kwargs = mock_plot.call_args
+        self.assertNotIn("show_link", kwargs)

@@ -21,7 +21,6 @@ class PlotlyView(TethysGizmoOptions):
         attributes(Optional[dict]): Dictionary of attributed to add to the outer div.
         classes(Optional[str]): Space separated string of classes to add to the outer div.
         hidden(Optional[bool]): If True, the plot will be hidden. Default is False.
-        show_link(Optional[bool]): If True, the link to export plot to view in plotly is shown. Default is False.
 
     Controller Code Basic Example::
 
@@ -227,7 +226,6 @@ class PlotlyView(TethysGizmoOptions):
             auto_open=False,
             output_type="div",
             include_plotlyjs=False,
-            show_link=show_link,
         )
         self.height = height
         self.width = width
