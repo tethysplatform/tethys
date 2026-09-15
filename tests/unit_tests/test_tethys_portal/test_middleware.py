@@ -884,7 +884,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch("tethys_portal.middleware.settings")
     def test_oauth_required_has_provider(self, mock_settings, mock_gap):
         mock_get_response = mock.MagicMock()
-        mock_gap.return_value = mock.MagicMock(package="test_package", required_oauth2_providers=["test_value"])
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_value"]
+        )
         mock_request = mock.MagicMock()
         mock_request.user.social_auth.filter.return_value.exists.return_value = True
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
@@ -909,7 +911,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_urlencode,
     ):
         mock_get_response = mock.MagicMock()
-        mock_gap.return_value = mock.MagicMock(package="test_package", required_oauth2_providers=["test_provider"])
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_provider"]
+        )
         mock_request = mock.MagicMock()
         mock_request.get_full_path.return_value = "/apps/test_package/test_path"
         mock_request.user.social_auth.filter.return_value.exists.return_value = False

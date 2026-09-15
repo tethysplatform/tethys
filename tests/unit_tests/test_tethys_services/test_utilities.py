@@ -39,121 +39,98 @@ class TestUtilites(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch("tethys_services.utilities.messages.info")
+    @mock.patch("tethys_services.utilities.urlencode")
+    @mock.patch("tethys_services.utilities.reverse")
+    @mock.patch("tethys_services.utilities.redirect")
+    def test_ensure_oauth2_unauthenticated(
+        self, mock_redirect, mock_reverse, mock_urlencode, mock_info
+    ):
+        mock_user = mock.MagicMock(is_authenticated=False)
+        mock_request = mock.MagicMock(user=mock_user)
+        mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
+        mock_urlencode.return_value = "full_path"
+        mock_redirect.side_effect = lambda url: url
+        response = enforced_controller(mock_request)
+        mock_info.assert_called_once_with(
+            mock_request,
+            "This application requires authenticating with an account linked to hydroshare. Please log in to continue.",
+        )
+        self.assertEqual(response, "/login/?full_path")
+
+    @mock.patch("tethys_services.utilities.messages.info")
+    @mock.patch("tethys_services.utilities.urlencode")
+    @mock.patch("tethys_services.utilities.reverse")
+    @mock.patch("tethys_services.utilities.redirect")
+    def test_ensure_oauth2_not_associated(
+        self, mock_redirect, mock_reverse, mock_urlencode, mock_info
+    ):
+        mock_user = mock.MagicMock(is_authenticated=True)
+        mock_request = mock.MagicMock(user=mock_user)
+        mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
+        mock_urlencode.return_value = "full_path"
+        mock_redirect.side_effect = lambda url: url
+        mock_user.social_auth.filter.return_value.first.return_value = None
+        response = enforced_controller(mock_request)
+        mock_info.assert_called_once_with(
+            mock_request,
+            "This application requires authenticating with hydroshare. Please link your hydroshare account.",
+        )
+        self.assertEqual(response, "/settings/?full_path")
+
+    @mock.patch("tethys_services.utilities.urlencode")
+    @mock.patch("tethys_services.utilities.logger")
+    @mock.patch("tethys_services.utilities.messages.info")
+    @mock.patch("tethys_services.utilities.load_strategy")
+    @mock.patch("tethys_services.utilities.reverse")
+    @mock.patch("tethys_services.utilities.redirect")
+    def test_ensure_oauth2_token_refresh_error(
+        self,
+        mock_redirect,
+        mock_reverse,
+        mock_ls,
+        mock_info,
+        mock_logger,
+        mock_urlencode,
+    ):
+        mock_user = mock.MagicMock(is_authenticated=True)
+        mock_request = mock.MagicMock(user=mock_user)
+        mock_social = mock.MagicMock()
+        mock_social.get_access_token.side_effect = requests.exceptions.HTTPError
+        mock_user.social_auth.filter.return_value.first.return_value = mock_social
+        mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
+        mock_urlencode.return_value = "full_path"
+        mock_redirect.side_effect = lambda url: url
+
+        response = enforced_controller(mock_request)
+        mock_user.social_auth.filter.assert_called_once_with(provider="hydroshare")
+        mock_ls.assert_called_once()
+        mock_reverse.assert_any_call("user:settings")
+        mock_logger.debug.assert_called_once_with(
+            "there was an error refreshing the token - redirecting user to re-authenticate"
+        )
+        mock_info.assert_called_once_with(
+            mock_request,
+            "There was an error refreshing your hydroshare access token. Please re-authenticate.",
+        )
+        self.assertEqual(response, "/settings/?full_path")
+
     @mock.patch("tethys_services.utilities.load_strategy")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
     def test_ensure_oauth2(self, mock_redirect, mock_reverse, mock_ls):
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
+        mock_user = mock.MagicMock(is_authenticated=True)
+        mock_request = mock.MagicMock(user=mock_user)
+        mock_social = mock_user.social_auth.filter.return_value.first.return_value
+        mock_social.get_access_token.return_value = "test-token"
 
-        enforced_controller(mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-        mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
+        response = enforced_controller(mock_request)
+
+        mock_user.social_auth.filter.assert_called_once_with(provider="hydroshare")
+        mock_social.get_access_token.assert_called_once_with(mock_ls.return_value)
         mock_ls.assert_called_once()
-
-    @mock.patch("tethys_services.utilities.load_strategy")
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_token_expired(self, mock_redirect, mock_reverse, mock_ls):
-        mock_user = mock.MagicMock()
-        mock_social = mock.MagicMock()
-        mock_user.social_auth.get.return_value = mock_social
-        mock_social.get_backend_instance().user_data.return_value = None
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-
-        enforced_controller(mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-        mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
-        mock_ls.assert_called_once()
-
-    @mock.patch("tethys_services.utilities.logger")
-    @mock.patch("tethys_services.utilities.load_strategy")
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_token_expired_exception(
-        self, mock_redirect, mock_reverse, mock_ls, mock_logger
-    ):
-        mock_user = mock.MagicMock()
-        mock_social = mock.MagicMock()
-        mock_user.social_auth.get.return_value = mock_social
-        mock_social.get_backend_instance().user_data.return_value = None
-        mock_social.get_access_token.side_effect = requests.exceptions.HTTPError
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-
-        enforced_controller(mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-        mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
-        mock_ls.assert_called_once()
-        mock_logger.debug.assert_called_once()
-
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_ObjectDoesNotExist(self, mock_redirect, mock_reverse):
-        from django.core.exceptions import ObjectDoesNotExist
-
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-        mock_user.social_auth.get.side_effect = ObjectDoesNotExist
-
-        ret = enforced_controller(mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-        self.assertEqual(mock_redirect(), ret)
-
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_AttributeError(self, mock_redirect, mock_reverse):
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-        mock_user.social_auth.get.side_effect = AttributeError
-
-        ret = enforced_controller(mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-        self.assertEqual(mock_redirect(), ret)
-
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_AuthAlreadyAssociated(self, mock_redirect, mock_reverse):
-        from social_core.exceptions import AuthAlreadyAssociated
-
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-        mock_user.social_auth.get.side_effect = AuthAlreadyAssociated(
-            mock.MagicMock(), mock.MagicMock()
-        )
-
-        self.assertRaises(AuthAlreadyAssociated, enforced_controller, mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
-
-    @mock.patch("tethys_services.utilities.reverse")
-    @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_Exception(self, mock_redirect, mock_reverse):
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-        mock_user.social_auth.get.side_effect = Exception
-
-        self.assertRaises(Exception, enforced_controller, mock_request)
-        mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
-        mock_redirect.assert_called_once()
+        self.assertEqual(mock_request.social_access_token, "test-token")
+        self.assertEqual(response, True)
 
     def test_initialize_engine_object(self):
         input_engine = "tethys_dataset_services.engines.HydroShareDatasetEngine"
