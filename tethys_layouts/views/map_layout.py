@@ -19,6 +19,7 @@ import tempfile
 import uuid
 from zipfile import ZipFile
 
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.functional import classproperty
@@ -384,6 +385,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 "show_properties_popup": self.show_properties_popup,
                 "show_map_click_popup": self.show_map_click_popup,
                 "show_legends": self.show_legends,
+                "staticfiles_use_npm": settings.STATICFILES_USE_NPM,
                 "wide_nav": self.wide_nav,
                 "workspace": self.geoserver_workspace,
             }

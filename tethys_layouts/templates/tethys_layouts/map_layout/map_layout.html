@@ -3,8 +3,14 @@
 
 {% block import_gizmos %}
   {% import_gizmo_dependency select_input %}
-  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
-  <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
+  <!-- Bootstrap Select2 Theme -->
+  {{ tethys.select2_bootstrap_5_theme.link_tag|safe }}
+  <!-- Plotly -->
+  {% if staticfiles_use_npm %}
+    {% import_gizmo_dependency plotly_view %}
+  {% else %}
+    <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
+  {% endif %}
 {% endblock %}
 
 {% block app_navigation %}
