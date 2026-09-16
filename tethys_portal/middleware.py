@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+import logging
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -16,6 +17,7 @@ from django.urls import reverse
 from tethys_cli.cli_colors import pretty_output, FG_WHITE
 from tethys_apps.utilities import get_active_app, user_can_access_app
 from tethys_portal.views.error import handler_404
+from tethys_services.utilities import get_configured_oauth2_providers
 from urllib.parse import urlencode
 
 from tethys_portal.optional_dependencies import optional_import, has_module
@@ -32,6 +34,8 @@ TokenAuthentication = optional_import(
 AuthenticationFailed = optional_import(
     "AuthenticationFailed", from_module="rest_framework.exceptions"
 )
+
+logger = logging.getLogger(__name__)
 
 
 if has_module(SocialAuthExceptionMiddleware):
@@ -171,6 +175,27 @@ class TethysOauth2RequiredMiddleware:
         required_providers = app.required_oauth2_providers
         if not required_providers:
             return self.get_response(request)
+
+        unconfigured_providers = []
+        configured_providers = get_configured_oauth2_providers()
+        for provider in required_providers:
+            if provider not in configured_providers:
+                unconfigured_providers.append(provider)
+
+        if unconfigured_providers:
+            logger.warning(
+                f"The following required OAuth2 providers are not configured: {', '.join(unconfigured_providers)}"
+            )
+            if len(unconfigured_providers) == 1:
+                message = f"The required OAuth2 provider '{unconfigured_providers[0]}' is not configured on this portal. Please contact your portal administrator."
+            else:
+                message = (
+                    "The required OAuth2 providers "
+                    + ", ".join(unconfigured_providers)
+                    + " are not configured on this portal. Please contact your portal administrator."
+                )
+            messages.error(request, message)
+            return redirect(reverse("app_library"))
 
         # If the user is trying to access an app and there is a required OAuth2 provider for that app, check if the user is authenticated.
         if not request.user.is_authenticated:

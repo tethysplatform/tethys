@@ -42,6 +42,17 @@ AuthAlreadyAssociated, AuthException = optional_import(
 
 logger = logging.getLogger(__name__)
 
+def get_configured_oauth2_providers():
+    from django.conf import settings
+    from django.utils.module_loading import import_string
+
+    names = []
+    for backend in settings.AUTHENTICATION_BACKENDS:
+        backend_class = import_string(backend)
+        if hasattr(backend_class, "name"):
+            names.append(backend_class.name)
+
+    return names
 
 def ensure_oauth2(provider):
     """
@@ -80,6 +91,18 @@ def ensure_oauth2(provider):
 
             login_url = reverse("accounts:login")
             login_redirect_response = redirect(f"{login_url}?{next_param}")
+
+            app_library_redirect_response = redirect(reverse("app_library"))
+
+            if provider not in get_configured_oauth2_providers():
+                logger.warning(
+                    f"The required OAuth2 provider '{provider}' is not configured on this portal."
+                )
+                messages.error(
+                    request,
+                    f"The required OAuth2 provider '{provider}' is not configured on this portal. Please contact your portal administrator.",
+                )
+                return app_library_redirect_response
 
             if not user.is_authenticated:
                 # Anonymous User needs to be logged in and associated with that provider
