@@ -345,9 +345,6 @@ jobs:
     if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 45
-    env:
-      CONDA_CHANNEL_PRIORITY: strict
-      CONDA_CHANNELS: conda-forge
     strategy:
       fail-fast: false
       matrix:
@@ -367,10 +364,6 @@ jobs:
         conda activate tethys
         hash -r
         conda config --set always_yes yes --set changeps1 no
-        conda config --system --remove channels defaults || true
-        conda config --add channels conda-forge
-        conda config --remove channels defaults || true
-        conda config --set channel_priority strict
         conda update -q conda
     # Export Conda Build Path
     - name: Set Conda Build Path
@@ -400,8 +393,6 @@ jobs:
         . ~/miniconda/etc/profile.d/conda.sh;
         conda create -y -c conda-forge -n conda-build-full conda-build anaconda-client
         conda activate conda-build-full
-        conda config --add channels conda-forge
-        conda config --set channel_priority strict
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe
@@ -440,8 +431,6 @@ jobs:
         . ~/miniconda/etc/profile.d/conda.sh;
         conda create -y -c conda-forge -n conda-build-micro conda-build anaconda-client
         conda activate conda-build-micro
-        conda config --add channels conda-forge
-        conda config --set channel_priority strict
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe

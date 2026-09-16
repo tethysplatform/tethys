@@ -347,6 +347,12 @@ then
     conda install -n base conda-libmamba-solver
     conda config --set solver libmamba
 
+    # Configure conda channels to just conda-forge
+    echo "Configuring conda channels..."
+    conda config --system --add channels conda-forge
+    conda config --system --remove channels defaults || true
+    conda config --set channel_priority strict
+
     if [ -n "${CLONE_REPO}" ]
     then
         # clone Tethys repo
