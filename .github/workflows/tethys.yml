@@ -367,7 +367,9 @@ jobs:
         conda activate tethys
         hash -r
         conda config --set always_yes yes --set changeps1 no
+        conda config --system --remove channels defaults || true
         conda config --add channels conda-forge
+        conda config --remove channels defaults || true
         conda config --set channel_priority strict
         conda update -q conda
     # Export Conda Build Path
