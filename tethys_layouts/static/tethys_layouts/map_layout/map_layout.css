@@ -10,8 +10,16 @@
     height: 100%;
 }
 
-#app-content-wrapper #app-content #app-navigation .nav {
+#app-content-wrapper #app-content #app-navigation {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav,
+#app-content-wrapper #app-content #app-navigation #nav-header {
     height: auto;
+    flex: 0 0 auto;
 }
 
 #inner-app-content {
@@ -26,14 +34,16 @@
 
 /* Map Tabs */
 .map-tabs {
-    height: calc(100% - 100px);
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .map-tabs .tab-content {
     overflow-y: auto;
-    max-height: 95%;
-    min-height: 90%;
-    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 /* Layer Selector */
