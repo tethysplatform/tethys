@@ -344,6 +344,7 @@ jobs:
     needs: [ changes ]
     if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -387,6 +388,8 @@ jobs:
         . ~/miniconda/etc/profile.d/conda.sh;
         conda create -y -c conda-forge -n conda-build-full conda-build anaconda-client
         conda activate conda-build-full
+        conda config --add channels conda-forge
+        conda config --set channel_priority strict
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe
@@ -425,6 +428,8 @@ jobs:
         . ~/miniconda/etc/profile.d/conda.sh;
         conda create -y -c conda-forge -n conda-build-micro conda-build anaconda-client
         conda activate conda-build-micro
+        conda config --add channels conda-forge
+        conda config --set channel_priority strict
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe
