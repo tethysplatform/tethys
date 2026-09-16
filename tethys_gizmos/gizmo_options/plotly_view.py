@@ -225,7 +225,7 @@ class PlotlyView(TethysGizmoOptions):
 
         if show_link:
             warnings.warn(
-                "The 'show_link' argument is deprecated and will be removed in a future tethys version.",
+                "The 'show_link' argument has no effect and is deprecated; it will be removed in a future tethys version.",
                 DeprecationWarning,
                 stacklevel=2,
             )

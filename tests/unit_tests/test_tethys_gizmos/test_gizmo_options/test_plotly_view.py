@@ -44,3 +44,6 @@ class TestPlotlyView(unittest.TestCase):
         self.assertTrue(
             any("show_link" in str(item.message) for item in caught_warnings)
         )
+        self.assertTrue(
+            any("has no effect" in str(item.message) for item in caught_warnings)
+        )
