@@ -352,6 +352,8 @@ then
     conda config --system --add channels conda-forge
     conda config --system --remove channels defaults || true
     conda config --set channel_priority strict
+    conda config --add channels conda-forge
+    conda config --remove channels defaults || true
 
     if [ -n "${CLONE_REPO}" ]
     then
