@@ -361,13 +361,10 @@ jobs:
         cd ..
         bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
         . ~/miniconda/etc/profile.d/conda.sh
-        echo "=== after script ==="; conda config --show-sources
         conda activate tethys
         hash -r
         conda config --set always_yes yes --set changeps1 no
-        echo "=== after always_yes ==="; conda config --show-sources
         conda update -q conda
-        echo "=== after conda update ==="; conda config --show-sources
     # Export Conda Build Path
     - name: Set Conda Build Path
       run: |
