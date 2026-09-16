@@ -9,6 +9,8 @@ opy = optional_import("plotly.offline")
 
 __all__ = ["PlotlyView"]
 
+_SHOW_LINK_UNSET = object()
+
 
 class PlotlyView(TethysGizmoOptions):
     """
@@ -215,7 +217,7 @@ class PlotlyView(TethysGizmoOptions):
         classes="",
         divid="",
         hidden=False,
-        show_link=False,
+        show_link=_SHOW_LINK_UNSET,
     ):
         """
         Constructor
@@ -223,7 +225,7 @@ class PlotlyView(TethysGizmoOptions):
         # Initialize the super class
         super().__init__()
 
-        if show_link:
+        if show_link is not _SHOW_LINK_UNSET:
             warnings.warn(
                 "The 'show_link' argument has no effect and is deprecated; it will be removed in a future tethys version.",
                 DeprecationWarning,
