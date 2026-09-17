@@ -42,6 +42,7 @@ AuthAlreadyAssociated, AuthException = optional_import(
 
 logger = logging.getLogger(__name__)
 
+
 def get_configured_oauth2_providers():
     from django.conf import settings
     from django.utils.module_loading import import_string
@@ -53,6 +54,7 @@ def get_configured_oauth2_providers():
             names.append(backend_class.name)
 
     return names
+
 
 def ensure_oauth2(provider):
     """

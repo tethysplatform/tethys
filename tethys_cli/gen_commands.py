@@ -677,7 +677,10 @@ def get_destination_path(args, check_existence=True):
         destination_dir.mkdir(parents=True, exist_ok=True)
 
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
-        destination_dir = Path.cwd()
+        if args.directory:
+            destination_dir = Path(args.directory).parent.absolute()
+        else:
+            destination_dir = Path.cwd()
 
     if args.type == GEN_PYPROJECT_OPTION:
         destination_dir = get_target_tethys_app_dir(args)

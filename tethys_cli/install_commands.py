@@ -17,6 +17,7 @@ from tethys_cli.cli_colors import (
     write_error,
     write_warning,
     write_success,
+    write_info,
 )
 from tethys_cli.settings_commands import settings_command
 from tethys_cli.services_commands import services_list_command
@@ -131,6 +132,29 @@ def open_file(file_path):
         write_error(str(e))
         write_error("An unexpected error occurred reading the file. Please try again.")
         exit(1)
+
+
+def get_tethys_package_from_dir(root_dir="."):
+    """Return the name of the app package in the given source tree.
+
+    Tethys apps live in a directory named after their package, e.g.
+    tethysapp/my_app/. That directory name is the value of the ``package``
+    attribute on the app class in app.py, and it's what the app is registered
+    under in the database.
+
+    Returns None if there isn't exactly one package, since we can't tell which
+    one was installed.
+    """
+    candidates = []
+
+    for path in Path(root_dir).glob("tethysapp/*"):
+        if path.is_dir() and (path / "__init__.py").exists():
+            candidates.append(path.name)
+
+    if len(candidates) != 1:
+        return None
+
+    return candidates[0]
 
 
 def validate_service_id(service_type, service_id):
@@ -757,6 +781,8 @@ def install_command(args):
     app_name = None
     skip_config = False
     file_path = Path("./install.yml" if args.file is None else args.file)
+    if file_path.is_dir():
+        file_path = file_path / "install.yml"
 
     # Check for install.yml file
     if not file_path.exists():
@@ -765,9 +791,13 @@ def install_command(args):
             valid_inputs = ("y", "n", "yes", "no")
             no_inputs = ("n", "no")
 
+            if args.file:
+                destination_string = "at " + str(file_path)
+            else:
+                destination_string = "in your current directory"
+
             generate_input = input(
-                "Would you like to generate a template install.yml file in your current directory "
-                "now? (y/n): "
+                f"Would you like to generate a template install.yml file {destination_string} now? (y/n): "
             )
 
             while generate_input not in valid_inputs:
@@ -777,9 +807,14 @@ def install_command(args):
                 skip_config = True
                 write_msg("Generation of Install File cancelled.")
             else:
-                call(["tethys", "gen", "install"])
-                write_msg(
-                    "Install file generated. Fill out necessary information and re-install."
+                return_code = call(
+                    ["tethys", "gen", "install", "-d", str(file_path.parent)]
+                )
+                if return_code != 0:
+                    write_error("ERROR: Failed to generate the install.yml file.")
+                    exit(1)
+                write_info(
+                    "Re-run the install command after filling out the install.yml file."
                 )
                 exit(0)
 
@@ -885,20 +920,30 @@ def install_command(args):
                             None, cwd=str(public_resources_dir)
                         )
 
+    if app_name is None:
+        app_name = get_tethys_package_from_dir(file_path.parent)
+        if app_name is None:
+            write_warning(
+                "Could not determine the app package name. Certain configuration and checks may be skipped."
+            )
+
+    display_name = app_name or "the app"
+
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:
-        write_success(f"Successfully installed dependencies for {app_name}.")
+        write_success(f"Successfully installed dependencies for {display_name}.")
         return
 
     # Install Python Package
     write_msg("Running application install....")
 
     cmd = [sys.executable, "-m", "pip", "install"]
+    app_dir = str(file_path.parent)
 
     if args.develop:
-        cmd += ["-e", "."]
+        cmd += ["-e", app_dir]
     else:
-        cmd.append(".")
+        cmd.append(app_dir)
 
     # Check for deprecated setup.py file in the same directory as install.yml
     setup_py_path = file_path.parent / "setup.py"
@@ -925,11 +970,17 @@ def install_command(args):
 
         return
 
-    multiple_app_mode_check(app_name, quiet_mode=args.quiet)
+    if app_name is not None:
+        multiple_app_mode_check(app_name, quiet_mode=args.quiet)
+    else:
+        write_warning(
+            "Could not determine the app package name. MULTIPLE_APP_MODE "
+            "configuration will be skipped."
+        )
 
     if args.no_db_sync:
         write_success(
-            f"Successfully installed {app_name} into the active Tethys Portal."
+            f"Successfully installed {display_name} into the active Tethys Portal."
         )
         return
 
@@ -939,8 +990,15 @@ def install_command(args):
     setup_django()
     from tethys_apps.models import TethysApp
 
-    app = TethysApp.objects.get(package=app_name)
-    if app.required_oauth2_providers:
+    app = None
+    if app_name is not None:
+        try:
+            app = TethysApp.objects.get(package=app_name)
+        except ObjectDoesNotExist:
+            app = None
+            write_warning(f"ERROR: The app '{app_name}' could not be found.")
+
+    if app and app.required_oauth2_providers:
         authentication_backend_names = []
         for backend in settings.AUTHENTICATION_BACKENDS:
             backend_class = import_string(backend)
@@ -1007,7 +1065,9 @@ def install_command(args):
                         stdout, stderr
                     )
                 )
-    write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
+    write_success(
+        f"Successfully installed {display_name} into the active Tethys Portal."
+    )
 
 
 def validate_schema(check_str, check_list):
