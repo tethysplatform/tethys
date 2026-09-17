@@ -1,5 +1,6 @@
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.base.controller import page as page_controller
+from django.conf import settings
 from django.templatetags.static import static
 
 
@@ -40,6 +41,13 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
 
     """
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Fill in metadata for single-file apps run via "tethys run" (express mode)
+        from tethys_apps.base.express import synthesize_express_metadata
+
+        synthesize_express_metadata(cls)
+
     @classmethod
     def get_static_url(cls, *args):
         url = static(cls.package)
@@ -58,7 +66,7 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
                 self.registered_url_maps,
                 key=lambda x: x.index if x.index is not None else 999,
             ):
-                href = f"/apps/{self.root_url}/"
+                href = f"/apps/{self.root_url}/" if settings.MULTIPLE_APP_MODE else "/"
                 if url_map.name != self.index:
                     href += url_map.name.replace("_", "-") + "/"
                 if url_map.index == -1:

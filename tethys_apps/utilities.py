@@ -30,7 +30,7 @@ from tethys_apps.base.mixins import (
 )
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from .harvester import SingletonHarvester
-from django.db.utils import ProgrammingError
+from django.db.utils import OperationalError, ProgrammingError
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -682,7 +682,7 @@ def get_configured_standalone_app():
             app = TethysApp.objects.get(package=standalone_app)
         else:
             app = TethysApp.objects.first()
-    except (ProgrammingError, TethysApp.DoesNotExist):
+    except (OperationalError, ProgrammingError, TethysApp.DoesNotExist):
         # If a tethys application is not actually installed or DB is not setup yet, continue and the UI will notify the user
         pass
 
