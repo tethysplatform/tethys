@@ -673,7 +673,8 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertIn(
-            'Choose from: "ps_database|ps_connection|ds_spatial"', po_call_args[0][0][0]
+            'Choose from: "ps_database|ps_connection|ds_spatial|ds_dataset|ss_scheduler|wps|secure_map"',
+            po_call_args[0][0][0],
         )
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")

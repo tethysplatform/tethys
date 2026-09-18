@@ -47,6 +47,9 @@ Override these methods (add them to your app class) to define objects that are u
 .. automethod:: tethys_sdk.base.TethysAppBase.web_processing_service_settings
    :noindex:
 
+.. automethod:: tethys_sdk.base.TethysAppBase.secure_map_service_settings
+   :noindex:
+
 .. automethod:: tethys_sdk.base.TethysAppBase.scheduler_settings
    :noindex:
 
@@ -84,6 +87,12 @@ Class Methods
    :noindex:
 
 .. automethod:: tethys_sdk.base.TethysAppBase.get_web_processing_service
+   :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.get_secure_map_service
+   :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.update_secure_map_service_params
    :noindex:
 
 .. automethod:: tethys_sdk.base.TethysAppBase.get_handoff_manager

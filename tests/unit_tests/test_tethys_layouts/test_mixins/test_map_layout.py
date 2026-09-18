@@ -1271,6 +1271,40 @@ class TestMapLayoutMixin(unittest.TestCase):
             },
         )
 
+    def test_build_gml_layer_default(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_gml_layer(
+            endpoint="http://example.com/geoserver/wfs",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_variable="baz",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "GML")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertDictEqual(
+            ret.layer_options,
+            {"visible": True, "show_download": False},
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "foo:bar",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "baz",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
+                "legend_url": None,
+            },
+        )
+
     def test_build_custom_layer_geoserver_wms(self):
         class CustomMapLayoutThing(MapLayoutMixin):
             map_extent = [-65.69, 23.81, -129.17, 49.38]

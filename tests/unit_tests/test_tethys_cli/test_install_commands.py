@@ -776,6 +776,7 @@ class TestInstallCommands(TestCase):
         self.app_model.delete()
         chdir(self.cwd)
 
+    # @mock.patch("tethys_cli.install_commands.")
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("builtins.input", side_effect=["x", "n"])
@@ -789,7 +790,6 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
-
         install_commands.install_command(args)
         self.assertEqual(2, len(mock_call.call_args_list))
         po_call_args = mock_pretty_output().__enter__().write.call_args_list

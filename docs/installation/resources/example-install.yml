@@ -2,7 +2,7 @@
 version: 1.1
 # This should be greater or equal to your tethys-platform in your environment
 tethys_version: ">=4.0.0"
-# This should match the app - package name in your setup.py
+# # This should match the value of the `package` attribute on the app class in app.py.
 name: my_first_app
 
 requirements:
