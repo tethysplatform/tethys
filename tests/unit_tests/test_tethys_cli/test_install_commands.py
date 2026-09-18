@@ -790,7 +790,6 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
-        print("\n\n\nTesting here...\n\n\n")
         install_commands.install_command(args)
         self.assertEqual(2, len(mock_call.call_args_list))
         po_call_args = mock_pretty_output().__enter__().write.call_args_list

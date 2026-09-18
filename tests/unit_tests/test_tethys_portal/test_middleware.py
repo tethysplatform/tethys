@@ -880,13 +880,15 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_get_response.assert_called_once_with(mock_request)
 
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
     @mock.patch("tethys_portal.middleware.get_active_app")
     @mock.patch("tethys_portal.middleware.settings")
-    def test_oauth_required_has_provider(self, mock_settings, mock_gap):
+    def test_oauth_required_has_provider(self, mock_settings, mock_gap, mock_gcop):
         mock_get_response = mock.MagicMock()
         mock_gap.return_value = mock.MagicMock(
             package="test_package", required_oauth2_providers=["test_value"]
         )
+        mock_gcop.return_value = ["test_value"]
         mock_request = mock.MagicMock()
         mock_request.user.social_auth.filter.return_value.exists.return_value = True
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
@@ -894,7 +896,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_request.user.social_auth.filter.assert_called_once_with(
             provider="test_value"
         )
-
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
     @mock.patch("tethys_portal.middleware.urlencode")
     @mock.patch("tethys_portal.middleware.reverse")
     @mock.patch("tethys_portal.middleware.messages.info")
@@ -909,6 +911,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_messages,
         mock_reverse,
         mock_urlencode,
+        mock_gcop,
     ):
         mock_get_response = mock.MagicMock()
         mock_gap.return_value = mock.MagicMock(
@@ -919,6 +922,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_request.user.social_auth.filter.return_value.exists.return_value = False
         mock_reverse.return_value = "/user/settings/"
         mock_urlencode.return_value = "next=/apps/test_package/test_path"
+        mock_gcop.return_value = ["test_provider"]
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_messages.assert_called_once_with(
             mock_request,

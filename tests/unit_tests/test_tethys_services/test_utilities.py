@@ -39,18 +39,20 @@ class TestUtilites(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.messages.info")
     @mock.patch("tethys_services.utilities.urlencode")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
     def test_ensure_oauth2_unauthenticated(
-        self, mock_redirect, mock_reverse, mock_urlencode, mock_info
+        self, mock_redirect, mock_reverse, mock_urlencode, mock_info, mock_gcop
     ):
         mock_user = mock.MagicMock(is_authenticated=False)
         mock_request = mock.MagicMock(user=mock_user)
         mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
         mock_urlencode.return_value = "full_path"
         mock_redirect.side_effect = lambda url: url
+        mock_gcop.return_value = ["hydroshare"]
         response = enforced_controller(mock_request)
         mock_info.assert_called_once_with(
             mock_request,
@@ -58,13 +60,15 @@ class TestUtilites(unittest.TestCase):
         )
         self.assertEqual(response, "/login/?full_path")
 
+    @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.messages.info")
     @mock.patch("tethys_services.utilities.urlencode")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
     def test_ensure_oauth2_not_associated(
-        self, mock_redirect, mock_reverse, mock_urlencode, mock_info
+        self, mock_redirect, mock_reverse, mock_urlencode, mock_info, mock_gcop
     ):
+        mock_gcop.return_value = ["hydroshare"]
         mock_user = mock.MagicMock(is_authenticated=True)
         mock_request = mock.MagicMock(user=mock_user)
         mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
@@ -78,6 +82,7 @@ class TestUtilites(unittest.TestCase):
         )
         self.assertEqual(response, "/settings/?full_path")
 
+    @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.urlencode")
     @mock.patch("tethys_services.utilities.logger")
     @mock.patch("tethys_services.utilities.messages.info")
@@ -92,7 +97,9 @@ class TestUtilites(unittest.TestCase):
         mock_info,
         mock_logger,
         mock_urlencode,
+        mock_gcop,
     ):
+        mock_gcop.return_value = ["hydroshare"]
         mock_user = mock.MagicMock(is_authenticated=True)
         mock_request = mock.MagicMock(user=mock_user)
         mock_social = mock.MagicMock()
@@ -115,10 +122,12 @@ class TestUtilites(unittest.TestCase):
         )
         self.assertEqual(response, "/settings/?full_path")
 
+    @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.load_strategy")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2(self, mock_redirect, mock_reverse, mock_ls):
+    def test_ensure_oauth2(self, mock_redirect, mock_reverse, mock_ls, mock_gcop):
+        mock_gcop.return_value = ["hydroshare"]
         mock_user = mock.MagicMock(is_authenticated=True)
         mock_request = mock.MagicMock(user=mock_user)
         mock_social = mock_user.social_auth.filter.return_value.first.return_value
