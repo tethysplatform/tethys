@@ -66,7 +66,7 @@ class SecureMapServiceTests(TethysTestCase):
         )
 
         mock_user = mock.MagicMock()
-        mock_user.social_auth.get.return_value.extra_data = {}
+        mock_user.social_auth.get.return_value.get_access_token.return_value = None
 
         with self.assertRaises(ValueError) as context:
             secure_map_service._get_oauth_token(user=mock_user)
@@ -81,9 +81,9 @@ class SecureMapServiceTests(TethysTestCase):
         )
 
         mock_user = mock.MagicMock()
-        mock_user.social_auth.get.return_value.extra_data = {
-            "access_token": "access_token12345"
-        }
+        mock_user.social_auth.get.return_value.get_access_token.return_value = (
+            "access_token12345"
+        )
         token = secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(token, "access_token12345")
 
