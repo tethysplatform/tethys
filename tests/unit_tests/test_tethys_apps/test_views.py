@@ -428,7 +428,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         assert ret.status_code == 200
         assert b"".join(ret.streaming_content) == b"response_content"
-        assert ret.headers["Cache-Control"] == "max-age=3600"
+        assert ret.headers["Cache-Control"] == "private, no-store"
         assert ret.headers["Expires"] == "test_expire_date"
 
     @mock.patch("tethys_apps.views.requests.request")

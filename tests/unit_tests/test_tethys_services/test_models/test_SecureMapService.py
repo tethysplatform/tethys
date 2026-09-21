@@ -53,7 +53,8 @@ class SecureMapServiceTests(TethysTestCase):
         with self.assertRaises(ValueError) as context:
             secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(
-            str(context.exception), "User not linked to test_provider for OAuth2."
+            str(context.exception),
+            "User not linked to test_provider for OAuth2 authentication.",
         )
 
     def test_get_oauth_token_no_token(self):
@@ -83,7 +84,6 @@ class SecureMapServiceTests(TethysTestCase):
         mock_user.social_auth.get.return_value.extra_data = {
             "access_token": "access_token12345"
         }
-
         token = secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(token, "access_token12345")
 

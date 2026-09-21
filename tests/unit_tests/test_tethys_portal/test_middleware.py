@@ -896,6 +896,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_request.user.social_auth.filter.assert_called_once_with(
             provider="test_value"
         )
+
     @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
     @mock.patch("tethys_portal.middleware.urlencode")
     @mock.patch("tethys_portal.middleware.reverse")

@@ -1433,6 +1433,7 @@ class TestTethysAppBase(unittest.TestCase):
             as_response=False,
             param_overrides=None,
             request_user=None,
+            as_token=False,
         )
         self.assertEqual(mock_rms(), result)
 
@@ -1527,6 +1528,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.app.tags = "t"
         self.app.show_in_apps_library = False
         self.app.enabled = False
+        self.app.required_oauth2_providers = ["test_provider"]
 
         self.app.sync_with_tethys_db()
 
@@ -1547,6 +1549,7 @@ class TestTethysAppBase(unittest.TestCase):
             tags="t",
             enabled=False,
             show_in_apps_library=False,
+            required_oauth2_providers=["test_provider"],
         )
 
         # Check if save is called 2 times

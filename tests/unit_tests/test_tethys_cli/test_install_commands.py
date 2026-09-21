@@ -777,11 +777,14 @@ class TestInstallCommands(TestCase):
         chdir(self.cwd)
 
     # @mock.patch("tethys_cli.install_commands.")
+    @mock.patch("tethys_cli.install_commands.get_tethys_package_from_dir")
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("builtins.input", side_effect=["x", "n"])
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
-    def test_install_file_not_generate(self, mock_call, _, mock_pretty_output, __):
+    def test_install_file_not_generate_no_package_name_from_dir(
+        self, mock_call, _, mock_pretty_output, __, mock_gtpfd
+    ):
         chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
@@ -790,6 +793,50 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
+        mock_gtpfd.return_value = None
+        install_commands.install_command(args)
+        self.assertEqual(2, len(mock_call.call_args_list))
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("WARNING: No install file found.", po_call_args[0][0][0])
+        self.assertEqual("Generation of Install File cancelled.", po_call_args[1][0][0])
+        self.assertEqual(
+            "Continuing install without configuration.", po_call_args[2][0][0]
+        )
+        self.assertEqual(
+            "Could not determine the app package name. Certain configuration and checks may be skipped.",
+            po_call_args[3][0][0],
+        )
+        self.assertEqual("Running application install....", po_call_args[4][0][0])
+        self.assertEqual(
+            "Could not determine the app package name. MULTIPLE_APP_MODE configuration will be skipped.",
+            po_call_args[5][0][0],
+        )
+        self.assertEqual(
+            "Successfully installed the app into the active Tethys Portal.",
+            po_call_args[6][0][0],
+        )
+
+    # @mock.patch("tethys_cli.install_commands.")
+    @mock.patch("tethys_apps.models.TethysApp.objects.get")
+    @mock.patch("tethys_cli.install_commands.get_tethys_package_from_dir")
+    @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("builtins.input", side_effect=["x", "n"])
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
+    def test_install_file_not_generate_with_package_name_from_dir(
+        self, mock_call, _, mock_pretty_output, __, mock_gtpfd, mock_tethysapp_get
+    ):
+        chdir("..")  # move to a different directory that doesn't have an install.yml
+        args = mock.MagicMock(
+            file=None,
+            quiet=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+        mock_gtpfd.return_value = "package_name_from_dir"
+        mock_app = mock.MagicMock(required_oauth2_providers=None)
+        mock_tethysapp_get.return_value = mock_app
         install_commands.install_command(args)
         self.assertEqual(2, len(mock_call.call_args_list))
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -800,7 +847,7 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Running application install....", po_call_args[3][0][0])
         self.assertEqual(
-            "Successfully installed None into the active Tethys Portal.",
+            "Successfully installed package_name_from_dir into the active Tethys Portal.",
             po_call_args[4][0][0],
         )
 
@@ -817,7 +864,7 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
-        check_call = ["tethys", "gen", "install"]
+        check_call = ["tethys", "gen", "install", "-d", "."]
 
         mock_exit.side_effect = SystemExit
 
@@ -1041,7 +1088,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[2][1][0])
 
@@ -1097,7 +1145,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1159,7 +1208,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1259,7 +1309,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1312,7 +1363,8 @@ class TestInstallCommands(TestCase):
 
         # Verify that the application install still happens
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[0][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
@@ -1429,7 +1481,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[1][1][0],
         )
         mock_mamc.assert_called_once()
 
