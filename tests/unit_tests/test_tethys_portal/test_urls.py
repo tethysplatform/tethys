@@ -27,6 +27,14 @@ class TestUrls(TethysTestCase):
             "tethys_portal.views.accounts.logout_view", resolver._func_path
         )
 
+    def test_api_urls_token_blacklist(self):
+        url = reverse("api:token_blacklist")
+        resolver = resolve(url)
+        self.assertEqual("/api/token/blacklist/", url)
+        self.assertEqual(
+            "rest_framework_simplejwt.views.TokenBlacklistView", resolver._func_path
+        )
+
     def test_account_urls_accounts_register(self):
         url = reverse("accounts:register")
         resolver = resolve(url)
