@@ -627,7 +627,6 @@ def services_create_secure_map_command(args):
     """
     setup_django()
     from tethys_services.models import SecureMapService
-
     SERVICE_TYPE_MAPS = {
         "image_wms": "ImageWMS",
         "gml": "GML",
@@ -645,12 +644,15 @@ def services_create_secure_map_command(args):
         oauth2_provider = args.oauth2_provider
         service_type = SERVICE_TYPE_MAPS[args.service_type]
         params = json.loads(args.params)
+        if not isinstance(params, dict):
+            raise MissingArgumentError(
+                f"'params' must be a JSON object, got {type(params).__name__}. "
+                'Example: \'{"key": "value"}\'.'
+            )
         use_proxy = args.use_proxy
         connection_timeout = args.connection_timeout
         read_timeout = args.read_timeout
-        if not isinstance(params, dict):
-            raise MissingArgumentError("Params must be a valid JSON object.")
-
+        
         if auth_method == "api_key":
             if oauth2_provider:
                 raise MissingArgumentError(
@@ -721,7 +723,7 @@ def services_create_secure_map_command(args):
             )
     except ValidationError as e:
         with pretty_output(FG_RED) as p:
-            p.write("Validation errors occurred attempting to create the service:")
+            p.write("Validation errors occured attempting to create the service:")
             for field, errors in e.message_dict.items():
                 p.write(f"- {field}: {', '.join(errors)}")
 

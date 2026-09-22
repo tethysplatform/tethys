@@ -589,6 +589,309 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_non_dict_params(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command
+        For when invalid params are provided
+        :return:
+        """
+        # test for non-dict after loading json.loads
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="api_key",
+            api_key="apikey123",
+            service_type="geojson",
+            params="5",
+        )
+        services_create_secure_map_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "'params' must be a JSON object, got int. Example: '{\"key\": \"value\"}'.",
+            po_call_args[0][0][0],
+        )
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_api_type_with_oauth2_provider(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command when an oauth2 provider is
+        provided with api_key chosen as the authentication method
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="api_key",
+            oauth2_provider="provider_xyz",
+            service_type="geojson",
+            params='{"test": "value"}',
+        )
+        services_create_secure_map_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "OAuth2 provider should not be provided if the authentication method is 'API key'",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_api_type_without_api_key(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command when an oauth2 provider is
+        provided with api_key chosen as the authentication method
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="api_key",
+            service_type="geojson",
+            api_key=None,
+            oauth2_provider=None,
+            params='{"test": "value"}',
+        )
+        services_create_secure_map_command(mock_args)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "API key is required for api_key authentication.",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_oauth2_type_with_api_key(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command when an api_key is
+        provided with oauth2 chosen as the authentication method
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="oauth2",
+            service_type="geojson",
+            api_key="some_api_key",
+            params='{"test": "value"}',
+        )
+        services_create_secure_map_command(mock_args)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "API key should not be provided if the authentication method is 'OAuth2'",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_oauth2_type_without_provider(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command when oauth2 is chosen as the authentication method
+        but no oauth2_provider is provided
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="oauth2",
+            service_type="geojson",
+            api_key=None,
+            oauth2_provider=None,
+            params='{"test": "value"}',
+        )
+        services_create_secure_map_command(mock_args)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "OAuth2 provider is required for oauth2 authentication.",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_command_invalid_authentication_type(self, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command when an invalid authentication method is provided
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            public_endpoint="https://www.example.com:443/secure_map",
+            auth_method="invalid_auth",
+            service_type="geojson",
+            api_key=None,
+            oauth2_provider=None,
+            params='{"test": "value"}',
+        )
+        services_create_secure_map_command(mock_args)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "Authentication method must be either 'api_key' or 'oauth2'.",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_create_secure_map(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_secure_map_command with valid inputs
+        :return:
+        """
+        # Test successfully creating a secure map service with API key authentication
+        mock_args = mock.MagicMock(
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            auth_method="api_key",
+            service_type="geojson",
+            api_key="test_api_key",
+            oauth2_provider=None,
+            params='{"test": "value"}',
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+        mock_args.name = "test_secure_map"
+        services_create_secure_map_command(mock_args)
+        mock_service.assert_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Successfully created new Secure Map Service!",
+            po_call_args[0][0][0],
+        )
+
+        mock_service.assert_called_with(
+            name="test_secure_map",
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            authentication_method="api_key",
+            service_type="GeoJSON",
+            api_key="test_api_key",
+            params={"test": "value"},
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_create_secure_map_with_oauth2(self, mock_service, mock_pretty_output):
+        # Test successfully creating a secure map service with OAuth2 authentication
+        mock_args = mock.MagicMock(
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            auth_method="oauth2",
+            service_type="geojson",
+            api_key=None,
+            oauth2_provider="test_oauth2_provider",
+            params='{"test": "value"}',
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+        mock_args.name = "test_secure_map_oauth2"
+        services_create_secure_map_command(mock_args)
+        mock_service.assert_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Successfully created new Secure Map Service!",
+            po_call_args[0][0][0],
+        )
+
+        mock_service.assert_called_with(
+            name="test_secure_map_oauth2",
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            authentication_method="oauth2",
+            service_type="GeoJSON",
+            oauth2_provider="test_oauth2_provider",
+            params={"test": "value"},
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_json_decode_error(self, mock_pretty_output):
+        mock_args = mock.MagicMock(
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            auth_method="api_key",
+            service_type="geojson",
+            api_key="test_api_key",
+            oauth2_provider=None,
+            params='invalid json',
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+        mock_args.name = "test_secure_map_json_decode_error"
+
+        services_create_secure_map_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Invalid JSON provided for \'params\': Expected a valid JSON object (e.g. \'{"key": "value"}\').', po_call_args[0][0][0])
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    def test_services_create_secure_map_json_validation_error(self, mock_pretty_output):
+        mock_args = mock.MagicMock(
+            endpoint="localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            auth_method="api_key",
+            service_type="geojson",
+            api_key="test_api_key",
+            oauth2_provider=None,
+            params='{"test": "value"}',
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+        mock_args.name = "test_secure_map_service"
+
+        services_create_secure_map_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Validation errors occured attempting to create the service:', po_call_args[0][0][0])
+        self.assertIn("- endpoint: Invalid Endpoint: Must be prefixed with \"http://\" or \"https://\"", po_call_args[1][0][0])
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_create_secure_map_integrity_error(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock(
+            endpoint="http://localhost:8000/secure_map",
+            legend_title="test_legend_title",
+            auth_method="api_key",
+            service_type="geojson",
+            api_key="test_api_key",
+            oauth2_provider=None,
+            params='{"test": "value"}',
+            use_proxy=True,
+            connection_timeout=5,
+            read_timeout=10,
+        )
+        mock_args.name = "duplicate_secure_map_service"
+
+        mock_service.return_value.save.side_effect = IntegrityError
+
+        services_create_secure_map_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            'Secure Map Service with name "duplicate_secure_map_service" already exists. Command aborted.',
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
     @mock.patch("tethys_services.models.WebProcessingService")
     def test_services_remove_wps_command_Exceptions(
