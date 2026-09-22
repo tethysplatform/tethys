@@ -972,7 +972,6 @@ def services_list_command(args):
                         model_dict["dir_path"],
                     )
                 )
-
     if list_spatial:
         spatial_entries = SpatialDatasetService.objects.order_by("id").all()
         if len(spatial_entries) > 0:
@@ -1050,7 +1049,6 @@ def services_list_command(args):
                         model_dict["public_endpoint"],
                     )
                 )
-
     if list_secure_map:
         secure_map_entries = SecureMapService.objects.order_by("id").all()
         if len(secure_map_entries) > 0:
@@ -1076,7 +1074,6 @@ def services_list_command(args):
                             )
                         )
                     is_first_entry = False
-
                 auth = model_dict["authentication_method"] or "None"
                 if auth == "api_key":
                     credential = (
@@ -1092,7 +1089,6 @@ def services_list_command(args):
                     credential = "None"
 
                 proxy = "Yes" if model_dict["use_proxy"] else "No"
-
                 print(
                     row.format(
                         model_dict["id"],

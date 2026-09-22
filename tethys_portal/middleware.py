@@ -181,17 +181,19 @@ class TethysOauth2RequiredMiddleware:
         for provider in required_providers:
             if provider not in configured_providers:
                 unconfigured_providers.append(provider)
-
         if unconfigured_providers:
             logger.warning(
                 f"The following required OAuth2 providers are not configured: {', '.join(unconfigured_providers)}"
             )
             if len(unconfigured_providers) == 1:
                 message = f"The required OAuth2 provider '{unconfigured_providers[0]}' is not configured on this portal. Please contact your portal administrator."
+            elif len(unconfigured_providers) == 2:
+                message = f"The required OAuth2 providers {unconfigured_providers[0]} and {unconfigured_providers[1]} are not configured on this portal. Please contact your portal administrator."
             else:
                 message = (
                     "The required OAuth2 providers "
-                    + ", ".join(unconfigured_providers)
+                    + ", ".join(unconfigured_providers[:-1])
+                    + f", and {unconfigured_providers[-1]}"
                     + " are not configured on this portal. Please contact your portal administrator."
                 )
             messages.error(request, message)

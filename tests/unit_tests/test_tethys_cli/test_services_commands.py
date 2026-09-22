@@ -17,6 +17,8 @@ from tethys_cli.services_commands import (
     services_remove_dataset_command,
     services_create_wps_command,
     services_remove_wps_command,
+    services_create_secure_map_command,
+    services_remove_secure_map_command
 )
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -36,6 +38,18 @@ class ServicesCommandsTest(unittest.TestCase):
         "endpoint": "EndPoint_foo",
         "public_endpoint": "PublicEndPoint_bar",
         "apikey": "APIKey_foo",
+    }
+
+    my_secure_map_dict = {
+        "id": "Id_baz",
+        "name": "Name_baz",
+        "legend_title": "LegendTitle_baz",
+        "endpoint": "EndPoint_baz",
+        "authentication_method": "api_key",
+        "api_key": "APIKey_baz",
+        "service_type": "ServiceType_baz",
+        "params": {"param1": "value1"},
+        "use_proxy": False,
     }
 
     my_sqlite_dict = {"id": "Id_bar", "name": "Name_bar", "dir_path": "DirPath_bar"}
@@ -720,6 +734,111 @@ class ServicesCommandsTest(unittest.TestCase):
             po_call_args[0][0][0],
         )
 
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_cli.services_commands.exit")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_remove_secure_map_command_force(self, mock_service, mock_exit, mock_pretty_output):
+        """
+        Test for services_remove_secure_map_command
+        For when a delete is forced
+        :param mock_service:  mock for SecureMapService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_service._meta.verbose_name = "Secure Map Service"
+
+        mock_args.force = True
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, services_remove_secure_map_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "Successfully removed Secure Map Service", po_call_args[0][0][0]
+        )
+
+    @mock.patch("tethys_cli.services_commands.input")
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_cli.services_commands.exit")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_remove_secure_map_command_no_proceed_invalid_char(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        """
+        Test for services_remove_secure_map_command
+        For when deleting is not forced, and when prompted, giving an invalid answer, then no delete
+        :param mock_service:  mock for SecureMapService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_service._meta.verbose_name = "Secure Map Service"
+
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ["foo", "N"]
+
+        self.assertRaises(SystemExit, services_remove_secure_map_command, mock_args)
+
+        mock_service.objects.get().delete.assert_not_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "Aborted. Secure Map Service not removed.", po_call_args[0][0][0]
+        )
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertEqual(
+            "Are you sure you want to delete this Secure Map Service? [y/n]: ",
+            po_call_args[0][0][0]
+        )
+        self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
+
+
+    @mock.patch("tethys_cli.services_commands.input")
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_cli.services_commands.exit")
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_remove_secure_map_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        """
+        Test for services_remove_secure_map_command
+        For when deleting is not forced, and when prompted, giving a valid answer to delete
+        :param mock_service:  mock for SecureMapService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_service._meta.verbose_name = "Secure Map Service"
+
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ["y"]
+
+        self.assertRaises(SystemExit, services_remove_secure_map_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called_once()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn(
+            "Successfully removed Secure Map Service 1",
+            po_call_args[0][0][0]
+        )
+
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
@@ -816,6 +935,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.persistent = False
         mock_args.dataset = False
         mock_args.wps = False
+        mock_args.secure_map = False
         mock_spatial.objects.order_by("id").all.return_value = [
             mock.MagicMock(),
             mock.MagicMock(),
@@ -875,6 +995,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.persistent = True
         mock_args.dataset = False
         mock_args.wps = False
+        mock_args.secure_map = False
         mock_postgres_persistent.objects.order_by("id").all.return_value = [
             mock.MagicMock()
         ]
@@ -940,6 +1061,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.persistent = False
         mock_args.dataset = True
         mock_args.wps = False
+        mock_args.secure_map = False
         mock_dataset.objects.order_by("id").all.return_value = [
             mock.MagicMock(),
             mock.MagicMock(),
@@ -979,7 +1101,7 @@ class ServicesCommandsTest(unittest.TestCase):
     ):
         """
         Test for services_list_command
-        Only dataset is set
+        Only wps is set
         :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_wps:  mock for WebProcessingService
         :param mock_pretty_output:  mock for pretty_output text
@@ -992,13 +1114,13 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.persistent = False
         mock_args.dataset = False
         mock_args.wps = True
+        mock_args.secure_map = False
         mock_wps.objects.order_by("id").all.return_value = [
             mock.MagicMock(),
             mock.MagicMock(),
         ]
 
         services_list_command(mock_args)
-
         # Check expected pretty_output
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(2, len(po_call_args))
@@ -1021,6 +1143,60 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertNotIn(self.my_postgres_dict["host"], rts_call_args[1][0][0])
         self.assertNotIn(self.my_postgres_dict["port"], rts_call_args[1][0][0])
         self.assertNotIn(self.my_postgres_dict["apikey"], rts_call_args[1][0][0])
+
+    @mock.patch("tethys_cli.services_commands.print")
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SecureMapService")
+    @mock.patch("tethys_cli.services_commands.model_to_dict")
+    def test_services_list_command_secure_map(self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print):
+        """
+        Test for services_list_command
+        Only wps is set
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
+        :param mock_secure_map:  mock for SecureMapService
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
+        :return:
+        """
+        mock_mtd.return_value = self.my_secure_map_dict
+        mock_args = mock.MagicMock()
+        mock_args.spatial = False
+        mock_args.persistent = False
+        mock_args.dataset = False
+        mock_args.wps = False
+        mock_args.secure_map = True
+
+        mock_secure_map.objects.order_by("id").all.return_value = [
+            mock.MagicMock(),
+            mock.MagicMock(),
+        ]
+        services_list_command(mock_args)
+
+        # Check expected pretty_output
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn("Secure Map Services:", po_call_args[0][0][0])
+        self.assertIn("ID", po_call_args[1][0][0])
+        self.assertIn("Name", po_call_args[1][0][0])
+        self.assertIn("Legend", po_call_args[1][0][0])
+        self.assertIn("Auth", po_call_args[1][0][0])
+        self.assertIn("Credential/Provider", po_call_args[1][0][0])
+        self.assertIn("Type", po_call_args[1][0][0])
+        self.assertIn("Proxy", po_call_args[1][0][0])
+        self.assertIn("Endpoint", po_call_args[1][0][0])
+
+        # Check text written with python's print
+        rts_call_args = mock_print.call_args_list
+        self.assertIn(self.my_secure_map_dict["id"], rts_call_args[1][0][0])
+        self.assertIn(self.my_secure_map_dict["name"], rts_call_args[1][0][0])
+        self.assertIn(self.my_secure_map_dict["legend_title"], rts_call_args[1][0][0])
+        self.assertIn(
+            self.my_secure_map_dict["authentication_method"], rts_call_args[1][0][0]
+        )
+        self.assertIn("API Key Set", rts_call_args[1][0][0])
+        self.assertIn(self.my_secure_map_dict["service_type"], rts_call_args[1][0][0])
+        self.assertIn("No", rts_call_args[1][0][0])
+        self.assertIn(self.my_secure_map_dict["endpoint"], rts_call_args[1][0][0])
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.DatasetService")
