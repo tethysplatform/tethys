@@ -20,7 +20,7 @@ from tethys_cli.services_commands import (
     services_create_secure_map_command,
     services_remove_secure_map_command
 )
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import IntegrityError
 
 
@@ -841,7 +841,8 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertIn('Invalid JSON provided for \'params\': Expected a valid JSON object (e.g. \'{"key": "value"}\').', po_call_args[0][0][0])
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_json_validation_error(self, mock_pretty_output):
+    @mock.patch("tethys_services.models.SecureMapService")
+    def test_services_create_secure_map_json_validation_error(self, mock_service, mock_pretty_output):
         mock_args = mock.MagicMock(
             endpoint="localhost:8000/secure_map",
             legend_title="test_legend_title",
@@ -855,6 +856,10 @@ class ServicesCommandsTest(unittest.TestCase):
             read_timeout=10,
         )
         mock_args.name = "test_secure_map_service"
+
+        mock_service.return_value.full_clean.side_effect = ValidationError(
+            {"endpoint": ["Invalid Endpoint: Must be prefixed with \"http://\" or \"https://\""]}
+        )
 
         services_create_secure_map_command(mock_args)
 
