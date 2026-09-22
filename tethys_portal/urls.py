@@ -25,6 +25,7 @@ from django.contrib.auth.views import (
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
+    TokenBlacklistView
 )
 
 from tethys_apps.urls import extension_urls
@@ -40,7 +41,7 @@ from tethys_portal.views import (
     email as tethys_portal_email,
     app_lifecycle,
 )
-from tethys_portal.optional_dependencies import has_module
+from tethys_portal.optional_dependencies import has_module, optional_import
 from tethys_apps import views as tethys_apps_views
 from tethys_compute import views as tethys_compute_views
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
@@ -48,7 +49,6 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
 
-from tethys_portal.optional_dependencies import optional_import
 
 # optional imports
 TrustedDevice = optional_import("mfa.TrustedDevice")
@@ -172,6 +172,7 @@ api_urls = [
     ),
     re_path(r"^token/refresh/$", TokenRefreshView.as_view(), name="token_refresh"),
     re_path(r"^token/verify/$", TokenVerifyView.as_view(), name="token_verify"),
+    re_path(r"^token/blacklist/$", TokenBlacklistView.as_view(), name="token_blacklist"),
     re_path(r"^apps/(?P<app>[\w-]+)/$", tethys_portal_api.get_app, name="get_app"),
 ]
 
