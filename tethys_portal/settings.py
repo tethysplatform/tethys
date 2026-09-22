@@ -271,11 +271,8 @@ INSTALLED_APPS = portal_config_settings.pop(
     default_installed_apps,
 )
 
-# Dedupe (preserving order) so an app also listed in portal_config.yml's
-# INSTALLED_APPS does not collide with a default and raise
-# "Application labels aren't unique".
 INSTALLED_APPS = tuple(
-    dict.fromkeys(INSTALLED_APPS + portal_config_settings.pop("INSTALLED_APPS", []))
+    INSTALLED_APPS + portal_config_settings.pop("INSTALLED_APPS", [])
 )
 
 MIDDLEWARE = portal_config_settings.pop(

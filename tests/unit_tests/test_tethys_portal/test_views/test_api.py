@@ -412,6 +412,7 @@ def test_get_jwt_token_POST_valid_user(client, user):
         }, response.json()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True, PREFIX_URL="/")
 @pytest.mark.django_db
 def test_token_blacklist_revokes_refresh_token(client, user):
     """A refresh token POSTed to the blacklist endpoint can no longer be refreshed."""
