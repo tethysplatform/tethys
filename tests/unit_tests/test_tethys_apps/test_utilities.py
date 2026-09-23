@@ -749,7 +749,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         )
         self.assertIn("does not exist.", po_call_args[0][0][0])
 
-    @mock.patch("tethys_apps.utilities.pretty_output")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_apps.utilities.get_service_from_type")
     def test_link_service_to_app_setting_fail_get_service_from_type(
         self, mock_gsft, mock_pretty_output

@@ -1249,20 +1249,25 @@ def test_gen_pyproject_no_setup(mock_exit, mock_write_error):
         mock_exit.assert_called_once_with(1)
 
 
-def test_get_install_destination_path_with_directory():
+@mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+def test_get_install_destination_path_with_directory(mock_check):
     with tempfile.TemporaryDirectory() as temp_dir:
         mock_args = mock.MagicMock(
             type=GEN_INSTALL_OPTION,
             directory=temp_dir,
         )
         result = get_destination_path(args=mock_args)
-        assert result == temp_dir.parent
+        expected = Path(temp_dir).absolute() / FILE_NAMES[GEN_INSTALL_OPTION]
+        assert result == str(expected)
+        mock_check.assert_called_once()
 
 
-def test_get_install_destination_path_without_directory():
+@mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+def test_get_install_destination_path_without_directory(mock_check):
     mock_args = mock.MagicMock(
         type=GEN_INSTALL_OPTION,
         directory=None,
     )
     result = get_destination_path(args=mock_args)
-    assert result == Path.cwd()
+    assert result == str(Path.cwd() / FILE_NAMES[GEN_INSTALL_OPTION])
+    mock_check.assert_called_once()
