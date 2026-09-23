@@ -511,14 +511,16 @@ class SecureMapServiceSettingTests(TethysTestCase):
         )
         setting.secure_map_service = self.map_service_with_api_key_no_proxy
         setting.save()
-        
+
         mock_get.side_effect = requests.Timeout
 
         with self.assertRaises(requests.exceptions.Timeout):
             SecureMapServiceSetting.objects.get(
                 name="secure_map_service"
             )._fetch_response()
-        mock_log.error.assert_called_with("SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)")
+        mock_log.error.assert_called_with(
+            "SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)"
+        )
 
     def test_get_value_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(
@@ -680,11 +682,14 @@ class SecureMapServiceSettingTests(TethysTestCase):
         setting.save()
 
         with self.assertRaises(ValueError) as context:
-            SecureMapServiceSetting.objects.get(
-                name="secure_map_service"
-            ).get_value(as_token=True)
+            SecureMapServiceSetting.objects.get(name="secure_map_service").get_value(
+                as_token=True
+            )
 
-        self.assertIn("request_user must be provided to retrieve an OAuth2 token.", str(context.exception))
+        self.assertIn(
+            "request_user must be provided to retrieve an OAuth2 token.",
+            str(context.exception),
+        )
 
     @mock.patch("tethys_apps.models.SecureMapService._get_oauth_token")
     def test_get_value_as_token(self, mock_get_oauth_token):

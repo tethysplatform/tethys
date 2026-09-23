@@ -174,6 +174,7 @@ def secure_map_proxy(request, setting_id):
     Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth2.
     """
     from tethys_services.models import SecureMapService
+
     try:
         service = SecureMapService.objects.get(id=setting_id)
     except SecureMapService.DoesNotExist:

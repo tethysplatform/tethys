@@ -18,7 +18,7 @@ from tethys_cli.services_commands import (
     services_create_wps_command,
     services_remove_wps_command,
     services_create_secure_map_command,
-    services_remove_secure_map_command
+    services_remove_secure_map_command,
 )
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import IntegrityError
@@ -612,7 +612,9 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_non_dict_params(self, mock_pretty_output):
+    def test_services_create_secure_map_command_non_dict_params(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command
         For when invalid params are provided
@@ -636,8 +638,11 @@ class ServicesCommandsTest(unittest.TestCase):
             "'params' must be a JSON object, got int. Example: '{\"key\": \"value\"}'.",
             po_call_args[0][0][0],
         )
+
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_api_type_with_oauth2_provider(self, mock_pretty_output):
+    def test_services_create_secure_map_command_api_type_with_oauth2_provider(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command when an oauth2 provider is
         provided with api_key chosen as the authentication method
@@ -662,7 +667,9 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_api_type_without_api_key(self, mock_pretty_output):
+    def test_services_create_secure_map_command_api_type_without_api_key(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command when an oauth2 provider is
         provided with api_key chosen as the authentication method
@@ -687,7 +694,9 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_oauth2_type_with_api_key(self, mock_pretty_output):
+    def test_services_create_secure_map_command_oauth2_type_with_api_key(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command when an api_key is
         provided with oauth2 chosen as the authentication method
@@ -711,7 +720,9 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_oauth2_type_without_provider(self, mock_pretty_output):
+    def test_services_create_secure_map_command_oauth2_type_without_provider(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command when oauth2 is chosen as the authentication method
         but no oauth2_provider is provided
@@ -736,7 +747,9 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    def test_services_create_secure_map_command_invalid_authentication_type(self, mock_pretty_output):
+    def test_services_create_secure_map_command_invalid_authentication_type(
+        self, mock_pretty_output
+    ):
         """
         Test for services_create_secure_map_command when an invalid authentication method is provided
         :return:
@@ -804,7 +817,9 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_create_secure_map_with_oauth2(self, mock_service, mock_pretty_output):
+    def test_services_create_secure_map_with_oauth2(
+        self, mock_service, mock_pretty_output
+    ):
         # Test successfully creating a secure map service with OAuth2 authentication
         mock_args = mock.MagicMock(
             endpoint="http://localhost:8000/secure_map",
@@ -850,7 +865,7 @@ class ServicesCommandsTest(unittest.TestCase):
             service_type="geojson",
             api_key="test_api_key",
             oauth2_provider=None,
-            params='invalid json',
+            params="invalid json",
             use_proxy=True,
             connection_timeout=5,
             read_timeout=10,
@@ -861,11 +876,16 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn('Invalid JSON provided for \'params\': Expected a valid JSON object (e.g. \'{"key": "value"}\').', po_call_args[0][0][0])
+        self.assertIn(
+            "Invalid JSON provided for 'params': Expected a valid JSON object (e.g. '{\"key\": \"value\"}').",
+            po_call_args[0][0][0],
+        )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_create_secure_map_json_validation_error(self, mock_service, mock_pretty_output):
+    def test_services_create_secure_map_json_validation_error(
+        self, mock_service, mock_pretty_output
+    ):
         mock_args = mock.MagicMock(
             endpoint="localhost:8000/secure_map",
             legend_title="test_legend_title",
@@ -881,19 +901,31 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args.name = "test_secure_map_service"
 
         mock_service.return_value.full_clean.side_effect = ValidationError(
-            {"endpoint": ["Invalid Endpoint: Must be prefixed with \"http://\" or \"https://\""]}
+            {
+                "endpoint": [
+                    'Invalid Endpoint: Must be prefixed with "http://" or "https://"'
+                ]
+            }
         )
 
         services_create_secure_map_command(mock_args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(2, len(po_call_args))
-        self.assertIn('Validation errors occured attempting to create the service:', po_call_args[0][0][0])
-        self.assertIn("- endpoint: Invalid Endpoint: Must be prefixed with \"http://\" or \"https://\"", po_call_args[1][0][0])
+        self.assertIn(
+            "Validation errors occured attempting to create the service:",
+            po_call_args[0][0][0],
+        )
+        self.assertIn(
+            '- endpoint: Invalid Endpoint: Must be prefixed with "http://" or "https://"',
+            po_call_args[1][0][0],
+        )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_create_secure_map_integrity_error(self, mock_service, mock_pretty_output):
+    def test_services_create_secure_map_integrity_error(
+        self, mock_service, mock_pretty_output
+    ):
         mock_args = mock.MagicMock(
             endpoint="http://localhost:8000/secure_map",
             legend_title="test_legend_title",
@@ -1068,7 +1100,9 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_remove_secure_map_command_force(self, mock_service, mock_exit, mock_pretty_output):
+    def test_services_remove_secure_map_command_force(
+        self, mock_service, mock_exit, mock_pretty_output
+    ):
         """
         Test for services_remove_secure_map_command
         For when a delete is forced
@@ -1091,15 +1125,15 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn(
-            "Successfully removed Secure Map Service", po_call_args[0][0][0]
-        )
+        self.assertIn("Successfully removed Secure Map Service", po_call_args[0][0][0])
 
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_remove_secure_map_command_no_proceed_invalid_char(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+    def test_services_remove_secure_map_command_no_proceed_invalid_char(
+        self, mock_service, mock_exit, mock_pretty_output, mock_input
+    ):
         """
         Test for services_remove_secure_map_command
         For when deleting is not forced, and when prompted, giving an invalid answer, then no delete
@@ -1123,24 +1157,23 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_service.objects.get().delete.assert_not_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn(
-            "Aborted. Secure Map Service not removed.", po_call_args[0][0][0]
-        )
+        self.assertIn("Aborted. Secure Map Service not removed.", po_call_args[0][0][0])
 
         po_call_args = mock_input.call_args_list
         self.assertEqual(2, len(po_call_args))
         self.assertEqual(
             "Are you sure you want to delete this Secure Map Service? [y/n]: ",
-            po_call_args[0][0][0]
+            po_call_args[0][0][0],
         )
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
-
 
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
     @mock.patch("tethys_services.models.SecureMapService")
-    def test_services_remove_secure_map_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+    def test_services_remove_secure_map_command_proceed(
+        self, mock_service, mock_exit, mock_pretty_output, mock_input
+    ):
         """
         Test for services_remove_secure_map_command
         For when deleting is not forced, and when prompted, giving a valid answer to delete
@@ -1166,8 +1199,7 @@ class ServicesCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn(
-            "Successfully removed Secure Map Service 1",
-            po_call_args[0][0][0]
+            "Successfully removed Secure Map Service 1", po_call_args[0][0][0]
         )
 
     @mock.patch("tethys_cli.services_commands.print")
@@ -1479,7 +1511,9 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
-    def test_services_list_command_secure_map_api_key_auth(self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print):
+    def test_services_list_command_secure_map_api_key_auth(
+        self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print
+    ):
         """
         Test for services_list_command
         Only wps is set
@@ -1520,21 +1554,29 @@ class ServicesCommandsTest(unittest.TestCase):
         rts_call_args = mock_print.call_args_list
         self.assertIn(self.my_api_key_secure_map_dict["id"], rts_call_args[1][0][0])
         self.assertIn(self.my_api_key_secure_map_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_api_key_secure_map_dict["legend_title"], rts_call_args[1][0][0])
         self.assertIn(
-            self.my_api_key_secure_map_dict["authentication_method"], rts_call_args[1][0][0]
+            self.my_api_key_secure_map_dict["legend_title"], rts_call_args[1][0][0]
+        )
+        self.assertIn(
+            self.my_api_key_secure_map_dict["authentication_method"],
+            rts_call_args[1][0][0],
         )
         self.assertIn("API Key Set", rts_call_args[1][0][0])
-        self.assertIn(self.my_api_key_secure_map_dict["service_type"], rts_call_args[1][0][0])
+        self.assertIn(
+            self.my_api_key_secure_map_dict["service_type"], rts_call_args[1][0][0]
+        )
         self.assertIn("No", rts_call_args[1][0][0])
-        self.assertIn(self.my_api_key_secure_map_dict["endpoint"], rts_call_args[1][0][0])
-
+        self.assertIn(
+            self.my_api_key_secure_map_dict["endpoint"], rts_call_args[1][0][0]
+        )
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
-    def test_services_list_command_secure_map_oauth2_auth(self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print):
+    def test_services_list_command_secure_map_oauth2_auth(
+        self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print
+    ):
         mock_mtd.return_value = self.my_oauth2_secure_map_dict
 
         mock_args = mock.MagicMock()
@@ -1567,20 +1609,31 @@ class ServicesCommandsTest(unittest.TestCase):
         rts_call_args = mock_print.call_args_list
         self.assertIn(self.my_oauth2_secure_map_dict["id"], rts_call_args[1][0][0])
         self.assertIn(self.my_oauth2_secure_map_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_oauth2_secure_map_dict["legend_title"], rts_call_args[1][0][0])
         self.assertIn(
-            self.my_oauth2_secure_map_dict["authentication_method"], rts_call_args[1][0][0]
+            self.my_oauth2_secure_map_dict["legend_title"], rts_call_args[1][0][0]
         )
-        self.assertIn(self.my_oauth2_secure_map_dict["oauth2_provider"], rts_call_args[1][0][0])
-        self.assertIn(self.my_oauth2_secure_map_dict["service_type"], rts_call_args[1][0][0])
+        self.assertIn(
+            self.my_oauth2_secure_map_dict["authentication_method"],
+            rts_call_args[1][0][0],
+        )
+        self.assertIn(
+            self.my_oauth2_secure_map_dict["oauth2_provider"], rts_call_args[1][0][0]
+        )
+        self.assertIn(
+            self.my_oauth2_secure_map_dict["service_type"], rts_call_args[1][0][0]
+        )
         self.assertIn("No", rts_call_args[1][0][0])
-        self.assertIn(self.my_oauth2_secure_map_dict["endpoint"], rts_call_args[1][0][0])
+        self.assertIn(
+            self.my_oauth2_secure_map_dict["endpoint"], rts_call_args[1][0][0]
+        )
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SecureMapService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
-    def test_services_list_command_secure_map_oauth2_invalid_authentication_type(self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print):
+    def test_services_list_command_secure_map_oauth2_invalid_authentication_type(
+        self, mock_mtd, mock_secure_map, mock_pretty_output, mock_print
+    ):
         mock_mtd.return_value = self.my_invalid_authentication_method_secure_map_dict
 
         mock_args = mock.MagicMock()
@@ -1611,18 +1664,34 @@ class ServicesCommandsTest(unittest.TestCase):
 
         # Check text written with python's print
         rts_call_args = mock_print.call_args_list
-        self.assertIn(self.my_invalid_authentication_method_secure_map_dict["id"], rts_call_args[1][0][0])
-        self.assertIn(self.my_invalid_authentication_method_secure_map_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_invalid_authentication_method_secure_map_dict["legend_title"], rts_call_args[1][0][0])
         self.assertIn(
-            self.my_invalid_authentication_method_secure_map_dict["authentication_method"], rts_call_args[1][0][0]
+            self.my_invalid_authentication_method_secure_map_dict["id"],
+            rts_call_args[1][0][0],
+        )
+        self.assertIn(
+            self.my_invalid_authentication_method_secure_map_dict["name"],
+            rts_call_args[1][0][0],
+        )
+        self.assertIn(
+            self.my_invalid_authentication_method_secure_map_dict["legend_title"],
+            rts_call_args[1][0][0],
+        )
+        self.assertIn(
+            self.my_invalid_authentication_method_secure_map_dict[
+                "authentication_method"
+            ],
+            rts_call_args[1][0][0],
         )
         self.assertIn("None", rts_call_args[1][0][0])
-        self.assertIn(self.my_invalid_authentication_method_secure_map_dict["service_type"], rts_call_args[1][0][0])
+        self.assertIn(
+            self.my_invalid_authentication_method_secure_map_dict["service_type"],
+            rts_call_args[1][0][0],
+        )
         self.assertIn("No", rts_call_args[1][0][0])
-        self.assertIn(self.my_invalid_authentication_method_secure_map_dict["endpoint"], rts_call_args[1][0][0])
-
-
+        self.assertIn(
+            self.my_invalid_authentication_method_secure_map_dict["endpoint"],
+            rts_call_args[1][0][0],
+        )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.DatasetService")

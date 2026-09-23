@@ -893,32 +893,55 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch("tethys_portal.middleware.get_active_app")
     @mock.patch("tethys_portal.middleware.messages.error")
     @mock.patch("tethys_portal.middleware.logger")
-    def test_oauth_required_unconfigured_providers(self, mock_logger, mock_messages, mock_gap, mock_gcop):
+    def test_oauth_required_unconfigured_providers(
+        self, mock_logger, mock_messages, mock_gap, mock_gcop
+    ):
         mock_get_response = mock.MagicMock()
         mock_gap.return_value = mock.MagicMock(
             package="test_package", required_oauth2_providers=["test_provider"]
         )
         mock_gcop.return_value = ["configured_provider"]
-        
-        mock_request = mock.MagicMock()        
+
+        mock_request = mock.MagicMock()
 
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
-        mock_logger.warning.assert_called_with("The following required OAuth2 providers are not configured: test_provider")
-        mock_messages.assert_called_with(mock_request, "The required OAuth2 provider 'test_provider' is not configured on this portal. Please contact your portal administrator.")
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 provider 'test_provider' is not configured on this portal. Please contact your portal administrator.",
+        )
 
         mock_gap.return_value = mock.MagicMock(
-            package="test_package", required_oauth2_providers=["test_provider1", "test_provider2"]
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
         )
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
-        mock_logger.warning.assert_called_with("The following required OAuth2 providers are not configured: test_provider1, test_provider2")
-        mock_messages.assert_called_with(mock_request, "The required OAuth2 providers test_provider1 and test_provider2 are not configured on this portal. Please contact your portal administrator.")
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1 and test_provider2 are not configured on this portal. Please contact your portal administrator.",
+        )
 
         mock_gap.return_value = mock.MagicMock(
-            package="test_package", required_oauth2_providers=["test_provider1", "test_provider2", "test_provider3"]
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
         )
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
-        mock_logger.warning.assert_called_with("The following required OAuth2 providers are not configured: test_provider1, test_provider2, test_provider3")
-        mock_messages.assert_called_with(mock_request, "The required OAuth2 providers test_provider1, test_provider2, and test_provider3 are not configured on this portal. Please contact your portal administrator.")
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2, test_provider3"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1, test_provider2, and test_provider3 are not configured on this portal. Please contact your portal administrator.",
+        )
 
     @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
     @mock.patch("tethys_portal.middleware.urlencode")
@@ -955,22 +978,28 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
             f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
         )
         mock_gap.return_value = mock.MagicMock(
-            package="test_package", required_oauth2_providers=["test_provider1", "test_provider2"]
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
         )
         mock_gcop.return_value = ["test_provider1", "test_provider2"]
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_messages.assert_called_with(
             mock_request,
-            "This application requires authenticating with test_provider1 and test_provider2. Please link your accounts."
+            "This application requires authenticating with test_provider1 and test_provider2. Please link your accounts.",
         )
         mock_gap.return_value = mock.MagicMock(
-            package="test_package", required_oauth2_providers=["test_provider1", "test_provider2", "test_provider3"]
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
         )
         mock_gcop.return_value = ["test_provider1", "test_provider2", "test_provider3"]
         TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
         mock_messages.assert_called_with(
             mock_request,
-            "This application requires authenticating with test_provider1, test_provider2, and test_provider3. Please link your accounts."
+            "This application requires authenticating with test_provider1, test_provider2, and test_provider3. Please link your accounts.",
         )
 
     @mock.patch("tethys_portal.middleware.urlencode")

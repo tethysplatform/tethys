@@ -41,7 +41,6 @@ class TestUtilites(unittest.TestCase):
     def tearDown(self):
         pass
 
-    
     @override_settings(AUTHENTICATION_BACKENDS=["class_1", "class_2"])
     @mock.patch("django.utils.module_loading.import_string")
     def test_get_configured_oauth2_providers(self, mock_is):
@@ -52,13 +51,14 @@ class TestUtilites(unittest.TestCase):
         mock_class_3 = mock.MagicMock()
         # mock_class_3 does not have a name attribute, so won't be included in returned list
         mock_is.side_effect = [mock_class_1, mock_class_2, mock_class_3]
-        self.assertEqual(get_configured_oauth2_providers(), ["test_provider", "test_provider2"])
-
+        self.assertEqual(
+            get_configured_oauth2_providers(), ["test_provider", "test_provider2"]
+        )
 
     @override_settings(AUTHENTICATION_BACKENDS=[])
     def test_get_get_configured_oauth2_providers_empty(self):
         self.assertEqual(get_configured_oauth2_providers(), [])
-    
+
     @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.messages.info")
     @mock.patch("tethys_services.utilities.urlencode")
@@ -146,17 +146,20 @@ class TestUtilites(unittest.TestCase):
     @mock.patch("tethys_services.utilities.logger")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
-    def test_ensure_oauth2_provider_not_configured(self, mock_redirect, mock_reverse, mock_logger, mock_gcop):
+    def test_ensure_oauth2_provider_not_configured(
+        self, mock_redirect, mock_reverse, mock_logger, mock_gcop
+    ):
         mock_gcop.return_value = ["provider1"]
         mock_reverse.side_effect = lambda name: f"/{name.split(':')[-1]}/"
         mock_redirect.side_effect = lambda url: url
 
-        response = enforced_controller(mock.MagicMock(user=mock.MagicMock(is_authenticated=True)))
+        response = enforced_controller(
+            mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        )
         mock_logger.warning.assert_called_once_with(
             "The required OAuth2 provider 'hydroshare' is not configured on this portal."
         )
         self.assertEqual(response, "/app_library/")
-
 
     @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.load_strategy")

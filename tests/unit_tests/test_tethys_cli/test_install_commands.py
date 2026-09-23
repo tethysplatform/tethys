@@ -112,7 +112,9 @@ class TestServiceInstallHelpers(TestCase):
 
     @mock.patch("tethys_cli.install_commands.validate_service_id")
     @mock.patch("tethys_cli.install_commands.write_error")
-    def test_find_and_link_invalid_service(self, mock_write_error, mock_validate_service_id):
+    def test_find_and_link_invalid_service(
+        self, mock_write_error, mock_validate_service_id
+    ):
         service_type = "service_type"
         setting_name = "setting_name"
         service_id = "service_name"
@@ -2524,7 +2526,9 @@ class TestInstallCommands(TestCase):
     @mock.patch("builtins.input", side_effect=["y"])
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.install_commands.exit")
-    def test_install_file_generate_with_file_arg(self, mock_exit, mock_call, mock_input):
+    def test_install_file_generate_with_file_arg(
+        self, mock_exit, mock_call, mock_input
+    ):
         nonexistent_file = self.root_app_path / "does_not_exist" / "install.yml"
         args = mock.MagicMock(
             file=str(nonexistent_file),
@@ -2545,12 +2549,14 @@ class TestInstallCommands(TestCase):
             ["tethys", "gen", "install", "-d", str(nonexistent_file.parent)]
         )
         mock_exit.assert_called_once_with(0)
-    
+
     @mock.patch("tethys_cli.install_commands.write_error")
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("builtins.input", side_effect=["y"])
     @mock.patch("tethys_cli.install_commands.exit")
-    def test_error_generating_install_file(self, mock_exit, mock_input, mock_call, mock_write_error):
+    def test_error_generating_install_file(
+        self, mock_exit, mock_input, mock_call, mock_write_error
+    ):
         chdir("..")  # move out of the dir that has an install.yml
 
         args = mock.MagicMock(
@@ -2568,7 +2574,9 @@ class TestInstallCommands(TestCase):
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
         mock_call.assert_called_once_with(["tethys", "gen", "install", "-d", "."])
-        mock_write_error.assert_called_with("ERROR: Failed to generate the install.yml file.")
+        mock_write_error.assert_called_with(
+            "ERROR: Failed to generate the install.yml file."
+        )
         mock_exit.assert_called_once_with(1)
 
     @mock.patch("tethys_cli.install_commands.write_warning")
@@ -2586,13 +2594,17 @@ class TestInstallCommands(TestCase):
         )
         mock_tethys_app.objects.get.side_effect = ObjectDoesNotExist
         install_commands.install_command(args)
-        mock_write_warning.assert_called_with("ERROR: The app 'test_app' could not be found.")
+        mock_write_warning.assert_called_with(
+            "ERROR: The app 'test_app' could not be found."
+        )
 
     @override_settings(AUTHENTICATION_BACKENDS=["test_provider"])
     @mock.patch("tethys_cli.install_commands.import_string")
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_missing_configured_backends(self, mock_tethys_app, mock_write_warning, mock_import_string):
+    def test_missing_configured_backends(
+        self, mock_tethys_app, mock_write_warning, mock_import_string
+    ):
         args = mock.MagicMock(
             file=None,
             develop=False,

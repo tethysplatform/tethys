@@ -627,6 +627,7 @@ def services_create_secure_map_command(args):
     """
     setup_django()
     from tethys_services.models import SecureMapService
+
     SERVICE_TYPE_MAPS = {
         "image_wms": "ImageWMS",
         "gml": "GML",
@@ -652,7 +653,7 @@ def services_create_secure_map_command(args):
         use_proxy = args.use_proxy
         connection_timeout = args.connection_timeout
         read_timeout = args.read_timeout
-        
+
         if auth_method == "api_key":
             if oauth2_provider:
                 raise MissingArgumentError(

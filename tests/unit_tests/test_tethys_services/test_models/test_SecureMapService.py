@@ -15,12 +15,15 @@ class SecureMapServiceTests(TethysTestCase):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
-            params="invalid_params"
+            params="invalid_params",
         )
 
         with self.assertRaises(ValidationError) as context:
             secure_map_service.clean()
-        self.assertEqual({"params": ['Parameters must be a JSON object (e.g. {"key": "value"})']}, context.exception.message_dict)
+        self.assertEqual(
+            {"params": ['Parameters must be a JSON object (e.g. {"key": "value"})']},
+            context.exception.message_dict,
+        )
 
     def test_get_oauth_token_api_key(self):
         secure_map_service = SecureMapService(
@@ -94,13 +97,15 @@ class SecureMapServiceTests(TethysTestCase):
         )
 
         mock_user = mock.MagicMock()
-        mock_user.social_auth.get.return_value.get_access_token.side_effect = AuthException(mock.MagicMock(), "access token failure")
+        mock_user.social_auth.get.return_value.get_access_token.side_effect = (
+            AuthException(mock.MagicMock(), "access token failure")
+        )
 
         with self.assertRaises(ValueError) as context:
             secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(
             str(context.exception),
-            f"Failed to retrieve access Oauth2 token for {secure_map_service.oauth2_provider}: access token failure"
+            f"Failed to retrieve access Oauth2 token for {secure_map_service.oauth2_provider}: access token failure",
         )
 
     def test_get_oauth_token_success(self):
@@ -263,8 +268,6 @@ class SecureMapServiceTests(TethysTestCase):
         with self.assertRaises(ValueError) as context:
             secure_map_service._update_params(None)
 
-        self.assertEqual(str(context.exception), "new_params must be a JSON object (dict).")
-
-        
-
-
+        self.assertEqual(
+            str(context.exception), "new_params must be a JSON object (dict)."
+        )
