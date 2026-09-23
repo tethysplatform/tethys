@@ -749,6 +749,24 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         )
         self.assertIn("does not exist.", po_call_args[0][0][0])
 
+    @mock.patch("tethys_apps.utilities.pretty_output")
+    @mock.patch("tethys_apps.utilities.get_service_from_type")
+    def test_link_service_to_app_setting_fail_get_service_from_type(self, mock_gsft, mock_pretty_output):
+        mock_gsft.side_effect = ValueError("Test exception")
+
+        ret = utilities.link_service_to_app_setting(
+            service_type="spatial",
+            service_uid="foo_spatial_service",
+            app_package="foo_app",
+            setting_type="ds_spatial",
+            setting_uid="456",
+        )
+
+        self.assertEqual(False, ret)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn("Test exception", po_call_args[0][0][0])
+        
     @mock.patch("tethys_apps.utilities.environ")
     @mock.patch("tethys_apps.utilities.Path.home")
     def test_get_tethys_home_dir__default_env_name__tethys_home_not_defined(
@@ -1255,3 +1273,27 @@ class TestAsyncUtilities(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(
             await updated_class().authorized_connect() == "authorized_connect_run"
         )
+
+    def test_get_service_from_type_unknown_service_type(self):
+        with self.assertRaises(ValueError) as context:
+            utilities.get_service_from_type("unknown_service_type", 123)
+        self.assertEqual(str(context.exception), 'Unknown service type: "unknown_service_type". Choose from: condor|dask|dataset|persistent|spatial|wps|secure_map')
+
+    @mock.patch("tethys_apps.utilities.get_service_object")
+    def test_get_service_from_type_persistent_list(self, mock_gso):
+        mock_gso.return_value = "sqlite_mocked_service"
+        ret = utilities.get_service_from_type("persistent", 123)
+        self.assertEqual(ret, "sqlite_mocked_service")
+
+    @mock.patch("tethys_apps.utilities.get_service_object")
+    def test_get_service_from_type_persistent_list_no_object_found(self, mock_gso):
+        mock_gso.return_value = None
+        ret = utilities.get_service_from_type("persistent", 123)
+        self.assertIsNone(ret)
+
+    @mock.patch("tethys_apps.utilities.get_service_object")
+    def test_get_service_from_type_secure_map(self, mock_gso):
+        mock_gso.return_value = "secure_map_mocked_service"
+        ret = utilities.get_service_from_type("secure_map", 123)
+        self.assertEqual(ret, "secure_map_mocked_service")
+    

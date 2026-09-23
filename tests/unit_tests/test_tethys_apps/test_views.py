@@ -2,6 +2,8 @@ import pytest
 import unittest
 from unittest import mock
 
+from requests import Timeout
+
 from tethys_apps.models import ProxyApp, TethysApp
 from tethys_services.models import SecureMapService
 from tethys_apps.views import (
@@ -458,3 +460,45 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         assert ret.status_code == 200
         assert b"".join(ret.streaming_content) == b"response_content"
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_request_timeout(self, mock_get, mock_request_func, mock_logger):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_setting_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service.connection_timeout = 12
+        mock_service.read_timeout = 34
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_request_func.side_effect = Timeout
+        ret = secure_map_proxy(mock_request, mock_setting_id)
+        assert ret.status_code == 504
+        mock_logger.error.assert_called_with("Request to http://example.com/service timed out. (connection_timeout: 12s, read_timeout: 34s)")
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_not_ok_response(self, mock_get, mock_request_func, mock_logger):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_setting_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 400
+        mock_response.ok = False
+        mock_response.iter_content.return_value = [b"error_content"]
+        mock_request_func.return_value = mock_response
+        ret = secure_map_proxy(mock_request, mock_setting_id)
+
+        assert ret.status_code == 400
+        assert b"".join(ret.streaming_content) == b"error_content"
+        mock_logger.error.assert_called_with("Upstream request to http://example.com/service failed with status 400.")

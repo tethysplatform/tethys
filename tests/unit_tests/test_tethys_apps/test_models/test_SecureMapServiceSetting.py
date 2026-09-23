@@ -29,6 +29,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
             service_type="WMS",
             params=self.params_with_api_key,
             use_proxy=False,
+            connection_timeout=14,
+            read_timeout=29,
         )
         self.map_service_with_api_key_no_proxy.save()
 
@@ -41,6 +43,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
             service_type="WMS",
             params=self.params_without_api_key,
             use_proxy=False,
+            connection_timeout=12,
+            read_timeout=16,
         )
         self.map_service_without_api_key_param_no_proxy.save()
 
@@ -53,6 +57,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
             service_type="GML",
             params=self.params_with_api_key,
             use_proxy=True,
+            connection_timeout=15,
+            read_timeout=20,
         )
         self.map_service_with_api_key_with_proxy.save()
 
@@ -65,6 +71,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
             service_type="GML",
             params=self.params_without_api_key,
             use_proxy=False,
+            connection_timeout=17,
+            read_timeout=21,
         )
         self.map_service_with_oauth_no_proxy.save()
 
@@ -77,6 +85,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
             service_type="WMS",
             params=self.params_without_api_key,
             use_proxy=True,
+            connection_timeout=16,
+            read_timeout=27,
         )
         self.map_service_with_oauth_with_proxy.save()
 
@@ -160,7 +170,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
             url, "https://example.com/map_service?param1=value1&api_key=test_api_key"
         )
 
-    def test__generate_request_param_overrides(self):
+    def test__generate_request_param_overrides_no_proxy(self):
         setting = self.test_app.settings_set.select_subclasses().get(
             name="secure_map_service"
         )
@@ -176,6 +186,25 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.assertEqual(
             url,
             "https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
+        )
+
+    def test__generate_request__param_overrides_with_proxy(self):
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_with_proxy
+        setting.save()
+
+        url = SecureMapServiceSetting.objects.get(
+            name="secure_map_service"
+        )._generate_request(
+            param_overrides={"param1": "overridden_value", "param2": "value2"}
+        )
+
+        self.assertIsInstance(url, Promise)
+        self.assertEqual(
+            f"/secure-map-proxy/{setting.secure_map_service.pk}/?param1=overridden_value&param2=value2",
+            force_str(url),
         )
 
     def test__build_layer_none(self):
@@ -474,6 +503,23 @@ class SecureMapServiceSettingTests(TethysTestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+    @mock.patch("tethys_apps.models.log")
+    @mock.patch("tethys_apps.models.requests.get")
+    def test__fetch_response_request_timeout(self, mock_get, mock_log):
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+        
+        mock_get.side_effect = requests.Timeout
+
+        with self.assertRaises(requests.exceptions.Timeout):
+            SecureMapServiceSetting.objects.get(
+                name="secure_map_service"
+            )._fetch_response()
+        mock_log.error.assert_called_with("SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)")
+
     def test_get_value_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(
             name="secure_map_service"
@@ -625,6 +671,35 @@ class SecureMapServiceSettingTests(TethysTestCase):
         ).get_value()
 
         self.assertEqual(service, setting.secure_map_service)
+
+    def test_get_value_as_token_no_user(self):
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+
+        with self.assertRaises(ValueError) as context:
+            SecureMapServiceSetting.objects.get(
+                name="secure_map_service"
+            ).get_value(as_token=True)
+
+        self.assertIn("request_user must be provided to retrieve an OAuth2 token.", str(context.exception))
+
+    @mock.patch("tethys_apps.models.SecureMapService._get_oauth_token")
+    def test_get_value_as_token(self, mock_get_oauth_token):
+        mock_get_oauth_token.return_value = "test_token"
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+
+        token = SecureMapServiceSetting.objects.get(
+            name="secure_map_service"
+        ).get_value(as_token=True, request_user="test_user")
+
+        self.assertEqual(token, "test_token")
 
     def test_update_params_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(

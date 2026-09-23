@@ -919,7 +919,6 @@ def install_command(args):
                         download_vendor_static_files(
                             None, cwd=str(public_resources_dir)
                         )
-
     if app_name is None:
         app_name = get_tethys_package_from_dir(file_path.parent)
         if app_name is None:
