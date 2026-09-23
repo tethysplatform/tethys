@@ -70,6 +70,7 @@ CONTEXT_PROCESSORS_OVERRIDE                        override for ``CONTEXT_PROCES
 RESOURCE_QUOTA_HANDLERS                            a list of Tethys ``ResourceQuotaHandler`` classes to load (see: :ref:`sdk_quotas_api`). For convenience, any quota handlers listed here will be appended to the default list of quota handlerss. To override ``RESOURCE_QUOTA_HANDLERS`` completely, use the ``RESOURCE_QUOTA_HANDLERS_OVERRIDE`` setting.
 RESOURCE_QUOTA_HANDLERS_OVERRIDE                   override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
 USE_OLD_WORKSPACES_API                             a temporary setting that maintains backward compatibility for the :ref:`tethys_workspaces_api` when True. When False the the new :ref:`tethys_paths_api` functionality will apply. Defaults to True. Will be removed in 5.0.
+SIMPLE_JWT                                         the `Simple JWT settings <https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html>`_ dictionary that controls JSON Web Token authentication. Defaults to ``{"ROTATE_REFRESH_TOKENS": True, "BLACKLIST_AFTER_ROTATION": True}``. Setting this value replaces the default rather than merging with it. See :ref:`advanced_config_jwt`.
 ================================================== ================================================================================
 
 .. _tethys_portal_config_settings:

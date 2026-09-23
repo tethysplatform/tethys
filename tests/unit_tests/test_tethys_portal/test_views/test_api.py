@@ -410,3 +410,29 @@ def test_get_jwt_token_POST_valid_user(client, user):
             "access": "mock_access",
             "refresh": "mock_refresh",
         }, response.json()
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True, PREFIX_URL="/")
+@pytest.mark.django_db
+def test_token_blacklist_revokes_refresh_token(client, user):
+    """A refresh token POSTed to the blacklist endpoint can no longer be refreshed."""
+    from rest_framework_simplejwt.tokens import RefreshToken
+
+    refresh = str(RefreshToken.for_user(user))
+
+    # Blacklisting the refresh token succeeds.
+    resp = client.post(
+        reverse("api:token_blacklist"),
+        data={"refresh": refresh},
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+
+    # The blacklisted refresh token can no longer mint access tokens.
+    resp = client.post(
+        reverse("api:token_refresh"),
+        data={"refresh": refresh},
+        content_type="application/json",
+    )
+    assert resp.status_code == 401
+    assert resp.json()["code"] == "token_not_valid"

@@ -255,6 +255,7 @@ for module in [
     "oauth2_provider",
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt.token_blacklist",
     "session_security",
     "django_recaptcha",
     "social_django",
@@ -348,6 +349,17 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
+
+# Rotate refresh tokens and blacklist the previous one on each rotation, so that a
+# refresh token surrendered at /api/token/blacklist/ (e.g. on logout) is revoked
+# server-side and can no longer mint access tokens. Overridable via portal_config.yml.
+SIMPLE_JWT = portal_config_settings.pop(
+    "SIMPLE_JWT",
+    {
+        "ROTATE_REFRESH_TOKENS": True,
+        "BLACKLIST_AFTER_ROTATION": True,
+    },
+)
 
 
 # Terms and conditions settings
