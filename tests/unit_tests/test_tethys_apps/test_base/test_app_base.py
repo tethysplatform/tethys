@@ -1434,6 +1434,8 @@ class TestTethysAppBase(unittest.TestCase):
             param_overrides=None,
             request_user=None,
             as_token=False,
+            source_options=None,
+            layer_options=None,
         )
         self.assertEqual(mock_rms(), result)
 
