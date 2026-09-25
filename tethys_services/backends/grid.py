@@ -21,6 +21,11 @@ class GRiDOAuth2(BaseOAuth2):
 
     SCOPE_SEPARATOR = ","
 
+    EXTRA_DATA = [
+        ("refresh_token", "refresh_token", True),
+        ("expires_in", "expires"),
+    ]
+
     def user_data(self, access_token, *args, **kwargs):
         # GRiD's OAuth2 does not provide user information, it is used for authorization only.
         return {}
