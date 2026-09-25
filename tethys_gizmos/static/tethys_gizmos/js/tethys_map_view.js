@@ -151,7 +151,7 @@ var update_field;
 
 // Utility Methods
 var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer,
-    get_token_headers, remove_token, load_image_or_tile_token 
+    get_token_headers, remove_token, load_image_or_tile_token, resolve_gml_projection;
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -1033,7 +1033,10 @@ ol_layers_init = function()
                 projection: new ol.proj.get(DEFAULT_PROJECTION),
                 loader: function(extent, resolution, projection, success, failer) {
                   fetch(kml_url, {credentials: 'same-origin', headers: get_token_headers(kml_token)})
-                    .then(r => r.text())
+                    .then(r => {
+                      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                      return r.text();
+                    })
                     .then(text => {
                       let features = kml_format.readFeatures(text, {
                         featureProjection: DEFAULT_PROJECTION,
@@ -1083,6 +1086,7 @@ ol_layers_init = function()
           if (current_layer.options.hasOwnProperty('url')) {
             let baseUrl = current_layer.options.url;
             let token = current_layer.options.token;
+            let data_projection_override = current_layer.options.data_projection;
 
             let gmlSource = new ol.source.Vector({
               format: gmlFormat,
@@ -1092,12 +1096,22 @@ ol_layers_init = function()
                 let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
 
                 fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
-                  .then(r => r.text())
+                  .then(r => {
+                    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                    return r.text();
+                  })
                   .then(text => {
-                    let features = gmlFormat.readFeatures(text, {
-                      dataProjection: 'EPSG:4326',
-                      featureProjection: DEFAULT_PROJECTION,
-                    });
+                      let data_projection = resolve_gml_projection(gmlFormat, text, data_projection_override);
+                      let features = gmlFormat.readFeatures(text, {
+                        dataProjection: data_projection || LAT_LON_PROJECTION,
+                        featureProjection: DEFAULT_PROJECTION,
+                      });
+                    if (!data_projection && features.length > 0) {
+                      console.warn(
+                        'GML: could not read a projection from the data, so ' + LAT_LON_PROJECTION +
+                        ' is assumed. Set data_projection on the layer to use a different one.'
+                      );
+                    }
                     gmlSource.addFeatures(features);
                     if (success) { success(features); }
                   })
@@ -1114,14 +1128,19 @@ ol_layers_init = function()
           }
 
           else if (current_layer.options.hasOwnProperty('gml')) {
-              let gmlSource = new ol.source.Vector({
-                  features: gmlFormat.readFeatures(current_layer.options.gml, {
-                      dataProjection: 'EPSG:4326',
-                      featureProjection: DEFAULT_PROJECTION,
-                  }),
-              });
-              current_layer_layer_options['source'] = gmlSource;
-              layer = new ol.layer.Vector(current_layer_layer_options);
+              let data_projection = resolve_gml_projection(gmlFormat, current_layer.options.gml, current_layer.options.data_projection);            
+              let gmlFeatures = gmlFormat.readFeatures(current_layer.options.gml, {
+              dataProjection: data_projection || LAT_LON_PROJECTION,
+              featureProjection: DEFAULT_PROJECTION,
+            });
+            if (!data_projection && gmlFeatures.length > 0) {
+              console.warn(
+                'GML: could not read a projection from the data, so ' + LAT_LON_PROJECTION +
+                ' is assumed. Set data_projection on the layer to use a different one.');
+            }
+            let gmlSource = new ol.source.Vector({features: gmlFeatures});
+            current_layer_layer_options['source'] = gmlSource;
+            layer = new ol.layer.Vector(current_layer_layer_options);
           }
         }
 
@@ -1129,6 +1148,7 @@ ol_layers_init = function()
         else {
           let token = current_layer.options ? current_layer.options.token: null;
           let baseUrl = current_layer.options ? current_layer.options.url: null;
+          let data_projection_override = current_layer.options ? current_layer.options.data_projection : null;
 
           if (token && baseUrl) {
             let format_name = current_layer.options.format || 'GeoJSON';
@@ -1146,10 +1166,14 @@ ol_layers_init = function()
                   url += sep + 'bbox=' + extent.join(',') + ',' + DEFAULT_PROJECTION;
                 }
                 fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
-                  .then(r => r.text())
+                  .then(r => {
+                    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                    return r.text();
+                  })
                   .then(text => {
+                    let data_projection = data_projection_override || vector_format.readProjection(text) || LAT_LON_PROJECTION;
                     let features = vector_format.readFeatures(text, {
-                      dataProjection: 'EPSG:4326',
+                      dataProjection: data_projection,
                       featureProjection: DEFAULT_PROJECTION,
                     });
                     vector_source.addFeatures(features);
@@ -2476,6 +2500,32 @@ remove_token = function(options) {
   let stripped_options = Object.assign({}, options);
   delete stripped_options.token;
   return stripped_options;
+};
+
+resolve_gml_projection = function(gml_format, gml, data_projection_override) {
+  if (data_projection_override) {
+    return data_projection_override;
+  }
+
+  let declared_projection = gml_format.readProjection(gml);
+  if (declared_projection) {
+    return declared_projection;
+  }
+  
+  if (typeof gml === 'string') {
+    // MapServer puts a <gml:boundedBy> before the first feature, and readProjection
+    // doesn't look past it. Fall back to the first srsName in the document.
+    let match = gml.match(/srsName=["']([^"']+)["']/);
+    if (match) {
+      let projection = ol.proj.get(match[1]);
+      if (projection) {
+        return projection;
+      }
+      console.warn('GML: srsName "' + match[1] + '" is not a known projection. Register it with proj4 or set data_projection on the layer.');
+    }    
+  }
+
+  return null;
 };
 
 

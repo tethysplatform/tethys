@@ -184,6 +184,30 @@ If the service uses OAuth2 authentication and is not proxied, the access token m
         request_user=request.user,
     )
 
+Specifying the Source Projection
+--------------------------------
+
+``GML`` layers and ``Vector`` layers that are loaded with a token are transformed from the coordinate reference system of the source data to the projection of the map when they are rendered. That CRS is determined in the following order:
+
+1. The ``data_projection`` option of the layer, if one is set.
+2. The CRS declared by the data itself (``srsName`` in GML/WFS responses, ``crs`` in GeoJSON).
+3. ``EPSG:4326``, which is assumed when the data declares no CRS.
+
+Most services declare their CRS, so no additional configuration is needed. If a service returns data in a projection other than ``EPSG:4326`` without declaring it, set the ``data_projection`` option on the layer that is returned:
+
+.. code-block:: python
+
+    layer = App.get_secure_map_service(
+        'primary_secure_map_service',
+        as_layer=True,
+        request_user=request.user,
+    )
+    layer.options['data_projection'] = 'EPSG:26912'
+
+.. note::
+
+    ``param_overrides`` cannot be used to set ``data_projection``, because those values are added to the query string of the request to the service. Set it on the ``options`` of the returned :ref:`MVLayer <gizmo_mvlayer>` as shown above.
+
 Get a Response
 --------------
 

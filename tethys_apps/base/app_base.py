@@ -1903,6 +1903,8 @@ class TethysAppBase(TethysBase):
         as_token=False,
         param_overrides=None,
         request_user=None,
+        source_options=None,
+        layer_options=None,
     ):
         """
         Retrieves secure map service assigned to named SecureMapServiceSetting for the app.
@@ -1915,6 +1917,8 @@ class TethysAppBase(TethysBase):
             as_token(bool): Returns an OAuth2 token string if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
             request_user(User): Django User object to use for the request. Defaults to None.
+            source_options(dict): Used with as_layer. Merged into the ``options`` of the returned MVLayer (OpenLayers ol.source options, e.g. ``data_projection``). ``url`` and ``token`` are set by the service and cannot be overridden. Defaults to None.
+            layer_options(dict): Used with as_layer. Merged over ``{"visible": True}`` into the ``layer_options`` of the returned MVLayer (OpenLayers ol.layer options, e.g. ``style``). Defaults to None.
 
         Returns:
             SecureMapService: SecureMapService assigned to setting.
@@ -1937,6 +1941,8 @@ class TethysAppBase(TethysBase):
             as_token=as_token,
             param_overrides=param_overrides,
             request_user=request_user,
+            source_options=source_options,
+            layer_options=layer_options,
         )
 
     @classmethod
@@ -1949,6 +1955,8 @@ class TethysAppBase(TethysBase):
         as_token=False,
         param_overrides=None,
         request_user=None,
+        source_options=None,
+        layer_options=None,
     ):
         """
         Resolve the named SecureMapServiceSetting.
@@ -1958,11 +1966,13 @@ class TethysAppBase(TethysBase):
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
             as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
-            as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
+            as_layer(bool): Returns MapLayer object if True, Defaults to False.
             as_response(bool): Returns requests.Response object if True, Defaults to False.
             as_token(bool): Returns OAuth2 token if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
             request_user(User): Django User object to use for the request. Defaults to None.
+            source_options(dict): Used with as_layer. Merged into the ``options`` of the returned MVLayer (OpenLayers ol.source options, e.g. ``data_projection``). ``url`` and ``token`` are set by the service and cannot be overridden. Defaults to None.
+            layer_options(dict): Used with as_layer. Merged over ``{"visible": True}`` into the ``layer_options`` of the returned MVLayer (OpenLayers ol.layer options, e.g. ``style``). Defaults to None.
 
         Returns:
             SecureMapService: when no 'as' option is specified
@@ -1992,6 +2002,8 @@ class TethysAppBase(TethysBase):
             as_token=as_token,
             param_overrides=param_overrides,
             request_user=request_user,
+            source_options=source_options,
+            layer_options=layer_options,
         )
 
     @classmethod

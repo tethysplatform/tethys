@@ -608,6 +608,50 @@ class SecureMapServiceSettingTests(TethysTestCase):
             "https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
         )
 
+    def test_get_value_as_layer_with_source_options(self):
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+
+        layer = SecureMapServiceSetting.objects.get(
+            name="secure_map_service"
+        ).get_value(
+            as_layer=True,
+            source_options={"custom_option": "custom_value"},
+        )
+
+        self.assertIsInstance(layer, MVLayer)
+        self.assertEqual(layer["source"], setting.secure_map_service.service_type)
+        self.assertEqual(
+            layer["options"]["url"],
+            "https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+        self.assertEqual(layer["options"]["custom_option"], "custom_value")
+
+    def test_get_value_as_layer_with_layer_options(self):
+        setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+
+        layer = SecureMapServiceSetting.objects.get(
+            name="secure_map_service"
+        ).get_value(
+            as_layer=True,
+            layer_options={"custom_layer_option": "custom_layer_value"},
+        )
+
+        self.assertIsInstance(layer, MVLayer)
+        self.assertEqual(layer["source"], setting.secure_map_service.service_type)
+        self.assertEqual(
+            layer["options"]["url"],
+            "https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+        self.assertEqual(layer["layer_options"]["custom_layer_option"], "custom_layer_value")
+
     @mock.patch("tethys_apps.models.requests.get")
     def test_get_value_as_response(self, mock_get):
         setting = self.test_app.settings_set.select_subclasses().get(

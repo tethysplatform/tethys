@@ -267,6 +267,12 @@ class MapView(TethysGizmoOptions):
             ]
         )
 
+        # Define GML Layer with an explicit source projection
+        gml_layer = MVLayer(source='GML',
+                            options={'url': 'https://example.com/geoserver/wfs?service=wfs&version=1.1.0&request=getfeature&typename=my:layer',
+                                     'data_projection': 'EPSG:26912'},
+                            legend_title='My GML Layer')
+
         # Tiled ArcGIS REST Layer
         arc_gis_layer = MVLayer(
             source='TileArcGISRest',
@@ -634,6 +640,10 @@ class MVLayer(SecondaryGizmoOptions):
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
         data (dict): Dictionary representation of layer data.
         times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
+
+    In addition to the OpenLayers source options, the following keys are supported in the ``options`` dictionary:
+
+        data_projection (str, optional): The coordinate reference system of the source data (e.g.: "EPSG:4326" or "EPSG:3857"). If omitted, the CRS is inferred from the data itself (``srsName`` in GML/WFS responses, ``crs`` in GeoJSON) and "EPSG:4326" is assumed when the data declares no CRS. Applies to ``GML`` layers (both the ``url`` and inline ``gml`` forms) and to ``Vector`` layers that are loaded with a ``token``.
 
     Example
 

@@ -1206,7 +1206,13 @@ class SecureMapServiceSetting(TethysAppSetting):
         url = f"{endpoint}{separator}{query_string}" if query_string else endpoint
         return url
 
-    def _build_layer(self, param_overrides=None, request_user=None):
+    def _build_layer(
+        self,
+        param_overrides=None,
+        request_user=None,
+        source_options=None,
+        layer_options=None,
+    ):
         if not self.secure_map_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot build layer for SecureMapServiceSetting "
@@ -1214,9 +1220,12 @@ class SecureMapServiceSetting(TethysAppSetting):
                 f"no SecureMapService assigned."
             )
 
-        endpoint = self._generate_request(param_overrides=param_overrides)
         service = self.secure_map_service
-        options = {"url": endpoint}
+
+        # Caller's source options first; url and token are set by the service and always win.
+        options = dict(source_options or {})
+        options["url"] = self._generate_request(param_overrides=param_overrides)
+
         if not service.use_proxy and service.authentication_method == "oauth2":
             if not request_user:
                 raise ValueError(
@@ -1227,7 +1236,7 @@ class SecureMapServiceSetting(TethysAppSetting):
 
         return MVLayer(
             source=service.service_type,
-            layer_options={"visible": True},
+            layer_options={"visible": True, **(layer_options or {})},
             options=options,
             legend_title=service.legend_title,
             data={"show_legend": True, "layer_id": service.pk},
@@ -1291,6 +1300,8 @@ class SecureMapServiceSetting(TethysAppSetting):
         as_token=False,
         param_overrides=None,
         request_user=None,
+        source_options=None,
+        layer_options=None,
     ):
         secure_map_service = None
         if self.secure_map_service:
@@ -1312,7 +1323,10 @@ class SecureMapServiceSetting(TethysAppSetting):
             return self._generate_request(param_overrides=param_overrides)
         elif as_layer:
             return self._build_layer(
-                param_overrides=param_overrides, request_user=request_user
+                param_overrides=param_overrides,
+                request_user=request_user,
+                source_options=source_options,
+                layer_options=layer_options,
             )
         elif as_response:
             return self._fetch_response(
