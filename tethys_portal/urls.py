@@ -188,6 +188,11 @@ user_urls = [
         tethys_portal_user.social_disconnect,
         name="disconnect",
     ),
+    re_path(
+        r"^refresh-token/(?P<association_id>[0-9]+)/$",
+        tethys_portal_user.refresh_social_token_endpoint,
+        name="social_refresh",
+    ),
     re_path(r"^delete-account/$", tethys_portal_user.delete_account, name="delete"),
     re_path(
         r"^clear-workspace/(?P<root_url>[\w.@+-]+)/$",
@@ -248,6 +253,11 @@ urlpatterns = [
         name="update_dask_job_status",
     ),
     re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+    re_path(
+        r"^secure-map-proxy/(?P<setting_id>\d+)/$",
+        tethys_apps_views.secure_map_proxy,
+        name="secure_map_proxy",
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 

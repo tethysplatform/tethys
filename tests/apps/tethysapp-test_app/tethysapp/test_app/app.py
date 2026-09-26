@@ -7,6 +7,7 @@ from tethys_sdk.app_settings import (
     PersistentStoreConnectionSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
+    SecureMapServiceSetting,
     WebProcessingServiceSetting,
     SchedulerSetting,
 )
@@ -177,6 +178,20 @@ class App(TethysAppBase):
         )
 
         return sds_settings
+
+    def secure_map_service_settings(self):
+        """
+        Example secure_map_service_settings method.
+        """
+        secure_map_service_settings = (
+            SecureMapServiceSetting(
+                name="secure_map_service",
+                description="Secure map service for app to use",
+                required=True,
+            ),
+        )
+
+        return secure_map_service_settings
 
     def scheduler_settings(self):
         """
