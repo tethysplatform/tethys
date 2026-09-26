@@ -8,6 +8,11 @@
 <a href="{% url 'user:settings' %}" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
 {% endblock %}
 
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'tethys_portal/js/social_token_refresh.js' %}"></script>
+{% endblock %}
+
 {% block secondary_content %}
     {% block profile_sections %}
     <div id="profile-sections" class="container">
@@ -86,6 +91,8 @@
             {% else %}
               <dd class="col-sm-8">None</dd>
             {% endif %}
+            {% url 'user:profile' as profile_url %}
+            {% include 'tethys_portal/user/social_token_refresh.html' with next_url=profile_url %}
             <dt class="col-sm-4">Not Connected:</dt>
             {% if backends.not_associated %}
               {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}

@@ -188,6 +188,11 @@ user_urls = [
         tethys_portal_user.social_disconnect,
         name="disconnect",
     ),
+    re_path(
+        r"^refresh-token/(?P<association_id>[0-9]+)/$",
+        tethys_portal_user.refresh_social_token_endpoint,
+        name="social_refresh",
+    ),
     re_path(r"^delete-account/$", tethys_portal_user.delete_account, name="delete"),
     re_path(
         r"^clear-workspace/(?P<root_url>[\w.@+-]+)/$",

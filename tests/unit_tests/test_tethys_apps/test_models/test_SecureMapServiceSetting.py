@@ -650,7 +650,9 @@ class SecureMapServiceSettingTests(TethysTestCase):
             layer["options"]["url"],
             "https://example.com/map_service?param1=value1&api_key=test_api_key",
         )
-        self.assertEqual(layer["layer_options"]["custom_layer_option"], "custom_layer_value")
+        self.assertEqual(
+            layer["layer_options"]["custom_layer_option"], "custom_layer_value"
+        )
 
     @mock.patch("tethys_apps.models.requests.get")
     def test_get_value_as_response(self, mock_get):

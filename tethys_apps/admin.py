@@ -10,6 +10,7 @@
 
 import json
 import logging
+from urllib.parse import urlencode
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib import admin
@@ -21,6 +22,7 @@ from django.utils.html import format_html
 from django.shortcuts import reverse
 from django.db import models
 from django.template.loader import render_to_string
+from social_django.admin import UserSocialAuthOption
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
@@ -48,6 +50,7 @@ from tethys_portal.optional_dependencies import (
     MissingOptionalDependency,
 )
 from django.contrib.contenttypes.models import ContentType
+from social_django.models import UserSocialAuth
 
 # optional imports
 MFAApp = optional_import("myAppNameConfig", from_module="mfa.apps")
@@ -306,6 +309,48 @@ class SecureMapServiceSettingInline(TethysAppSettingInline):
     model = SecureMapServiceSetting
 
 
+class UserSocialAuthInline(admin.TabularInline):
+    template = "tethys_portal/admin/edit_inline/tabular.html"
+    model = UserSocialAuth
+    verbose_name = "Linked OAuth2 Account"
+    verbose_name_plural = "Linked OAuth2 Accounts"
+    extra = 0
+    fields = ("provider", "token_expires", "refresh_button")
+    readonly_fields = fields
+
+    class Media:
+        js = ("tethys_portal/js/social_token_refresh.js",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def token_expires(self, obj):
+        remaining = obj.expiration_timedelta()
+        if remaining is None:
+            return "Unknown"
+        if remaining.total_seconds() <= 0:
+            return "Expired"
+        return f"in {str(remaining).split('.')[0]}"
+
+    def refresh_button(self, obj):
+        if not obj.extra_data.get("refresh_token"):
+            return "No refresh token"
+        url = reverse("user:social_refresh", kwargs={"association_id": obj.id})
+        next_url = reverse("admin:auth_user_change", args=(obj.user_id,))
+        url = f"{url}?{urlencode({'next': next_url})}"
+        return format_html(
+            '<button type="button" class="btn btn-primary btn-sm" '
+            'data-social-refresh-url="{}" data-next="{}">Refresh Token</button>',
+            reverse("user:social_refresh", kwargs={"association_id": obj.id}),
+            reverse("admin:auth_user_change", args=(obj.user_id,)),
+        )
+
+    refresh_button.short_description = "Refresh Token"
+
+
 class TethysAppAdmin(GuardedModelAdmin):
     obj_perms_manage_template = "tethys_apps/guardian/extend_obj_perms_manage.html"
     readonly_fields = (
@@ -394,12 +439,16 @@ class CustomUser(UserAdmin):
     def change_view(self, *args, **kwargs):
         if not isinstance(self.inlines, list):
             self.inlines = list(self.inlines)
-        if UserQuotasSettingInline not in self.inlines:
-            self.inlines.append(UserQuotasSettingInline)
+        extra_inlines = [UserQuotasSettingInline, UserSocialAuthInline]
+        for inline in extra_inlines:
+            if inline not in self.inlines:
+                self.inlines.append(inline)
         response = super().change_view(*args, **kwargs)
 
         # remove inline so it does not interfere with other models that relate to User
         self.inlines.remove(UserQuotasSettingInline)
+        self.inlines.remove(UserSocialAuthInline)
+
         return response
 
 
@@ -706,6 +755,52 @@ class ProxyAppAdmin(GuardedModelAdmin):
     obj_perms_manage_template = "tethys_apps/guardian/extend_obj_perms_manage.html"
 
 
+class SocialTokenAdminMixin:
+    """Token expiration display and refresh button used in social auth admin views."""
+
+    @admin.display(description="Token expires")
+    def token_expires(self, obj):
+        remaining = obj.expiration_timedelta()
+        if remaining is None:
+            return "Unknown"
+        if remaining.total_seconds() <= 0:
+            return "Expired"
+        return f"in {str(remaining).split('.')[0]}"
+
+    def refresh_next_url(self, obj):
+        raise NotImplementedError
+
+    @admin.display(description="Refresh Token")
+    def refresh_button(self, obj):
+        if not obj.extra_data.get("refresh_token"):
+            return "No refresh token"
+        return format_html(
+            '<button type="button" class="btn btn-primary btn-sm" '
+            'data-social-refresh-url="{}" data-next="{}">Refresh Token</button>',
+            reverse("user:social_refresh", kwargs={"association_id": obj.id}),
+            self.refresh_next_url(obj),
+        )
+
+
+class TethysUserSocialAuthAdmin(SocialTokenAdminMixin, UserSocialAuthOption):
+    list_display = (*UserSocialAuthOption.list_display, "token_expires")
+    exclude = ("extra_data",)
+    readonly_fields = ("formatted_extra_data", "token_expires", "refresh_button")
+
+    class Media:
+        js = ("tethys_portal/js/social_token_refresh.js",)
+
+    @admin.display(description="Extra data")
+    def formatted_extra_data(self, obj):
+        return format_html(
+            "<pre>{}</pre>",
+            json.dumps(obj.extra_data or {}, indent=2, sort_keys=True, default=str),
+        )
+
+    def refresh_next_url(self, obj):
+        return reverse("admin:social_django_usersocialauth_change", args=(obj.pk,))
+
+
 register_custom_group()
 admin.site.unregister(User)
 admin.site.register(User, CustomUser)
@@ -714,3 +809,5 @@ if has_module(User_Keys):
 admin.site.register(ProxyApp, ProxyAppAdmin)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)
+admin.site.unregister(UserSocialAuth)
+admin.site.register(UserSocialAuth, TethysUserSocialAuthAdmin)

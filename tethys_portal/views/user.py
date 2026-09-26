@@ -9,10 +9,16 @@
 """
 
 from django.conf import settings as django_settings
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
+from social_django.models import UserSocialAuth
+import logging
 
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
@@ -23,12 +29,15 @@ from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_config.models import get_custom_template
+from tethys_services.utilities import refresh_social_token
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
 has_mfa = optional_import("has_mfa", from_module="mfa.helpers")
 Token = optional_import("Token", from_module="rest_framework.authtoken.models")
+
+logger = logging.getLogger("tethys." + __name__)
 
 
 def get_user_context(request):
@@ -259,3 +268,42 @@ def _check_quota_helper(quota):
         return _convert_storage_units(quota["units"], quota["quota"])
     else:
         return None
+
+
+@require_POST
+@login_required()
+def refresh_social_token_endpoint(request, association_id):
+    try:
+        auth = UserSocialAuth.objects.get(id=association_id)
+    except UserSocialAuth.DoesNotExist:
+        messages.error(request, "Could not find social authentication association.")
+        return redirect("user:settings")
+    # Allow only users to refresh their own tokens or admins to refresh anyone's token.
+    is_owner = auth.user_id == request.user.pk
+    is_admin = request.user.is_staff and request.user.has_perm("auth.change_user")
+    if not (is_owner or is_admin):
+        raise PermissionDenied
+
+    # Make sure the next URL is safe and allowed for redirection.
+    next_url = request.POST.get("next")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = reverse("user:settings")
+
+    try:
+        refresh_social_token(auth)
+    except ValueError:
+        logger.exception(
+            f"Token refresh failed for user {auth.user_id}, provider {auth.provider}"
+        )
+        messages.error(
+            request, f"Failed to refresh {auth.provider} token; see the server log."
+        )
+    else:
+        logger.info(
+            f"User {request.user.pk} refreshed OAuth2 token for user {auth.user_id}, "
+            f"provider {auth.provider}"
+        )
+        messages.success(request, f"Refreshed {auth.provider} token.")
+    return redirect(next_url)

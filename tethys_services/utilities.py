@@ -56,6 +56,30 @@ def get_configured_oauth2_providers():
     return names
 
 
+def refresh_social_token(social_auth):
+    """
+    Force a refresh of the OAuth2 access token for a UserSocialAuth association.
+
+    Args:
+        social_auth (UserSocialAuth): The social auth association to refresh.
+
+    Raises:
+        ValueError: if the association has no refresh token or the provider rejects the refresh.
+    """
+    if not social_auth.extra_data.get("refresh_token"):
+        raise ValueError(
+            f"No refresh token is stored for {social_auth.provider}. The user must reconnect the account."
+        )
+
+    try:
+        social_auth.refresh_token(load_strategy())
+    except (requests.exceptions.HTTPError, AuthException) as e:
+        logger.debug(f"Error refreshing {social_auth.provider} token: {e}")
+        raise ValueError(
+            f"The {social_auth.provider} provider rejected the token refresh. The user may need to reconnect the account."
+        ) from e
+
+
 def ensure_oauth2(provider):
     """
     Decorator to ensure a user has been authenticated with the given oauth2 provider.
