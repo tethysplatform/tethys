@@ -254,9 +254,14 @@ urlpatterns = [
     ),
     re_path(r"^api/", include((api_urls, "api"), namespace="api")),
     re_path(
-        r"^secure-map-proxy/(?P<setting_id>\d+)/$",
+        r"^secure-map-proxy/(?P<service_id>\d+)/$",
         tethys_apps_views.secure_map_proxy,
         name="secure_map_proxy",
+    ),
+    re_path(
+        r"^secure-map-token/(?P<service_id>\d+)/$",
+        tethys_apps_views.secure_map_token,
+        name="secure_map_token",
     ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

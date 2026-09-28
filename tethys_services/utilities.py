@@ -58,7 +58,7 @@ def get_configured_oauth2_providers():
 
 def refresh_social_token(social_auth):
     """
-    Force a refresh of the OAuth2 access token for a UserSocialAuth association.
+    Refresh the OAuth2 access token for a UserSocialAuth association.
 
     Args:
         social_auth (UserSocialAuth): The social auth association to refresh.

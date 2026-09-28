@@ -165,7 +165,7 @@ class TestUrls(TethysTestCase):
         )
 
     def test_urlpatterns_secure_map_proxy(self):
-        url = reverse("secure_map_proxy", kwargs={"setting_id": "15"})
+        url = reverse("secure_map_proxy", kwargs={"service_id": "15"})
         resolver = resolve(url)
         self.assertEqual("/secure-map-proxy/15/", url)
         self.assertEqual("tethys_apps.views.secure_map_proxy", resolver._func_path)

@@ -643,7 +643,7 @@ class MVLayer(SecondaryGizmoOptions):
 
     In addition to the OpenLayers source options, the following keys are supported in the ``options`` dictionary:
 
-        data_projection (str, optional): The coordinate reference system of the source data (e.g.: "EPSG:4326" or "EPSG:3857"). If omitted, the CRS is inferred from the data itself (``srsName`` in GML/WFS responses, ``crs`` in GeoJSON) and "EPSG:4326" is assumed when the data declares no CRS. Applies to ``GML`` layers (both the ``url`` and inline ``gml`` forms) and to ``Vector`` layers that are loaded with a ``token``.
+        data_projection (str, optional): The coordinate reference system of the source data (e.g.: "EPSG:4326" or "EPSG:3857"). If omitted, the CRS is inferred from the data itself (``srsName`` in GML/WFS responses, ``crs`` in GeoJSON) and "EPSG:4326" is assumed when the data declares no CRS. Applies to ``GML`` layers (both the ``url`` and inline ``gml`` forms) and to ``Vector`` layers that are loaded with a ``token_url``.
 
     Example
 

@@ -449,17 +449,22 @@ class SecureMapService(models.Model):
                 {"params": 'Parameters must be a JSON object (e.g. {"key": "value"})'}
             )
 
-    def _get_oauth_token(self, user):
+    def _get_oauth_token(self, user, with_expiry=False):
         """
         Retrieve the OAuth2 token for the given user.
         Args:
             user (User): The user for whom to retrieve the OAuth2 token.
+            with_expiry (bool): Whether to return the token with its expiry time.
 
         Returns:
-            str: The OAuth2 token for the user.
+            str: The OAuth2 token for the user if with_expiry is False.
+            tuple: A tuple of (access_token, expires_in) if with_expiry is True.
         """
         from social_django.utils import load_strategy
         from social_core.exceptions import AuthException
+
+        if user is None or not user.is_authenticated:
+            raise ValueError("User must be authenticated to retrieve an OAuth2 token.")
 
         if self.authentication_method != "oauth2":
             raise ValueError(
@@ -469,7 +474,7 @@ class SecureMapService(models.Model):
             raise ValueError(
                 "OAuth2 provider must be specified to retrieve an OAuth2 token."
             )
-
+        
         try:
             auth = user.social_auth.get(provider=self.oauth2_provider)
         except ObjectDoesNotExist:
@@ -486,8 +491,14 @@ class SecureMapService(models.Model):
 
         if not access_token:
             raise ValueError("No access token found for user.")
+        if not with_expiry:
+            return access_token
+    
+        remaining = auth.expiration_timedelta()
+        expires_in = max(int(remaining.total_seconds()), 0) if remaining is not None else None
 
-        return access_token
+        return access_token, expires_in
+
 
     def _get_resolved_params(self):
         """

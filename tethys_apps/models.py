@@ -20,7 +20,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.functional import lazy
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
@@ -1189,7 +1189,7 @@ class SecureMapServiceSetting(TethysAppSetting):
             # fully loaded and the urls are registered. This helps in cases
             # like using a map service for a MapLayout basemap
             def build_proxy_url():
-                url = reverse("secure_map_proxy", kwargs={"setting_id": service.pk})
+                url = reverse("secure_map_proxy", kwargs={"service_id": service.pk})
                 if param_overrides:
                     return f"{url}?{urlencode(param_overrides)}"
                 return url
@@ -1209,7 +1209,6 @@ class SecureMapServiceSetting(TethysAppSetting):
     def _build_layer(
         self,
         param_overrides=None,
-        request_user=None,
         source_options=None,
         layer_options=None,
     ):
@@ -1227,12 +1226,9 @@ class SecureMapServiceSetting(TethysAppSetting):
         options["url"] = self._generate_request(param_overrides=param_overrides)
 
         if not service.use_proxy and service.authentication_method == "oauth2":
-            if not request_user:
-                raise ValueError(
-                    "Request user must be provided to build layer for OAuth2 authenticated service."
-                )
-
-            options["token"] = service._get_oauth_token(request_user)
+            options["token_url"] = reverse_lazy(
+                "secure_map_token", kwargs={"service_id": service.pk}
+            )
 
         return MVLayer(
             source=service.service_type,
@@ -1324,7 +1320,6 @@ class SecureMapServiceSetting(TethysAppSetting):
         elif as_layer:
             return self._build_layer(
                 param_overrides=param_overrides,
-                request_user=request_user,
                 source_options=source_options,
                 layer_options=layer_options,
             )

@@ -299,10 +299,10 @@ class TethysAppsViewsTest(unittest.TestCase):
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_noneexistent_service(self, mock_get):
         mock_request = mock.MagicMock()
-        mock_setting_id = 9999
+        mock_service_id = 9999
         mock_get.side_effect = SecureMapService.DoesNotExist
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         self.assertEqual(404, ret.status_code)
         self.assertEqual(b"Service setting not found.", ret.content)
@@ -310,13 +310,13 @@ class TethysAppsViewsTest(unittest.TestCase):
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_no_auth_token(self, mock_get):
         mock_request = mock.MagicMock()
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth2"
         mock_service._get_oauth_token.return_value = None
         mock_get.return_value = mock_service
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         assert ret.status_code == 500
         assert ret.content == b"Failed to retrieve OAuth2 token."
@@ -325,7 +325,7 @@ class TethysAppsViewsTest(unittest.TestCase):
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_empty_304(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock()
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth2"
         mock_service._get_oauth_token.return_value = "test_oauth_token123"
@@ -333,7 +333,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         mock_request_func.return_value = mock.MagicMock(status_code=304, content=b"")
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         assert ret.status_code == 304
 
@@ -343,7 +343,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         self, mock_get, mock_request_func
     ):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth2"
         mock_service.endpoint = "http://example.com/service"
@@ -354,7 +354,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_response.iter_content.return_value = [b"response_content"]
         mock_request_func.return_value = mock_response
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         kwargs = mock_request_func.call_args.kwargs
         assert kwargs["method"] == mock_request.method
@@ -371,7 +371,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         self, mock_get, mock_request_func
     ):
         mock_request = mock.MagicMock(method="GET", body=None)
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
@@ -382,7 +382,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_response.iter_content.return_value = [b"response_content"]
         mock_request_func.return_value = mock_response
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         kwargs = mock_request_func.call_args.kwargs
         assert kwargs["method"] == mock_request.method
@@ -403,7 +403,7 @@ class TethysAppsViewsTest(unittest.TestCase):
             "If-None-Match": "test_value",
             "If-Modified-Since": "test_date",
         }
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth2"
         mock_service.endpoint = "http://example.com/service"
@@ -418,7 +418,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         }
         mock_request_func.return_value = mock_response
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         kwargs = mock_request_func.call_args.kwargs
         assert kwargs["method"] == mock_request.method
@@ -438,7 +438,7 @@ class TethysAppsViewsTest(unittest.TestCase):
     def test_secure_map_proxy_api_key_content_type(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
         mock_request.content_type = "application/json"
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
@@ -449,7 +449,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_response.iter_content.return_value = [b"response_content"]
         mock_request_func.return_value = mock_response
 
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         kwargs = mock_request_func.call_args.kwargs
         assert kwargs["method"] == mock_request.method
@@ -468,7 +468,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         self, mock_get, mock_request_func, mock_logger
     ):
         mock_request = mock.MagicMock(method="GET", body=None)
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
@@ -478,7 +478,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_get.return_value = mock_service
 
         mock_request_func.side_effect = Timeout
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
         assert ret.status_code == 504
         mock_logger.error.assert_called_with(
             "Request to http://example.com/service timed out. (connection_timeout: 12s, read_timeout: 34s)"
@@ -491,7 +491,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         self, mock_get, mock_request_func, mock_logger
     ):
         mock_request = mock.MagicMock(method="GET", body=None)
-        mock_setting_id = 1
+        mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "api_key"
         mock_service.endpoint = "http://example.com/service"
@@ -503,7 +503,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_response.ok = False
         mock_response.iter_content.return_value = [b"error_content"]
         mock_request_func.return_value = mock_response
-        ret = secure_map_proxy(mock_request, mock_setting_id)
+        ret = secure_map_proxy(mock_request, mock_service_id)
 
         assert ret.status_code == 400
         assert b"".join(ret.streaming_content) == b"error_content"

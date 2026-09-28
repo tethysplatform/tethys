@@ -13,6 +13,7 @@ import requests
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 
 from tethys_config.models import get_custom_template
@@ -169,14 +170,14 @@ def send_beta_feedback_email(request):
 
 
 @login_required()
-def secure_map_proxy(request, setting_id):
+def secure_map_proxy(request, service_id):
     """
     Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth2.
     """
     from tethys_services.models import SecureMapService
 
     try:
-        service = SecureMapService.objects.get(id=setting_id)
+        service = SecureMapService.objects.get(id=service_id)
     except SecureMapService.DoesNotExist:
         return HttpResponse("Service setting not found.", status=404)
 
@@ -245,3 +246,28 @@ def secure_map_proxy(request, setting_id):
         proxy_response["Cache-Control"] = "private, no-store"
 
     return proxy_response
+
+
+@require_POST
+@login_required()
+def secure_map_token(request, service_id):
+    from tethys_services.models import SecureMapService
+
+    if not request.user.is_authenticated:
+        logger.warning(f"Unauthenticated token request for SecureMapService {service_id}.")
+        return JsonResponse({"error": "Authentication required."}, status=401)
+    try:
+        service = SecureMapService.objects.get(id=service_id)
+    except SecureMapService.DoesNotExist:
+        return HttpResponse("Service setting not found.", status=404)
+
+    if service.use_proxy or service.authentication_method != "oauth2":
+        return JsonResponse(
+            {"Error": "Token not available for this service."}, status=404
+        )
+
+    user = request.user
+    token, expires_in = service._get_oauth_token(user, with_expiry=True)
+    response = JsonResponse({"access_token": token, "expires_in": expires_in})
+    response["Cache-Control"] = "no-store"
+    return response

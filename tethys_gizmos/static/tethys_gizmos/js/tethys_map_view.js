@@ -150,8 +150,13 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer,
-    get_token_headers, remove_token, load_image_or_tile_token, resolve_gml_projection;
+var is_defined, in_array, string_to_function, get_csrf_token, build_ol_objects, add_default_base_map_layer, resolve_gml_projection;
+
+// Token Management Methods
+var create_token_manager, get_token_manager, remove_token, fetch_with_token, load_image_or_tile_with_token;
+
+// Secure Layers
+var m_token_managers = {};
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -920,14 +925,14 @@ ol_layers_init = function()
 
       // Tile layer case
       if (in_array(current_layer.source, TILE_SOURCES)) {
-        var resolutions, source_options, tile_grid, tile_token;
+        var resolutions, source_options, tile_grid, token_manager;
 
-        tile_token = current_layer.options ? current_layer.options.token : null;
+        token_manager = get_token_manager(current_layer.options);
         source_options = remove_token(current_layer.options);
 
         // Load the tiles with an Authorization header when a token is given
-        if (tile_token) {
-          source_options['tileLoadFunction'] = load_image_or_tile_token(tile_token, ol.TileState.ERROR);
+        if (token_manager) {
+          source_options['tileLoadFunction'] = load_image_or_tile_with_token(token_manager, ol.TileState.ERROR);
         }
 
         if (source_options && 'tileGrid' in source_options) {
@@ -975,12 +980,12 @@ ol_layers_init = function()
 
       // Image layer case
       else if (in_array(current_layer.source, IMAGE_SOURCES)) {
-        let image_token = current_layer.options ? current_layer.options.token : null;
+        let token_manager = get_token_manager(current_layer.options);
         let image_source_options = remove_token(current_layer.options);
 
         // Load the images with an Authorization header when a token is given
-        if (image_token) {
-          image_source_options['imageLoadFunction'] = load_image_or_tile_token(image_token, ol.ImageState.ERROR);
+        if (token_manager) {
+          image_source_options['imageLoadFunction'] = load_image_or_tile_with_token(token_manager, ol.ImageState.ERROR);
         }
 
         Source = string_to_function('ol.source.' + current_layer.source);
@@ -1021,10 +1026,10 @@ ol_layers_init = function()
           // From URL case
           if (current_layer.options.hasOwnProperty('url')) {
             let kml_url = current_layer.options.url;
-            let kml_token = current_layer.options.token;
+            let token_manager = get_token_manager(current_layer.options);
 
             // Load the KML with an Authorization header when a token is given
-            if (kml_token) {
+            if (token_manager) {
               let kml_format = new ol.format.KML();
 
               let kml_url_source = new ol.source.Vector({
@@ -1032,7 +1037,7 @@ ol_layers_init = function()
                 strategy: ol.loadingstrategy.all,
                 projection: new ol.proj.get(DEFAULT_PROJECTION),
                 loader: function(extent, resolution, projection, success, failer) {
-                  fetch(kml_url, {credentials: 'same-origin', headers: get_token_headers(kml_token)})
+                  fetch_with_token(token_manager, kml_url)
                     .then(r => {
                       if (!r.ok) { throw new Error('HTTP ' + r.status); }
                       return r.text();
@@ -1085,7 +1090,7 @@ ol_layers_init = function()
 
           if (current_layer.options.hasOwnProperty('url')) {
             let baseUrl = current_layer.options.url;
-            let token = current_layer.options.token;
+            let token_manager = get_token_manager(current_layer.options);
             let data_projection_override = current_layer.options.data_projection;
 
             let gmlSource = new ol.source.Vector({
@@ -1095,7 +1100,7 @@ ol_layers_init = function()
                 let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
                 let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
 
-                fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
+                fetch_with_token(token_manager, url)
                   .then(r => {
                     if (!r.ok) { throw new Error('HTTP ' + r.status); }
                     return r.text();
@@ -1146,11 +1151,11 @@ ol_layers_init = function()
 
         // Generic vector case
         else {
-          let token = current_layer.options ? current_layer.options.token: null;
+          let token_manager = get_token_manager(current_layer.options);
           let baseUrl = current_layer.options ? current_layer.options.url: null;
           let data_projection_override = current_layer.options ? current_layer.options.data_projection : null;
 
-          if (token && baseUrl) {
+          if (token_manager && baseUrl) {
             let format_name = current_layer.options.format || 'GeoJSON';
             let VectorFormat = string_to_function('ol.format.' + format_name);
             let vector_format = new VectorFormat();
@@ -1165,7 +1170,7 @@ ol_layers_init = function()
                   let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
                   url += sep + 'bbox=' + extent.join(',') + ',' + DEFAULT_PROJECTION;
                 }
-                fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
+                fetch_with_token(token_manager, url)
                   .then(r => {
                     if (!r.ok) { throw new Error('HTTP ' + r.status); }
                     return r.text();
@@ -2482,23 +2487,23 @@ is_defined = function(variable)
   return !!(typeof variable !== typeof undefined && variable !== false && variable !== null);
 };
 
-// Build request headers with a token for authentication
-get_token_headers = function(token) {
-  let headers = {};
+// Read the CSRF token from the page's hidden input and if that doesn't exist, use the cookie
+get_csrf_token = function() {
+  let input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  if (input) { return input.value; }
 
-  if (token) {
-    headers['Authorization'] = 'Bearer ' + token;
-  }
+  let match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+  if (match) { return decodeURIComponent(match[1]); }
 
-  return headers;
+  throw new Error('CSRF token not found on page.');
 };
 
-// Remove the token from the options object
+// Remove the token url from the options object
 remove_token = function(options) {
   if (!options) { return options; }
 
   let stripped_options = Object.assign({}, options);
-  delete stripped_options.token;
+  delete stripped_options.token_url;
   return stripped_options;
 };
 
@@ -2528,11 +2533,82 @@ resolve_gml_projection = function(gml_format, gml, data_projection_override) {
   return null;
 };
 
+// Create a manager that fetches, caches, and refreshes access tokens from a token endpoint
+create_token_manager = function(token_url) {
+  // Saves as {token, expires_at}
+  let cached = null;   
+  let pending = null;
+  const REFRESH_BEFORE_EXPIRY_MS = 60000;
 
-// Load an image or tile with an authorization header
-load_image_or_tile_token = function(token, error_state) {
+  let request_token = function() {
+    pending = Promise.resolve()
+      .then(() => fetch(token_url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'X-CSRFToken': get_csrf_token()},
+      }))
+      .then(r => {
+        if (!r.ok) { throw new Error('Token request to ' + token_url + ' failed: HTTP ' + r.status); }
+        return r.json();
+      })
+      .then(data => {
+        let lifetime_ms = data.expires_in ? data.expires_in * 1000 : null;
+        cached = {
+          token: data.access_token,
+          expires_at: lifetime_ms
+            ? Date.now() + lifetime_ms - Math.min(REFRESH_BEFORE_EXPIRY_MS, lifetime_ms / 2)
+            : null,
+        };
+        return cached.token;
+      })
+      .finally(() => { pending = null; });
+    return pending;
+  };
+
+  return {
+    get: function() {
+      if (cached && (!cached.expires_at || Date.now() < cached.expires_at)) {
+        return Promise.resolve(cached.token);
+      }
+      return pending || request_token();
+    },
+    invalidate: function() { cached = null; },
+  };
+};
+
+// Get the token manager for a layer, or null if the layer has no token endpoint
+get_token_manager = function(options) {
+  if (!options || !options.token_url) { return null; }
+
+  if (!m_token_managers[options.token_url]) {
+    m_token_managers[options.token_url] = create_token_manager(options.token_url);
+  }
+  return m_token_managers[options.token_url];
+};
+
+// Run fetch request with a bearer token using a token manager
+fetch_with_token = function(token_manager, url, init) {
+  init = Object.assign({credentials: 'same-origin'}, init);
+  if (!token_manager) { return fetch(url, init); }
+
+  let attempt = function(token) {
+    let headers = new Headers(init.headers || {});
+    headers.set('Authorization', 'Bearer ' + token);
+    return fetch(url, Object.assign({}, init, {headers: headers}));
+  };
+  
+  // If response is a 401, delete cached token and retry once with a new token
+  return token_manager.get().then(attempt).then(r => {
+    if (r.status !== 401) { return r; }
+    token_manager.invalidate();
+    return token_manager.get().then(attempt);
+  });
+};
+
+// Load an image or tile with an Authorization header from a token manager
+load_image_or_tile_with_token = function(token_manager, error_state) {
   return function(image_or_tile, src) {
-    fetch(src, {credentials: 'same-origin', headers: get_token_headers(token)})
+    fetch_with_token(token_manager, src)
       .then(r => {
         if (!r.ok) { throw new Error('HTTP ' + r.status); }
         return r.blob();
@@ -2540,7 +2616,7 @@ load_image_or_tile_token = function(token, error_state) {
       .then(blob => {
         let object_url = URL.createObjectURL(blob);
         let img = image_or_tile.getImage();
-        img.onload = function() { URL.revokeObjectURL(object_url); };
+        img.onload = img.onerror = function() { URL.revokeObjectURL(object_url); };
         img.src = object_url;
       })
       .catch(err => {

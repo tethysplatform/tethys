@@ -1970,7 +1970,7 @@ class TethysAppBase(TethysBase):
             as_response(bool): Returns requests.Response object if True, Defaults to False.
             as_token(bool): Returns OAuth2 token if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
-            request_user(User): Django User object to use for the request. Defaults to None.
+            request_user(User): Django User object to use for the request. Defaults to None. Required for `as_token` and `as_response` to retreive the OAuth2 token if the service uses OAuth2 authentication.
             source_options(dict): Used with as_layer. Merged into the ``options`` of the returned MVLayer (OpenLayers ol.source options, e.g. ``data_projection``). ``url`` and ``token`` are set by the service and cannot be overridden. Defaults to None.
             layer_options(dict): Used with as_layer. Merged over ``{"visible": True}`` into the ``layer_options`` of the returned MVLayer (OpenLayers ol.layer options, e.g. ``style``). Defaults to None.
 
