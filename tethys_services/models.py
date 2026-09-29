@@ -474,7 +474,7 @@ class SecureMapService(models.Model):
             raise ValueError(
                 "OAuth2 provider must be specified to retrieve an OAuth2 token."
             )
-        
+
         try:
             auth = user.social_auth.get(provider=self.oauth2_provider)
         except ObjectDoesNotExist:
@@ -493,12 +493,13 @@ class SecureMapService(models.Model):
             raise ValueError("No access token found for user.")
         if not with_expiry:
             return access_token
-    
+
         remaining = auth.expiration_timedelta()
-        expires_in = max(int(remaining.total_seconds()), 0) if remaining is not None else None
+        expires_in = (
+            max(int(remaining.total_seconds()), 0) if remaining is not None else None
+        )
 
         return access_token, expires_in
-
 
     def _get_resolved_params(self):
         """

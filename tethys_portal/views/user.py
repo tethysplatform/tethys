@@ -293,8 +293,11 @@ def refresh_social_token_endpoint(request, association_id):
         next_url = reverse("user:settings")
 
     cooldown_key = f"refresh_social_token_{association_id}"
-    if not cache.add(cooldown_key, True, timeout=60): 
-        messages.warning(request, "This token was refreshed recently. Please wait before trying again.")
+    if not cache.add(cooldown_key, True, timeout=60):
+        messages.warning(
+            request,
+            "This token was refreshed recently. Please wait before trying again.",
+        )
         return redirect(next_url)
 
     try:
