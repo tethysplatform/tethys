@@ -305,24 +305,11 @@ class SecureMapServiceSettingTests(TethysTestCase):
         layer = SecureMapServiceSetting.objects.get(
             name="secure_map_service"
         )._build_layer()
-
         self.assertEqual(layer["source"], setting.secure_map_service.service_type)
         self.assertEqual(
             layer["options"]["url"], "https://example.com/map_service?param1=value1"
         )
-        self.assertEqual(layer["options"]["token"], "test_oauth_token")
-
-    def test__build_Layer_oauth_no_request_user(self):
-        setting = self.test_app.settings_set.select_subclasses().get(
-            name="secure_map_service"
-        )
-        setting.secure_map_service = self.map_service_with_oauth_no_proxy
-        setting.save()
-
-        self.assertRaises(
-            ValueError,
-            SecureMapServiceSetting.objects.get(name="secure_map_service")._build_layer,
-        )
+        self.assertEqual(layer["options"]["token_url"], f"/secure-map-token/{setting.secure_map_service.id}/")
 
     def test__fetch_response_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(
