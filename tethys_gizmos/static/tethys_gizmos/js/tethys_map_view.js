@@ -2538,7 +2538,10 @@ create_token_manager = function(token_url) {
   // Saves as {token, expires_at}
   let cached = null;   
   let pending = null;
+  let failed_until = 0;
+  let last_error = null;
   const REFRESH_BEFORE_EXPIRY_MS = 60000;
+  const FAILURE_RETRY_MS = 30000;
 
   let request_token = function() {
     pending = Promise.resolve()
@@ -2561,12 +2564,21 @@ create_token_manager = function(token_url) {
         };
         return cached.token;
       })
+      .catch(err => {
+        // Make sure to record the failure so that future requests know to wait before retrying.
+        failed_until = Date.now() + FAILURE_RETRY_MS;
+        last_error = err;
+        throw err;
+      })
       .finally(() => { pending = null; });
     return pending;
   };
 
   return {
     get: function() {
+      if (Date.now() < failed_until) {
+        return Promise.reject(last_error);
+      }
       if (cached && (!cached.expires_at || Date.now() < cached.expires_at)) {
         return Promise.resolve(cached.token);
       }

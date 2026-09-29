@@ -187,9 +187,14 @@ def secure_map_proxy(request, service_id):
 
     headers = {}
     if service.authentication_method == "oauth2":
-        access_token = service._get_oauth_token(request.user)
-        if not access_token:
-            return HttpResponse("Failed to retrieve OAuth2 token.", status=500)
+        try:
+            access_token = service._get_oauth_token(request.user)
+        except ValueError:
+            logger.exception(
+                f"Failed to obtain OAuth2 token for SecureMapService {service_id}."
+            )
+            return HttpResponse("Failed to obtain OAuth2 token.", status=403)
+        
         headers["Authorization"] = f"Bearer {access_token}"
 
     if request.content_type:
@@ -221,6 +226,10 @@ def secure_map_proxy(request, service_id):
         )
         return HttpResponse("Request timed out.", status=504)
 
+    except requests.RequestException as e:
+        logger.error(f"Request to {service.endpoint} failed: {type(e).__name__}")
+        return HttpResponse("Request failed.", status=502)
+
     if not resp.ok:
         logger.error(
             f"Upstream request to {service.endpoint} failed with status {resp.status_code}."
@@ -251,7 +260,7 @@ def secure_map_proxy(request, service_id):
 @require_POST
 @login_required()
 def secure_map_token(request, service_id):
-    from tethys_services.models import SecureMapService
+    from tethys_services.models import SecureMapService 
 
     if not request.user.is_authenticated:
         logger.warning(f"Unauthenticated token request for SecureMapService {service_id}.")
@@ -259,15 +268,21 @@ def secure_map_token(request, service_id):
     try:
         service = SecureMapService.objects.get(id=service_id)
     except SecureMapService.DoesNotExist:
-        return HttpResponse("Service setting not found.", status=404)
+        return JsonResponse({"error": "Service setting not found."}, status=404)
 
     if service.use_proxy or service.authentication_method != "oauth2":
         return JsonResponse(
-            {"Error": "Token not available for this service."}, status=404
+            {"error": "Token not available for this service."}, status=404
         )
 
-    user = request.user
-    token, expires_in = service._get_oauth_token(user, with_expiry=True)
+    try:
+        token, expires_in = service._get_oauth_token(request.user, with_expiry=True)
+    except ValueError:
+        logger.exception(
+            f"Failed to obtain OAuth2 token for SecureMapService {service_id}."
+        )
+        return JsonResponse({"error": "Failed to obtain OAuth2 token."}, status=403)
+    
     response = JsonResponse({"access_token": token, "expires_in": expires_in})
     response["Cache-Control"] = "no-store"
     return response

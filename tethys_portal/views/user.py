@@ -9,6 +9,7 @@
 """
 
 from django.conf import settings as django_settings
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
@@ -291,9 +292,15 @@ def refresh_social_token_endpoint(request, association_id):
     ):
         next_url = reverse("user:settings")
 
+    cooldown_key = f"refresh_social_token_{association_id}"
+    if not cache.add(cooldown_key, True, timeout=60): 
+        messages.warning(request, "This token was refreshed recently. Please wait before trying again.")
+        return redirect(next_url)
+
     try:
         refresh_social_token(auth)
     except ValueError:
+        cache.delete(cooldown_key)
         logger.exception(
             f"Token refresh failed for user {auth.user_id}, provider {auth.provider}"
         )
@@ -306,4 +313,5 @@ def refresh_social_token_endpoint(request, association_id):
             f"provider {auth.provider}"
         )
         messages.success(request, f"Refreshed {auth.provider} token.")
+
     return redirect(next_url)
