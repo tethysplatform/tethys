@@ -304,7 +304,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
 
         layer = SecureMapServiceSetting.objects.get(
             name="secure_map_service"
-        )._build_layer(request_user=self.test_user)
+        )._build_layer()
 
         self.assertEqual(layer["source"], setting.secure_map_service.service_type)
         self.assertEqual(
@@ -322,7 +322,6 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.assertRaises(
             ValueError,
             SecureMapServiceSetting.objects.get(name="secure_map_service")._build_layer,
-            request_user=None,
         )
 
     def test__fetch_response_none(self):

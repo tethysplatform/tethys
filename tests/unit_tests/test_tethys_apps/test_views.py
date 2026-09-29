@@ -307,19 +307,23 @@ class TethysAppsViewsTest(unittest.TestCase):
         self.assertEqual(404, ret.status_code)
         self.assertEqual(b"Service setting not found.", ret.content)
 
+    @mock.patch("tethys_apps.views.logger")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_no_auth_token(self, mock_get):
+    def test_secure_map_proxy_oauth_token_error(self, mock_get, mock_logger):
         mock_request = mock.MagicMock()
         mock_service_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth2"
-        mock_service._get_oauth_token.return_value = None
+        mock_service._get_oauth_token.side_effect = ValueError("Test error")
         mock_get.return_value = mock_service
-
+        
         ret = secure_map_proxy(mock_request, mock_service_id)
 
-        assert ret.status_code == 500
-        assert ret.content == b"Failed to retrieve OAuth2 token."
+        mock_logger.exception.assert_called_with(
+            "Failed to obtain OAuth2 token for SecureMapService 1."
+        )
+        assert ret.status_code == 403
+        assert ret.content == b"Failed to obtain OAuth2 token."
 
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")

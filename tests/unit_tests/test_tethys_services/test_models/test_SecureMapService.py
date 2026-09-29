@@ -25,35 +25,37 @@ class SecureMapServiceTests(TethysTestCase):
             context.exception.message_dict,
         )
 
-    def test_get_oauth_token_api_key(self):
+    def test__get_oauth_token_api_key(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
             authentication_method="api_key",
         )
-
+        mock_user = mock.MagicMock() 
+        mock_user.is_authenticated = True
         with self.assertRaises(ValueError) as context:
-            secure_map_service._get_oauth_token(user=None)
+            secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(
             str(context.exception),
             "Authentication method must be 'oauth2' to retrieve an OAuth2 token.",
         )
 
-    def test_get_oauth_token_no_provider(self):
+    def test__get_oauth_token_no_provider(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
             authentication_method="oauth2",
         )
-
+        mock_user = mock.MagicMock()
+        mock_user.is_authenticated = True
         with self.assertRaises(ValueError) as context:
-            secure_map_service._get_oauth_token(user=None)
+            secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(
             str(context.exception),
             "OAuth2 provider must be specified to retrieve an OAuth2 token.",
         )
 
-    def test_get_oauth_token_user_not_linked(self):
+    def test__get_oauth_token_user_not_linked(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -71,7 +73,7 @@ class SecureMapServiceTests(TethysTestCase):
             "User not linked to test_provider for OAuth2 authentication.",
         )
 
-    def test_get_oauth_token_no_token(self):
+    def test__get_oauth_token_no_token(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -108,7 +110,7 @@ class SecureMapServiceTests(TethysTestCase):
             f"Failed to retrieve access Oauth2 token for {secure_map_service.oauth2_provider}: access token failure",
         )
 
-    def test_get_oauth_token_success(self):
+    def test__get_oauth_token_success(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -123,7 +125,7 @@ class SecureMapServiceTests(TethysTestCase):
         token = secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(token, "access_token12345")
 
-    def test_get_resolved_params(self):
+    def test__get_resolved_params(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -186,7 +188,7 @@ class SecureMapServiceTests(TethysTestCase):
             {"param1": "value1", "param2": "value2", "api_key": "api_key_12345"},
         )
 
-    def test_get_resolved_params_with_missing_api_key(self):
+    def test__get_resolved_params_with_missing_api_key(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -205,7 +207,7 @@ class SecureMapServiceTests(TethysTestCase):
             {"param1": "value1", "param2": "value2", "test_api_key": ""},
         )
 
-    def test_get_resolved_params_with_multiple_params(self):
+    def test__get_resolved_params_with_multiple_params(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
