@@ -2489,11 +2489,11 @@ is_defined = function(variable)
 
 // Read the CSRF token from the page's hidden input and if that doesn't exist, use the cookie
 get_csrf_token = function() {
-  let input = document.querySelector('input[name="csrfmiddlewaretoken"]');
-  if (input) { return input.value; }
-
   let match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
   if (match) { return decodeURIComponent(match[1]); }
+
+  let input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  if (input) { return input.value; }
 
   throw new Error('CSRF token not found on page.');
 };
