@@ -2577,7 +2577,9 @@ create_token_manager = function(token_url) {
   return {
     get: function() {
       if (Date.now() < failed_until) {
-        return Promise.reject(last_error);
+        return Promise.reject(new Error(
+          'Token request skipped: waiting after a recent failure (' + last_error.message + ')'
+        ));
       }
       if (cached && (!cached.expires_at || Date.now() < cached.expires_at)) {
         return Promise.resolve(cached.token);
