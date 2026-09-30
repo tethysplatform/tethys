@@ -8,12 +8,16 @@
 ********************************************************************************
 """
 
+from functools import lru_cache
 import logging
+import os
 import requests
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse, FileResponse
 from django.core.mail import send_mail
+from large_image_source_rasterio import open as rio_open
+
 
 from tethys_config.models import get_custom_template
 from .base.app_base import TethysAppBase
@@ -224,3 +228,51 @@ def secure_map_proxy(request, setting_id):
             proxy_response[header] = value
 
     return proxy_response
+
+@lru_cache(maxsize=32)
+def _open_source(path, mtime):
+    return rio_open(path, projection="EPSG:3857", encoding="PNG")
+
+def _get_source(path):
+    return _open_source(path, os.path.getmtime(path))
+
+# @login_required()
+def basemap_tile(request, image_id, z, x, y):
+    from tethys_services.models import BasemapImage
+    z, x, y = int(z), int(x), int(y)
+
+    try:
+        image = BasemapImage.objects.get(
+            pk=image_id, status=BasemapImage.StatusChoices.READY
+        )
+
+    except BasemapImage.DoesNotExist:
+        return HttpResponse("Basemap image not found or not ready.", status=404)
+
+    ts = _get_source(image.generated_file.path)
+
+    try:
+        tile = ts.getTile(x, y, z)
+    except Exception:
+        # Outside the image extent — OpenLayers requests a full grid,
+        # so most tiles at low zoom fall here. Not an error.
+        return HttpResponse(status=204)
+
+    return HttpResponse(tile, content_type="image/png")
+
+@login_required()
+def basemap_source_file(request, image_id):
+    import mimetypes
+    from tethys_services.models import BasemapImage
+
+    try:
+        image = BasemapImage.objects.get(pk=image_id)
+    except BasemapImage.DoesNotExist:
+        return HttpResponse("Basemap image not found.", status=404)
+
+    content_type, _ = mimetypes.guess_type(image.source_file.path)
+
+    return FileResponse(
+        image.source_file.open("rb"),
+        content_type=content_type or "application/octet-stream"
+    )

@@ -10,6 +10,10 @@
 
 from django.conf import settings
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, render
+from django.urls import path, reverse
+from django.utils.html import format_html, json_script
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from .models import (
@@ -19,8 +23,11 @@ from .models import (
     WebProcessingService,
     PostgresPersistentStoreService,
     SQLitePersistentStoreService,
+    BasemapImage,
+    BasemapService,
 )
-from django.forms import ModelForm, PasswordInput, ChoiceField
+from django.forms import ModelForm, PasswordInput, ChoiceField, CharField, HiddenInput
+import json
 from tethys_portal.optional_dependencies import (
     optional_import,
     has_module,
@@ -30,6 +37,7 @@ JSONEditorWidget = optional_import(
     "JSONEditorWidget", from_module="django_json_widget.widgets"
 )
 
+SUPPORTED_BASEMAP_IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".webp")
 
 class DatasetServiceForm(ModelForm):
     class Meta:
@@ -135,6 +143,12 @@ class SecureMapServiceForm(ModelForm):
             required=False,
         )
 
+class BasemapServiceForm(ModelForm):
+    class Meta:
+        model = BasemapService
+        fields = "__all__"
+
+
 
 class DatasetServiceAdmin(admin.ModelAdmin):
     """
@@ -219,9 +233,161 @@ class SecureMapServiceAdmin(admin.ModelAdmin):
         js = ("tethys_services/js/secure_map_service_admin.js",)
 
 
+class BasemapImageInlineForm(ModelForm):
+    georeference = CharField(widget=HiddenInput, required=False)
+
+    class Meta:
+        model = BasemapImage
+        fields = ("source_file",)
+
+class BasemapImageInline(admin.StackedInline):
+    model = BasemapImage
+    form = BasemapImageInlineForm
+    extra = 1  # one blank file input on a fresh service
+
+    fields = (
+        "source_file",
+        "georeference",
+        "display_status",
+        "error_message",
+        "generated_file",
+        "srs",
+        "min_x",
+        "min_y",
+        "max_x",
+        "max_y",
+        "map_data"
+    )
+    readonly_fields = (
+        "display_status",
+        "error_message",
+        "generated_file",
+        "srs",
+        "min_x",
+        "min_y",
+        "max_x",
+        "max_y",
+        "map_data"
+    )
+    @admin.display(description="Status")
+    def display_status(self, obj):
+        if obj.pk is None:
+            return "N/A"
+        return obj.get_status_display()
+
+    @admin.display(description="Map Data")
+    def map_data(self, obj):
+        if obj.pk is None or not obj.source_file or not obj.georeference_bounds:
+            return ""
+        if not obj.source_file.name.lower().endswith(SUPPORTED_BASEMAP_IMAGE_EXTENSIONS):
+            return ""
+        return json_script(
+            {
+                "url": obj.source_file.url,
+                "bounds": list(obj.georeference_bounds),
+                "epsg": obj.georeference_epsg,
+            },
+            element_id=f"basemap-image-{obj.pk}"
+        )
+
+class BasemapServiceAdmin(admin.ModelAdmin):
+    """
+    Admin model for Basemap Service Model
+    """
+
+    form = BasemapServiceForm
+    fields = (
+        "name",
+        "attribution",
+        "min_zoom",
+        "max_zoom",
+    )
+    inlines = [BasemapImageInline]
+    readonly_fields = ("min_zoom", "max_zoom")
+    list_display = ("name", "image_count")
+
+    @admin.display(description="Images")
+    def image_count(self, obj):
+        return obj.images.count()
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        for fs in formsets:
+            if fs.model is not BasemapImage:
+                continue
+
+            for f in fs.forms:
+                if f in fs.deleted_forms or not f.instance.pk:
+                    continue
+                raw = f.cleaned_data.get("georeference")
+                replaced = "source_file" in f.changed_data
+                updates = []
+
+                if replaced:
+                    old = f.initial.get("source_file")
+                    old_name = getattr(old, "name", old)
+                    if old_name and old_name != f.instance.source_file.name:
+                        f.instance.source_file.storage.delete(old_name)
+                if raw:
+                    data = json.loads(raw)
+                    f.instance.georeference_epsg = data["epsg"]
+                    f.instance.georeference_bounds = data["bounds"]
+                    updates += ["georeference_bounds", "georeference_epsg"]
+
+                if raw or replaced:
+                    f.instance.status = BasemapImage.StatusChoices.PENDING
+                    updates.append("status")
+
+                if updates:
+                    f.instance.save(update_fields=updates)
+
+        pending = form.instance.images.filter(
+            status=BasemapImage.StatusChoices.PENDING
+        )
+        for image in pending:
+            try:
+                image.generate()
+            except Exception as e:
+                print(f"Error generating basemap image {image.pk}: {e}")
+
+    class Media:
+        css = {"all": ("https://cdn.jsdelivr.net/npm/ol@9.2.4/ol.css",)}
+        js = (
+            "https://cdn.jsdelivr.net/npm/ol@9.2.4/dist/ol.js",
+            "tethys_services/js/basemap_georeference.js",
+        )
+class BasemapImageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "basemap_service", "status")
+    list_filter = ("status", "basemap_service")
+
+    def get_urls(self):
+        custom = [
+            path(
+                "<int:image_id>/georeference/",
+                self.admin_site.admin_view(self.georeference_view),
+                name="basemap_georeference",
+            ),
+        ]
+        return custom + super().get_urls()
+
+    def georeference_view(self, request, image_id):
+        image = get_object_or_404(BasemapImage, pk=image_id)
+        context = {
+            **self.admin_site.each_context(request),
+            "title": f"Georeference {image}",
+            "image": image,
+            "source_url": reverse("basemap_source_file", kwargs={"image_id": image.pk}),
+            "opts": self.model._meta,
+        }
+
+        return render(request, "tethys_services/basemap/basemap_georeference.html", context)
+
+
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)
 admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
 admin.site.register(PostgresPersistentStoreService, PostgresPersistentStoreServiceAdmin)
 admin.site.register(SQLitePersistentStoreService, SQLitePersistentStoreServiceAdmin)
 admin.site.register(SecureMapService, SecureMapServiceAdmin)
+admin.site.register(BasemapService, BasemapServiceAdmin)
+admin.site.register(BasemapImage, BasemapImageAdmin)
