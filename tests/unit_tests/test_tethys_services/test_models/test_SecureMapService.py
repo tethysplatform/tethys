@@ -160,7 +160,9 @@ class SecureMapServiceTests(TethysTestCase):
 
         mock_user.social_auth.get.return_value = mock_auth
 
-        token, expires_in = secure_map_service._get_oauth_token(user=mock_user, with_expiry=True)
+        token, expires_in = secure_map_service._get_oauth_token(
+            user=mock_user, with_expiry=True
+        )
         self.assertEqual(token, "access_token12345")
         self.assertEqual(expires_in, 5)
 
