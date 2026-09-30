@@ -155,8 +155,8 @@ class SecureMapServiceTests(TethysTestCase):
         mock_auth = mock.MagicMock()
         mock_auth.get_access_token.return_value = "access_token12345"
         mock_expiration = mock.MagicMock()
-        mock_expiration.total_seconds = 4.7
-        mock_auth.expiration_timedelta = mock_expiration
+        mock_expiration.total_seconds.return_value = 4
+        mock_auth.expiration_timedelta.return_value = mock_expiration
 
         mock_user.social_auth.get.return_value = mock_auth
 
@@ -164,7 +164,7 @@ class SecureMapServiceTests(TethysTestCase):
             user=mock_user, with_expiry=True
         )
         self.assertEqual(token, "access_token12345")
-        self.assertEqual(expires_in, 5)
+        self.assertEqual(expires_in, 4)
 
     def test__get_resolved_params(self):
         secure_map_service = SecureMapService(
