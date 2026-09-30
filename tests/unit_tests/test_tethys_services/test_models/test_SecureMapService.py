@@ -25,6 +25,24 @@ class SecureMapServiceTests(TethysTestCase):
             context.exception.message_dict,
         )
 
+    def test__get_oauth_token_user_unauthenticated(self):
+        secure_map_service = SecureMapService(
+            name="test_secure_map_service",
+            endpoint="http://example.com",
+            authentication_method="oauth2",
+            oauth2_provider="test_provider",
+        )
+
+        mock_user = mock.MagicMock()
+        mock_user.is_authenticated = False
+
+        with self.assertRaises(ValueError) as context:
+            secure_map_service._get_oauth_token(user=mock_user)
+        self.assertEqual(
+            str(context.exception),
+            "User must be authenticated to retrieve an OAuth2 token.",
+        )
+
     def test__get_oauth_token_api_key(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
@@ -110,7 +128,7 @@ class SecureMapServiceTests(TethysTestCase):
             f"Failed to retrieve access Oauth2 token for {secure_map_service.oauth2_provider}: access token failure",
         )
 
-    def test__get_oauth_token_success(self):
+    def test__get_oauth_token_without_expiry_success(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",
             endpoint="http://example.com",
@@ -124,6 +142,28 @@ class SecureMapServiceTests(TethysTestCase):
         )
         token = secure_map_service._get_oauth_token(user=mock_user)
         self.assertEqual(token, "access_token12345")
+
+    def test__get_oauth_token_with_expiry_success(self):
+        secure_map_service = SecureMapService(
+            name="test_secure_map_service",
+            endpoint="http://example.com",
+            authentication_method="oauth2",
+            oauth2_provider="test_provider",
+        )
+
+        mock_user = mock.MagicMock()
+        mock_auth = mock.MagicMock()
+        mock_auth.get_access_token.return_value = "access_token12345"
+        mock_expiration = mock.MagicMock()
+        mock_expiration.total_seconds = 4.7
+        mock_auth.expiration_timedelta = mock_expiration
+        
+        mock_user.social_auth.get.return_value = mock_auth
+        
+        token, expires_in = secure_map_service._get_oauth_token(user=mock_user)
+        self.assertEqual(token, "access_token12345")
+        self.assertEqual(expires_in, 5)
+
 
     def test__get_resolved_params(self):
         secure_map_service = SecureMapService(

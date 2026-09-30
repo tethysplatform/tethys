@@ -308,7 +308,7 @@ def refresh_social_token_endpoint(request, association_id):
             f"Token refresh failed for user {auth.user_id}, provider {auth.provider}"
         )
         messages.error(
-            request, f"Failed to refresh {auth.provider} token; see the server log."
+            request, f"Failed to refresh {auth.provider} token."
         )
     else:
         logger.info(

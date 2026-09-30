@@ -755,34 +755,7 @@ class ProxyAppAdmin(GuardedModelAdmin):
     obj_perms_manage_template = "tethys_apps/guardian/extend_obj_perms_manage.html"
 
 
-class SocialTokenAdminMixin:
-    """Token expiration display and refresh button used in social auth admin views."""
-
-    @admin.display(description="Token expires")
-    def token_expires(self, obj):
-        remaining = obj.expiration_timedelta()
-        if remaining is None:
-            return "Unknown"
-        if remaining.total_seconds() <= 0:
-            return "Expired"
-        return f"in {str(remaining).split('.')[0]}"
-
-    def refresh_next_url(self, obj):
-        raise NotImplementedError
-
-    @admin.display(description="Refresh Token")
-    def refresh_button(self, obj):
-        if not obj.extra_data.get("refresh_token"):
-            return "No refresh token"
-        return format_html(
-            '<button type="button" class="btn btn-primary btn-sm" '
-            'data-social-refresh-url="{}" data-next="{}">Refresh Token</button>',
-            reverse("user:social_refresh", kwargs={"association_id": obj.id}),
-            self.refresh_next_url(obj),
-        )
-
-
-class TethysUserSocialAuthAdmin(SocialTokenAdminMixin, UserSocialAuthOption):
+class TethysUserSocialAuthAdmin(UserSocialAuthOption):
     list_display = (*UserSocialAuthOption.list_display, "token_expires")
     exclude = ("extra_data",)
     readonly_fields = ("formatted_extra_data", "token_expires", "refresh_button")
@@ -797,8 +770,25 @@ class TethysUserSocialAuthAdmin(SocialTokenAdminMixin, UserSocialAuthOption):
             json.dumps(obj.extra_data or {}, indent=2, sort_keys=True, default=str),
         )
 
-    def refresh_next_url(self, obj):
-        return reverse("admin:social_django_usersocialauth_change", args=(obj.pk,))
+    @admin.display(description="Token expires")
+    def token_expires(self, obj):
+        remaining = obj.expiration_timedelta()
+        if remaining is None:
+            return "Unknown"
+        if remaining.total_seconds() <= 0:
+            return "Expired"
+        return f"in {str(remaining).split('.')[0]}"
+
+    @admin.display(description="Refresh Token")
+    def refresh_button(self, obj):
+        if not obj.extra_data.get("refresh_token"):
+            return "No refresh token"
+        return format_html(
+            '<button type="button" class="btn btn-primary btn-sm" '
+            'data-social-refresh-url="{}" data-next="{}">Refresh Token</button>',
+            reverse("user:social_refresh", kwargs={"association_id": obj.id}),
+            reverse("admin:social_django_usersocialauth_change", args=(obj.pk,)),
+        )
 
 
 register_custom_group()

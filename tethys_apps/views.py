@@ -179,7 +179,7 @@ def secure_map_proxy(request, service_id):
     try:
         service = SecureMapService.objects.get(id=service_id)
     except SecureMapService.DoesNotExist:
-        return HttpResponse("Service setting not found.", status=404)
+        return HttpResponse("Secure Map Service not found.", status=404)
 
     browser_params = {key: value for key, value in request.GET.items()}
     service_params = service._get_resolved_params()
@@ -270,7 +270,7 @@ def secure_map_token(request, service_id):
     try:
         service = SecureMapService.objects.get(id=service_id)
     except SecureMapService.DoesNotExist:
-        return JsonResponse({"error": "Service setting not found."}, status=404)
+        return JsonResponse({"error": "Secure Map Service not found."}, status=404)
 
     if service.use_proxy or service.authentication_method != "oauth2":
         return JsonResponse(
@@ -285,6 +285,6 @@ def secure_map_token(request, service_id):
         )
         return JsonResponse({"error": "Failed to obtain OAuth2 token."}, status=403)
 
-    response = JsonResponse({"access_token": token, "expires_in": expires_in})
+    response = JsonResponse({"access_token": token, "expires_in": expires_in}, status=200)
     response["Cache-Control"] = "no-store"
     return response

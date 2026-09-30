@@ -10,6 +10,7 @@ from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_dataset_services.engines import HydroShareDatasetEngine
 from tethys_services.utilities import (
+    refresh_social_token,
     ensure_oauth2,
     get_configured_oauth2_providers,
     initialize_engine_object,
@@ -59,6 +60,39 @@ class TestUtilites(unittest.TestCase):
     def test_get_get_configured_oauth2_providers_empty(self):
         self.assertEqual(get_configured_oauth2_providers(), [])
 
+
+    def test_refresh_social_token_no_refresh_token(self):
+        mock_auth = mock.MagicMock()
+        mock_auth.extra_data.get.return_value = None
+        mock_auth.provider = "Test provider"
+
+        with self.assertRaises(ValueError) as context:
+            refresh_social_token(mock_auth)
+
+        self.assertEqual(
+            str(context.exception), 
+            "No refresh token is stored for Test provider. The user must reconnect the account.")
+
+    @mock.patch("tethys_services.utilities.load_strategy")
+    def test_refresh_social_token(self, mock_load_strategy):
+        mock_auth = mock.MagicMock()
+        mock_auth.extra_data.get.return_value = "refresh_token"
+        refresh_social_token(mock_auth)
+        mock_auth.refresh_token.assert_called_with(mock_load_strategy())
+
+    @mock.patch("tethys_services.utilities.logger")
+    @mock.patch("tethys_services.utilities.load_strategy")
+    def test_refresh_social_token_refresh_error(self, mock_load_strategy, mock_logger):
+        mock_auth = mock.MagicMock()
+        mock_auth.extra_data.get.return_value = "refresh_token"
+        mock_auth.provider = "Test Provider"
+        mock_auth.refresh_token.side_effect = AuthException(None, "Refresh testing error")
+
+        with self.assertRaises(ValueError) as context:
+            refresh_social_token(mock_auth)
+        mock_logger.debug.assert_called_with("Error refreshing Test Provider token: Refresh testing error.")
+        self.assertEqual(str(context.exception), "The provider 'Test Provider' rejected the token refresh. The user may need to reconnect the account.")
+        
     @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.messages.info")
     @mock.patch("tethys_services.utilities.urlencode")

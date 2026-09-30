@@ -70,13 +70,12 @@ def refresh_social_token(social_auth):
         raise ValueError(
             f"No refresh token is stored for {social_auth.provider}. The user must reconnect the account."
         )
-
     try:
         social_auth.refresh_token(load_strategy())
     except (requests.exceptions.HTTPError, AuthException) as e:
-        logger.debug(f"Error refreshing {social_auth.provider} token: {e}")
+        logger.debug(f"Error refreshing {social_auth.provider} token: {e}.")
         raise ValueError(
-            f"The {social_auth.provider} provider rejected the token refresh. The user may need to reconnect the account."
+            f"The provider '{social_auth.provider}' rejected the token refresh. The user may need to reconnect the account."
         ) from e
 
 
