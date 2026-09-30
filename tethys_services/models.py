@@ -557,7 +557,7 @@ class BasemapService(models.Model):
         return {"XYZ": 
                 {
                     "url": lazy_tile_url(image.pk),
-                    "label": self.name,
+                    "control_label": self.name,
                     "attribution": self.attribution,
                     "min_zoom": self.min_zoom,
                     "max_zoom": self.max_zoom,
