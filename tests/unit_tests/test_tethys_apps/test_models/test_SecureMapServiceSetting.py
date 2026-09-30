@@ -309,7 +309,10 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.assertEqual(
             layer["options"]["url"], "https://example.com/map_service?param1=value1"
         )
-        self.assertEqual(layer["options"]["token_url"], f"/secure-map-token/{setting.secure_map_service.id}/")
+        self.assertEqual(
+            layer["options"]["token_url"],
+            f"/secure-map-token/{setting.secure_map_service.id}/",
+        )
 
     def test__fetch_response_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(

@@ -559,20 +559,22 @@ class TethysPortalUserTests(unittest.TestCase):
             "Your workspace and media directory have been successfully cleared.",
         )
         mock_redirect.assert_called_once_with("user:manage_storage")
-    
 
     @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
     @mock.patch("tethys_portal.views.user.redirect")
     @mock.patch("tethys_portal.views.user.messages.error")
-    def test_refresh_social_token_endpoint_nonexistent_association(self, mock_messages, mock_redirect, mock_get):
+    def test_refresh_social_token_endpoint_nonexistent_association(
+        self, mock_messages, mock_redirect, mock_get
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_get.side_effect = UserSocialAuth.DoesNotExist
         refresh_social_token_endpoint(mock_request, association_id=99999)
 
-        mock_messages.assert_called_with(mock_request, "Could not find social authentication association.")
+        mock_messages.assert_called_with(
+            mock_request, "Could not find social authentication association."
+        )
         mock_redirect.assert_called_with("user:settings")
-
 
     @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
     def test_refresh_social_token_endpoint_not_owner_or_admin(self, mock_get):
@@ -594,7 +596,9 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.cache")
     @mock.patch("tethys_portal.views.user.redirect")
     @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
-    def test_refresh_social_token_endpoint_refreshed_recently(self, mock_get, mock_redirect, mock_cache, mock_messages, mock_uhahas):
+    def test_refresh_social_token_endpoint_refreshed_recently(
+        self, mock_get, mock_redirect, mock_cache, mock_messages, mock_uhahas
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_request.user.pk = 25
@@ -612,7 +616,10 @@ class TethysPortalUserTests(unittest.TestCase):
 
         refresh_social_token_endpoint(mock_request, association_id=1)
 
-        mock_messages.assert_called_with(mock_request,"This token was refreshed recently. Please wait before trying again.")
+        mock_messages.assert_called_with(
+            mock_request,
+            "This token was refreshed recently. Please wait before trying again.",
+        )
         mock_redirect.assert_called_with("test_next_url")
 
     @mock.patch("tethys_portal.views.user.refresh_social_token")
@@ -622,7 +629,16 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.cache")
     @mock.patch("tethys_portal.views.user.redirect")
     @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
-    def test_refresh_social_token_endpoint_error_refreshing(self, mock_get, mock_redirect, mock_cache, mock_messages, mock_uhahas, mock_logger_exception, mock_refresh):
+    def test_refresh_social_token_endpoint_error_refreshing(
+        self,
+        mock_get,
+        mock_redirect,
+        mock_cache,
+        mock_messages,
+        mock_uhahas,
+        mock_logger_exception,
+        mock_refresh,
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_request.user.pk = 25
@@ -642,8 +658,12 @@ class TethysPortalUserTests(unittest.TestCase):
         refresh_social_token_endpoint(mock_request, association_id=1)
 
         mock_cache.delete.assert_called_with("refresh_social_token_1")
-        mock_logger_exception.assert_called_with("Token refresh failed for user 25, provider test_provider")
-        mock_messages.assert_called_with(mock_request, "Failed to refresh test_provider token.")
+        mock_logger_exception.assert_called_with(
+            "Token refresh failed for user 25, provider test_provider"
+        )
+        mock_messages.assert_called_with(
+            mock_request, "Failed to refresh test_provider token."
+        )
         mock_redirect.assert_called_with("test_next_url")
 
     @mock.patch("tethys_portal.views.user.reverse")
@@ -654,7 +674,17 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.cache")
     @mock.patch("tethys_portal.views.user.redirect")
     @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
-    def test_refresh_social_token_endpoint_successful_refresh_invalid_next_url(self, mock_get, mock_redirect, mock_cache, mock_messages, mock_uhahas, mock_logger_info, mock_refresh, mock_reverse):
+    def test_refresh_social_token_endpoint_successful_refresh_invalid_next_url(
+        self,
+        mock_get,
+        mock_redirect,
+        mock_cache,
+        mock_messages,
+        mock_uhahas,
+        mock_logger_info,
+        mock_refresh,
+        mock_reverse,
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_request.user.pk = 25
@@ -677,4 +707,3 @@ class TethysPortalUserTests(unittest.TestCase):
         )
         mock_messages.assert_called_with(mock_request, "Refreshed test_provider token.")
         mock_redirect.assert_called_with(mock_reverse("user:settings"))
-

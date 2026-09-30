@@ -285,6 +285,8 @@ def secure_map_token(request, service_id):
         )
         return JsonResponse({"error": "Failed to obtain OAuth2 token."}, status=403)
 
-    response = JsonResponse({"access_token": token, "expires_in": expires_in}, status=200)
+    response = JsonResponse(
+        {"access_token": token, "expires_in": expires_in}, status=200
+    )
     response["Cache-Control"] = "no-store"
     return response

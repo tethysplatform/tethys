@@ -3,6 +3,8 @@ import unittest
 from unittest import mock
 import json
 
+from django.test import override_settings
+
 from requests import Timeout
 import requests
 
@@ -319,7 +321,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_service.authentication_method = "oauth2"
         mock_service._get_oauth_token.side_effect = ValueError("Test error")
         mock_get.return_value = mock_service
-        
+
         ret = secure_map_proxy(mock_request, mock_service_id)
 
         mock_logger.exception.assert_called_with(
@@ -494,7 +496,9 @@ class TethysAppsViewsTest(unittest.TestCase):
     @mock.patch("tethys_apps.views.logger")
     @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_request_exception(self, mock_get, mock_request_func, mock_logger):
+    def test_secure_map_proxy_request_exception(
+        self, mock_get, mock_request_func, mock_logger
+    ):
         mock_request = mock.MagicMock(method="GET", body=None)
         mock_service_id = 1
         mock_service = mock.MagicMock()
@@ -540,6 +544,7 @@ class TethysAppsViewsTest(unittest.TestCase):
             "Upstream request to http://example.com/service failed with status 400."
         )
 
+    @override_settings(ENABLE_OPEN_PORTAL=True)
     @mock.patch("tethys_apps.views.logger")
     def test_secure_map_token_unauthenticated(self, mock_logger):
         mock_request = mock.MagicMock()
@@ -551,7 +556,9 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         ret = secure_map_token(mock_request, mock_service_id)
 
-        mock_logger.warning.assert_called_with("Unauthenticated token request for SecureMapService 1.")
+        mock_logger.warning.assert_called_with(
+            "Unauthenticated token request for SecureMapService 1."
+        )
         assert ret.status_code == 401
         assert json.loads(ret.content) == {"error": "Authentication required."}
 
@@ -588,12 +595,16 @@ class TethysAppsViewsTest(unittest.TestCase):
         ret = secure_map_token(mock_request, mock_service_id)
 
         assert ret.status_code == 404
-        assert json.loads(ret.content) == {"error": "Token not available for this service."}
-    
+        assert json.loads(ret.content) == {
+            "error": "Token not available for this service."
+        }
+
     @mock.patch("tethys_services.models.SecureMapService._get_oauth_token")
     @mock.patch("tethys_apps.views.logger")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_token_error_getting_token(self, mock_get, mock_logger, mock_got):
+    def test_secure_map_token_error_getting_token(
+        self, mock_get, mock_logger, mock_got
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_request.service_id = 1
@@ -633,5 +644,8 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_get.return_value = mock_service
         ret = secure_map_token(mock_request, mock_service_id)
         assert ret.status_code == 200
-        assert json.loads(ret.content) == {"access_token": "mock_access_token", "expires_in": 3600}
+        assert json.loads(ret.content) == {
+            "access_token": "mock_access_token",
+            "expires_in": 3600,
+        }
         assert ret["Cache-Control"] == "no-store"

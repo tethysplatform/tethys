@@ -989,7 +989,9 @@ class TestUserSocialAuthInline(unittest.TestCase):
     def test_token_expires_remaining(self):
         ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
         mock_obj = mock.MagicMock()
-        mock_obj.expiration_timedelta.return_value = timedelta(hours=1, microseconds=500)
+        mock_obj.expiration_timedelta.return_value = timedelta(
+            hours=1, microseconds=500
+        )
 
         self.assertEqual("in 1:00:00", ret.token_expires(mock_obj))
 
@@ -1053,7 +1055,9 @@ class TestTethysUserSocialAuthAdmin(unittest.TestCase):
     def test_token_expires_remaining(self):
         ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
         mock_obj = mock.MagicMock()
-        mock_obj.expiration_timedelta.return_value = timedelta(hours=1, microseconds=500)
+        mock_obj.expiration_timedelta.return_value = timedelta(
+            hours=1, microseconds=500
+        )
 
         self.assertEqual("in 1:00:00", ret.token_expires(mock_obj))
 
