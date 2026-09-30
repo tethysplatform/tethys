@@ -54,6 +54,7 @@ try:
         SpatialDatasetService,
         WebProcessingService,
         SecureMapService,
+        BasemapService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -176,6 +177,12 @@ class TethysApp(models.Model, TethysBaseMixin):
         return self.settings_set.exclude(
             securemapservicesetting__isnull=True
         ).select_subclasses("securemapservicesetting")
+
+    @property
+    def basemap_service_settings(self):
+        return self.settings_set.exclude(
+            basemapservicesetting__isnull=True
+        ).select_subclasses("basemapservicesetting")
 
     @property
     def configured(self):
@@ -1298,6 +1305,27 @@ class SecureMapServiceSetting(TethysAppSetting):
             )
         self.secure_map_service.update_params(new_params)
 
+class BasemapServiceSetting(TethysAppSetting):
+
+    basemap_service = models.ForeignKey(
+        BasemapService, on_delete=models.CASCADE, blank=True, null=True
+    )
+
+    def get_value(self, as_basemap=False):
+        basemap_service = None
+        if self.basemap_service:
+            basemap_service = self.basemap_service
+
+        if basemap_service is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
+        if as_basemap:
+            return self.basemap_service.as_basemap()
+        return self.basemap_service
 
 class SchedulerSetting(TethysAppSetting):
     """

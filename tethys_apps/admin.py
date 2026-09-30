@@ -41,6 +41,7 @@ from tethys_apps.models import (
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
     ProxyApp,
+    BasemapServiceSetting,
 )
 from tethys_portal.optional_dependencies import (
     optional_import,
@@ -305,6 +306,10 @@ class SecureMapServiceSettingInline(TethysAppSettingInline):
     fields = ("name", "description", "secure_map_service", "required")
     model = SecureMapServiceSetting
 
+class BasemapServiceSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "basemap_service", "required")
+    model = BasemapServiceSetting
 
 class TethysAppAdmin(GuardedModelAdmin):
     obj_perms_manage_template = "tethys_apps/guardian/extend_obj_perms_manage.html"
@@ -340,6 +345,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         WebProcessingServiceSettingInline,
         SchedulerSettingInline,
         TethysAppQuotasSettingInline,
+        BasemapServiceSettingInline,
     ]
 
     def has_delete_permission(self, request, obj=None):

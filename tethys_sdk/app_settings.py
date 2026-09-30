@@ -21,5 +21,6 @@ from tethys_apps.models import (
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
     SecureMapServiceSetting,
+    BasemapServiceSetting,
     TethysAppSettingNotAssigned,
 )

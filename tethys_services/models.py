@@ -513,3 +513,182 @@ class SecureMapService(models.Model):
         params.update(new_params)
         self.params = params
         self.save()
+
+def original_basemap_upload_path(instance, filename):
+    return f"basemaps/original/{instance.basemap_service.name}/{filename}"
+
+def generated_basemap_upload_path(instance, filename):
+    return f"basemaps/generated/{instance.basemap_service.name}/{filename}"
+class BasemapService(models.Model):
+
+    name = models.CharField(max_length=30, unique=True)
+    attribution = models.CharField(max_length=255, blank=True)
+    min_zoom = models.IntegerField(default=0)
+    max_zoom = models.PositiveSmallIntegerField(default=22)
+
+    def __str__(self):
+        return self.name
+
+    def as_basemap(self):
+        from django.urls import reverse
+        from django.utils.functional import lazy
+
+        def _tile_url(image_pk):
+            url = reverse(
+                "basemap_tile",
+                kwargs={
+                    "image_id": image_pk,
+                    "z": 0,
+                    "x": 0,
+                    "y": 0,
+                }
+            )
+
+            if "/0/0/0.png" not in url:
+                raise ValueError(f"Unexpected tile URL shape: {url}")
+            return url.replace("/0/0/0.png", "/{z}/{x}/{y}.png")
+
+        lazy_tile_url = lazy(_tile_url, str)
+
+        # TODO fix this
+        if not self.images.exists():
+            raise ValueError("No basemap images available for this service.")
+        image = self.images.first()
+        return {"XYZ": 
+                {
+                    "url": lazy_tile_url(image.pk),
+                    "label": self.name,
+                    "attribution": self.attribution,
+                    "min_zoom": self.min_zoom,
+                    "max_zoom": self.max_zoom,
+                }}
+
+class BasemapImage(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        PROCESSING = 'processing', 'Processing'
+        FAILED = 'failed', 'Failed'
+        READY = 'ready', 'Ready'
+        NEEDS_GEOREFERENCE = 'needs_georeference', 'Needs Georeference'
+
+    basemap_service = models.ForeignKey(BasemapService, on_delete=models.CASCADE, related_name="images")
+    source_file = models.FileField(upload_to=original_basemap_upload_path)
+    generated_file = models.FileField(upload_to=generated_basemap_upload_path, blank=True, null=True)
+    status = models.CharField(max_length=30, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+    error_message = models.TextField(blank=True, null=True)
+    srs = models.CharField(max_length=64, blank=True, null=True)
+    wkt = models.TextField(blank=True, null=True)
+    min_x = models.FloatField(blank=True, null=True)
+    min_y = models.FloatField(blank=True, null=True)
+    max_x = models.FloatField(blank=True, null=True)
+    max_y = models.FloatField(blank=True, null=True)
+    georeference_bounds = models.JSONField(blank=True, null=True)
+    georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.source_file.name.split('/')[-1].split('.')[0]} ({self.basemap_service.name})"
+
+    def generate(self):
+        import tempfile
+        from pathlib import Path
+        from django.core.files import File
+        try:
+            import rasterio
+            from rasterio.warp import calculate_default_transform, reproject, Resampling
+            from rasterio.shutil import copy as rio_copy
+            from rasterio.transform import from_bounds
+        except ImportError:
+            raise ImportError("rasterio is required to generate basemap images.")
+        
+        self.status = self.StatusChoices.PROCESSING
+        self.save(update_fields=["status"])
+
+        try:
+            with rasterio.open(self.source_file.path) as src:
+                src_crs = src.crs
+                src_transform = src.transform
+
+                if src_crs is None:
+                    if not self.georeference_bounds:
+                        self.status = self.StatusChoices.NEEDS_GEOREFERENCE
+                        self.error_message = ""
+                        self.save(update_fields=["status", "error_message"])
+                        return
+
+                    min_x, min_y, max_x, max_y = self.georeference_bounds
+                    src_crs = rasterio.crs.CRS.from_epsg(self.georeference_epsg)
+                    src_transform = from_bounds(min_x, min_y, max_x, max_y, src.width, src.height)
+                    self.srs = str(src_crs.to_epsg() or "")
+                    self.wkt = src_crs.to_wkt()
+
+                else:
+                    self.srs = str(src_crs.to_epsg() or "")
+                    self.wkt = src_crs.to_wkt()
+                    self.georeference_epsg = src_crs.to_epsg()
+
+                dst_crs = "EPSG:3857"
+                src_bounds = (
+                    tuple(self.georeference_bounds) if src.crs is None else src.bounds
+                )
+                transform, width, height = calculate_default_transform(
+                    src_crs, dst_crs, src.width, src.height, *src_bounds
+                )
+
+                profile = src.profile.copy()
+
+                profile = {
+                    "driver": "GTiff",
+                    "dtype": src.dtypes[0],
+                    "count": src.count,
+                    "crs": dst_crs,
+                    "transform": transform,
+                    "width": width,
+                    "height": height,
+                    "tiled": True,
+                    "blockxsize": 512,
+                    "blockysize": 512,
+                    "compress": "DEFLATE",
+                }
+
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    warped = Path(tmpdir) / "warped.tif"
+
+                    with rasterio.open(warped, "w", **profile) as dst:
+                        for i in range(1, src.count + 1):
+                            reproject(
+                                source = src.read(i) if src.crs is None else rasterio.band(src, i),
+                                destination=rasterio.band(dst, i),
+                                src_transform=src_transform,
+                                src_crs=src_crs,
+                                dst_transform=transform,
+                                dst_crs=dst_crs,
+                                resampling=Resampling.bilinear,
+                                src_nodata=None,
+                                dst_nodata=0
+                            )
+
+                    cog = Path(tmpdir) / "cog.tif"
+                    rio_copy(warped, cog, driver="COG", compress="DEFLATE", overview_resampling="nearest")
+
+                    with rasterio.open(cog) as final:
+                        self.min_x, self.min_y, self.max_x, self.max_y = final.bounds
+                        self.srs = str(final.crs.to_epsg() or "")
+                        self.wkt = final.crs.to_wkt()
+
+                    if self.generated_file:
+                        self.generated_file.delete(save=False)
+
+                    generated_name = Path(self.source_file.name).stem + "_cog.tif"
+                    with open(cog, "rb") as fh:
+                        self.generated_file.save(generated_name, File(fh), save=False)
+
+            self.status = self.StatusChoices.READY
+            self.error_message = ""
+            self.save()
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            self.status = self.StatusChoices.FAILED
+            self.error_message = str(e)
+            self.save(update_fields=["status", "error_message"])
+            raise

@@ -253,6 +253,16 @@ urlpatterns = [
         tethys_apps_views.secure_map_proxy,
         name="secure_map_proxy",
     ),
+    re_path(
+        r"^basemaps/(?P<image_id>\d+)/tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)\.png$",
+        tethys_apps_views.basemap_tile,
+        name="basemap_tile",
+    ),
+    re_path(
+        r"^basemaps/(?P<image_id>\d+)/source/$",
+        tethys_apps_views.basemap_source_file,
+        name="basemap_source_file",
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 

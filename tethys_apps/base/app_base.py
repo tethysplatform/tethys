@@ -877,6 +877,37 @@ class TethysAppBase(TethysBase):
         """
         return None
 
+    def basemap_service_settings(self):
+        """
+        Override this method to define basemap service connections for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``BasemapServiceSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.app_settings import BasemapServiceSetting
+
+            class MyFirstApp(TethysAppBase):
+
+                def basemap_service_settings(self):
+                    \"""
+                    Example basemap_service_settings method.
+                    \"""
+                    basemap_services = (
+                        BasemapServiceSetting(
+                            name='primary_basemap_service',
+                            description='Basemap Service for app to use',
+                            required=True,
+                        ),
+                    )
+
+                    return basemap_services
+        """
+        return None
+
     def scheduler_settings(self):
         """
         Override this method to define HTCondor and Dask scheduler services for use in your app.
@@ -2013,6 +2044,24 @@ class TethysAppBase(TethysBase):
 
         secure_map_service_setting.update_params(params)
 
+    @classmethod
+    def get_basemap_service(cls, name, as_basemap=True):
+
+        from tethys_apps.models import TethysApp
+
+        db_app = TethysApp.objects.get(package=cls.package)
+        basemap_service_settings = db_app.basemap_service_settings
+
+        try:
+            basemap_service_setting = basemap_service_settings.get(name=name)
+
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                "BasemapServiceSetting", name, cls.name
+            )
+
+        return basemap_service_setting.get_value(as_basemap=as_basemap)
+
     def sync_all_settings(self, db_app):
         # custom settings
         db_app.sync_settings(self.custom_settings(), db_app.custom_settings)
@@ -2038,6 +2087,9 @@ class TethysAppBase(TethysBase):
         # secure map service settings
         db_app.sync_settings(
             self.secure_map_service_settings(), db_app.secure_map_service_settings
+        )
+        db_app.sync_settings(
+            self.basemap_service_settings(), db_app.basemap_service_settings
         )
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
