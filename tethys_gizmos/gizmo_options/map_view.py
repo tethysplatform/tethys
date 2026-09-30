@@ -641,6 +641,8 @@ class MVLayer(SecondaryGizmoOptions):
         data (dict): Dictionary representation of layer data.
         times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
 
+    For ``GeoJSON`` layers, ``options`` is either an inline GeoJSON object or a dictionary with a ``url`` key, in which case the GeoJSON is loaded from that URL.
+
     In addition to the OpenLayers source options, the following keys are supported in the ``options`` dictionary:
 
         data_projection (str, optional): The coordinate reference system of the source data (e.g.: "EPSG:4326" or "EPSG:3857"). If omitted, the CRS is inferred from the data itself (``srsName`` in GML/WFS responses, ``crs`` in GeoJSON) and "EPSG:4326" is assumed when the data declares no CRS. Applies to ``GML`` layers (both the ``url`` and inline ``gml`` forms) and to ``Vector`` layers that are loaded with a ``token_url``.

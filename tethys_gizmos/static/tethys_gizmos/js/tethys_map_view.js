@@ -150,7 +150,7 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, get_csrf_token, build_ol_objects, add_default_base_map_layer, resolve_gml_projection;
+var is_defined, in_array, string_to_function, get_csrf_token, build_ol_objects, add_default_base_map_layer, resolve_gml_projection, resolve_geojson_projection;
 
 // Token Management Methods
 var create_token_manager, get_token_manager, remove_token, fetch_with_token, load_image_or_tile_with_token;
@@ -996,8 +996,64 @@ ol_layers_init = function()
       // Vector layer case
       else if (in_array(current_layer.source, VECTOR_SOURCES)) {
 
+        // GeoJSON from URL case
+        if (current_layer.source === GEOJSON && current_layer.options.hasOwnProperty('url')) {
+          let geojson_url = current_layer.options.url;
+          let token_manager = get_token_manager(current_layer.options);
+          let data_projection_override = current_layer.options.data_projection;
+          let geojson_format = new ol.format.GeoJSON();
+
+          let geojson_url_source = new ol.source.Vector({
+            format: geojson_format,
+            strategy: ol.loadingstrategy.all,
+            loader: function(extent, resolution, projection, success, failer) {
+              // Sends an Authorization header only when a token is given
+              fetch_with_token(token_manager, geojson_url)
+                .then(r => {
+                  if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                  return r.json();
+                })
+                .then(json => {
+                  let resolved = resolve_geojson_projection(geojson_format, json, data_projection_override);
+                  let features = geojson_format.readFeatures(
+                    json, 
+                    {'dataProjection': resolved.projection, 'featureProjection': resolved.projection}
+                  );
+                  
+                  if (resolved.assumed && features.length > 0) {
+                    let data_extent = ol.extent.createEmpty();
+                    features.forEach(f => {
+                      let g = f.getGeometry();
+                      if (g) { ol.extent.extend(data_extent, g.getExtent()); }
+                    });
+                    if (!ol.extent.containsExtent([-180, -90, 180, 90], data_extent)) {
+                      throw new Error('GeoJSON: no crs member, and coordinates [' + data_extent.join(', ') +
+                                      '] are outside ' + LAT_LON_PROJECTION + ' bounds. Set data_projection on the layer.');
+                    }
+                  }
+
+                  features.forEach(f => {
+                    let g = f.getGeometry();
+                    if (g) { g.transform(resolved.projection, DEFAULT_PROJECTION); }
+                  });
+                  
+                  geojson_url_source.addFeatures(features);
+                  if (success) { success(features); }
+                })
+                .catch(err => {
+                  console.error('GeoJSON load failed: ', err);
+                  geojson_url_source.removeLoadedExtent(extent);
+                  if (failer) { failer(); }
+                })
+            },
+          });
+
+          current_layer_layer_options['source'] = geojson_url_source;
+          layer = new ol.layer.Vector(current_layer_layer_options);
+        }
+
         // GeoJSON case
-        if (current_layer.source === GEOJSON){
+        else if (current_layer.source === GEOJSON){
           var geojson_source, json, projection, format, features;
 
           json = current_layer.options;
@@ -2531,6 +2587,29 @@ resolve_gml_projection = function(gml_format, gml, data_projection_override) {
   }
 
   return null;
+};
+
+resolve_geojson_projection = function(geojson_format, json, data_projection_override) {
+  if (data_projection_override) {
+    let projection = ol.proj.get(data_projection_override);
+    if (!projection) {
+      throw new Error('GeoJSON: data_projection "' + data_projection_override +
+                      '" is not a known projection. Register it with proj4.');
+    }
+    return {projection: projection, assumed: false};
+  }
+
+  if (json && json.crs) {
+    // Throws on crs types OL doesn't support; returns null for unknown names
+    let projection = geojson_format.readProjection(json);
+    if (!projection) {
+      throw new Error('GeoJSON: crs ' + JSON.stringify(json.crs) +
+                      ' is not a known projection. Register it with proj4 or set data_projection on the layer.');
+    }
+    return {projection: projection, assumed: false};
+  }
+
+  return {projection: ol.proj.get(LAT_LON_PROJECTION), assumed: true};
 };
 
 // Create a manager that fetches, caches, and refreshes access tokens from a token endpoint
