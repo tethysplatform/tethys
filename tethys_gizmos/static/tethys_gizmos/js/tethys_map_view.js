@@ -153,7 +153,7 @@ var update_field;
 var is_defined, in_array, string_to_function, get_csrf_token, build_ol_objects, add_default_base_map_layer, resolve_gml_projection, resolve_geojson_projection;
 
 // Token Management Methods
-var create_token_manager, get_token_manager, remove_token, fetch_with_token, load_image_or_tile_with_token;
+var create_token_manager, get_token_manager, remove_token_url, fetch_with_token, load_image_or_tile_with_token;
 
 // Secure Layers
 var m_token_managers = {};
@@ -928,7 +928,7 @@ ol_layers_init = function()
         var resolutions, source_options, tile_grid, token_manager;
 
         token_manager = get_token_manager(current_layer.options);
-        source_options = remove_token(current_layer.options);
+        source_options = remove_token_url(current_layer.options);
 
         // Load the tiles with an Authorization header when a token is given
         if (token_manager) {
@@ -981,7 +981,7 @@ ol_layers_init = function()
       // Image layer case
       else if (in_array(current_layer.source, IMAGE_SOURCES)) {
         let token_manager = get_token_manager(current_layer.options);
-        let image_source_options = remove_token(current_layer.options);
+        let image_source_options = remove_token_url(current_layer.options);
 
         // Load the images with an Authorization header when a token is given
         if (token_manager) {
@@ -1250,7 +1250,7 @@ ol_layers_init = function()
             current_layer_layer_options['source'] = vector_source;
           } else {
             Source = string_to_function('ol.source.' + current_layer.source);
-            current_layer_layer_options['source'] = new Source(remove_token(current_layer.options));
+            current_layer_layer_options['source'] = new Source(remove_token_url(current_layer.options));
           }
 
           layer = new ol.layer.Vector(current_layer_layer_options);
@@ -2555,7 +2555,7 @@ get_csrf_token = function() {
 };
 
 // Remove the token url from the options object
-remove_token = function(options) {
+remove_token_url = function(options) {
   if (!options) { return options; }
 
   let stripped_options = Object.assign({}, options);
