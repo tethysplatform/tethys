@@ -1966,7 +1966,7 @@ class TethysAppBase(TethysBase):
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
             as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
-            as_layer(bool): Returns MapLayer object if True, Defaults to False.
+            as_layer(bool): Returns MVLayer object if True, Defaults to False.
             as_response(bool): Returns requests.Response object if True, Defaults to False.
             as_token(bool): Returns OAuth2 token if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
