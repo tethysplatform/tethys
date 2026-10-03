@@ -1,13 +1,22 @@
 import pytest
 import unittest
 from unittest import mock
+import json
+
+from django.test import override_settings
+
+from requests import Timeout
+import requests
 
 from tethys_apps.models import ProxyApp, TethysApp
+from tethys_services.models import SecureMapService
 from tethys_apps.views import (
     library,
     handoff_capabilities,
     handoff,
     send_beta_feedback_email,
+    secure_map_proxy,
+    secure_map_token,
 )
 
 
@@ -291,3 +300,352 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_json_response.assert_called_once_with(
             {"success": False, "error": "Failed to send email: foo_error"}
         )
+
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_noneexistent_service(self, mock_get):
+        mock_request = mock.MagicMock()
+        mock_service_id = 9999
+        mock_get.side_effect = SecureMapService.DoesNotExist
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        self.assertEqual(404, ret.status_code)
+        self.assertEqual(b"Secure Map Service not found.", ret.content)
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_oauth_token_error(self, mock_get, mock_logger):
+        mock_request = mock.MagicMock()
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "oauth2"
+        mock_service._get_oauth_token.side_effect = ValueError("Test error")
+        mock_get.return_value = mock_service
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        mock_logger.exception.assert_called_with(
+            "Failed to obtain OAuth2 token for SecureMapService 1."
+        )
+        assert ret.status_code == 403
+        assert ret.content == b"Failed to obtain OAuth2 token."
+
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_empty_304(self, mock_get, mock_request_func):
+        mock_request = mock.MagicMock()
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "oauth2"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
+        mock_get.return_value = mock_service
+
+        mock_request_func.return_value = mock.MagicMock(status_code=304, content=b"")
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        assert ret.status_code == 304
+
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_oauth2_no_extra_headers(
+        self, mock_get, mock_request_func
+    ):
+        mock_request = mock.MagicMock(method="POST", body=b"test_body")
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "oauth2"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock(status_code=200)
+        mock_response.iter_content.return_value = [b"response_content"]
+        mock_request_func.return_value = mock_response
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        kwargs = mock_request_func.call_args.kwargs
+        assert kwargs["method"] == mock_request.method
+        assert kwargs["url"] == mock_service.endpoint
+        assert kwargs["headers"]["Authorization"] == "Bearer test_oauth_token123"
+        assert kwargs["data"] == mock_request.body
+
+        assert ret.status_code == 200
+        assert b"".join(ret.streaming_content) == b"response_content"
+
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_api_key_no_extra_headers(
+        self, mock_get, mock_request_func
+    ):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock(status_code=200)
+        mock_response.iter_content.return_value = [b"response_content"]
+        mock_request_func.return_value = mock_response
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        kwargs = mock_request_func.call_args.kwargs
+        assert kwargs["method"] == mock_request.method
+        assert kwargs["url"] == mock_service.endpoint
+        assert kwargs["params"]["api_key"] == "test_api_key"
+        assert kwargs["data"] is None
+
+        assert ret.status_code == 200
+        assert b"".join(ret.streaming_content) == b"response_content"
+
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_oauth2_with_extra_headers(
+        self, mock_get, mock_request_func
+    ):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_request.headers = {
+            "If-None-Match": "test_value",
+            "If-Modified-Since": "test_date",
+        }
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "oauth2"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_oauth_token.return_value = "test_oauth_token123"
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock(status_code=200)
+        mock_response.iter_content.return_value = [b"response_content"]
+        mock_response.headers = {
+            "Cache-Control": "max-age=3600",
+            "Expires": "test_expire_date",
+        }
+        mock_request_func.return_value = mock_response
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        kwargs = mock_request_func.call_args.kwargs
+        assert kwargs["method"] == mock_request.method
+        assert kwargs["url"] == mock_service.endpoint
+        assert kwargs["headers"]["Authorization"] == "Bearer test_oauth_token123"
+        assert kwargs["headers"]["If-None-Match"] == "test_value"
+        assert kwargs["headers"]["If-Modified-Since"] == "test_date"
+        assert kwargs["data"] is None
+
+        assert ret.status_code == 200
+        assert b"".join(ret.streaming_content) == b"response_content"
+        assert ret.headers["Cache-Control"] == "private, no-store"
+        assert ret.headers["Expires"] == "test_expire_date"
+
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_api_key_content_type(self, mock_get, mock_request_func):
+        mock_request = mock.MagicMock(method="POST", body=b"test_body")
+        mock_request.content_type = "application/json"
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock(status_code=200)
+        mock_response.iter_content.return_value = [b"response_content"]
+        mock_request_func.return_value = mock_response
+
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        kwargs = mock_request_func.call_args.kwargs
+        assert kwargs["method"] == mock_request.method
+        assert kwargs["url"] == mock_service.endpoint
+        assert kwargs["params"]["api_key"] == "test_api_key"
+        assert kwargs["headers"]["Content-Type"] == "application/json"
+        assert kwargs["data"] == b"test_body"
+
+        assert ret.status_code == 200
+        assert b"".join(ret.streaming_content) == b"response_content"
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_request_timeout(
+        self, mock_get, mock_request_func, mock_logger
+    ):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service.connection_timeout = 12
+        mock_service.read_timeout = 34
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_request_func.side_effect = Timeout
+        ret = secure_map_proxy(mock_request, mock_service_id)
+        assert ret.status_code == 504
+        mock_logger.error.assert_called_with(
+            "Request to http://example.com/service timed out. (connection_timeout: 12s, read_timeout: 34s)"
+        )
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_request_exception(
+        self, mock_get, mock_request_func, mock_logger
+    ):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service.connection_timeout = 12
+        mock_service.read_timeout = 34
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_request_func.side_effect = requests.RequestException("Test exception")
+        ret = secure_map_proxy(mock_request, mock_service_id)
+        assert ret.status_code == 502
+        assert ret.content == b"Request failed."
+        mock_logger.error.assert_called_with(
+            "Request to http://example.com/service failed: RequestException"
+        )
+
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_apps.views.requests.request")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_not_ok_response(
+        self, mock_get, mock_request_func, mock_logger
+    ):
+        mock_request = mock.MagicMock(method="GET", body=None)
+        mock_service_id = 1
+        mock_service = mock.MagicMock()
+        mock_service.authentication_method = "api_key"
+        mock_service.endpoint = "http://example.com/service"
+        mock_service._get_resolved_params.return_value = {"api_key": "test_api_key"}
+        mock_get.return_value = mock_service
+
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 400
+        mock_response.ok = False
+        mock_response.iter_content.return_value = [b"error_content"]
+        mock_request_func.return_value = mock_response
+        ret = secure_map_proxy(mock_request, mock_service_id)
+
+        assert ret.status_code == 400
+        assert b"".join(ret.streaming_content) == b"error_content"
+        mock_logger.error.assert_called_with(
+            "Upstream request to http://example.com/service failed with status 400."
+        )
+
+    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @mock.patch("tethys_apps.views.logger")
+    def test_secure_map_token_unauthenticated(self, mock_logger):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.service_id = 1
+        mock_request.user = mock.MagicMock()
+        mock_request.user.is_authenticated = False
+        mock_service_id = 1
+
+        ret = secure_map_token(mock_request, mock_service_id)
+
+        mock_logger.warning.assert_called_with(
+            "Unauthenticated token request for SecureMapService 1."
+        )
+        assert ret.status_code == 401
+        assert json.loads(ret.content) == {"error": "Authentication required."}
+
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_token_nonexistent_service(self, mock_get):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.service_id = 1
+        mock_request.user = mock.MagicMock()
+        mock_request.user.is_authenticated = True
+        mock_service_id = 1
+
+        mock_get.side_effect = SecureMapService.DoesNotExist
+
+        ret = secure_map_token(mock_request, mock_service_id)
+
+        assert ret.status_code == 404
+        assert json.loads(ret.content) == {"error": "Secure Map Service not found."}
+
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_token_api_key_type(self, mock_get):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.service_id = 1
+        mock_request.user = mock.MagicMock()
+        mock_request.user.is_authenticated = True
+        mock_service_id = 1
+
+        mock_service = mock.MagicMock()
+        mock_service.use_proxy = False
+        mock_service.authentication_method = "api_key"
+
+        mock_get.return_value = mock_service
+        ret = secure_map_token(mock_request, mock_service_id)
+
+        assert ret.status_code == 404
+        assert json.loads(ret.content) == {
+            "error": "Token not available for this service."
+        }
+
+    @mock.patch("tethys_services.models.SecureMapService._get_oauth_token")
+    @mock.patch("tethys_apps.views.logger")
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_token_error_getting_token(
+        self, mock_get, mock_logger, mock_got
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.service_id = 1
+        mock_request.user = mock.MagicMock()
+        mock_request.user.is_authenticated = True
+        mock_service_id = 1
+
+        mock_service = mock.MagicMock()
+        mock_service.use_proxy = False
+        mock_service.authentication_method = "oauth2"
+
+        mock_get.return_value = mock_service
+        mock_got.side_effect = ValueError()
+
+        ret = secure_map_token(mock_request, mock_service_id)
+
+        mock_logger.exception.assert_called_with(
+            f"Failed to obtain OAuth2 token for SecureMapService {mock_service_id}."
+        )
+        assert ret.status_code == 403
+        assert json.loads(ret.content) == {"error": "Failed to obtain OAuth2 token."}
+
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_token_success(self, mock_get):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.service_id = 1
+        mock_request.user = mock.MagicMock()
+        mock_request.user.is_authenticated = True
+        mock_service_id = 1
+
+        mock_service = mock.MagicMock()
+        mock_service.use_proxy = False
+        mock_service.authentication_method = "oauth2"
+        mock_service._get_oauth_token.return_value = ("mock_access_token", 3600)
+
+        mock_get.return_value = mock_service
+        ret = secure_map_token(mock_request, mock_service_id)
+        assert ret.status_code == 200
+        assert json.loads(ret.content) == {
+            "access_token": "mock_access_token",
+            "expires_in": 3600,
+        }
+        assert ret["Cache-Control"] == "no-store"

@@ -1,0 +1,15 @@
+{% if backends.associated %}
+  <dt class="col-sm-4">Access Tokens:</dt>
+  <dd class="col-sm-8">
+    {% csrf_token %}
+    {% for association in backends.associated %}
+      {% if association.extra_data.refresh_token %}
+        <button type="button" class="btn btn-outline-primary btn-sm me-1 mb-1"
+                data-social-refresh-url="{% url 'user:social_refresh' association_id=association.id %}"
+                data-next="{{ next_url }}">
+          Refresh {{ association.provider|title }} Token
+        </button>
+      {% endif %}
+    {% endfor %}
+  </dd>
+{% endif %}

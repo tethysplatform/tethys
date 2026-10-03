@@ -68,7 +68,6 @@
 <div class="profile-parameters col-xl-8">
   <dl class="row">
     <dt class="col-sm-4">Connected:</dt>
-    {{association.provider}}
     {% if backends.associated %}
       {% if user.has_usable_password or backends.associated|length > 1 %}
         {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated action='disconnect' %}
@@ -78,7 +77,8 @@
     {% else %}
       <dd class="col-sm-8">None</dd>
     {% endif %}
-    </span>
+    {% url 'user:settings' as settings_url %}
+    {% include 'tethys_portal/user/social_token_refresh.html' with next_url=settings_url %}
     <dt class="col-sm-4">Not Connected:</dt>
     {% if backends.not_associated %}
       {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
