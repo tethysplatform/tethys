@@ -422,6 +422,7 @@ class MapView(TethysGizmoOptions):
         {% block scripts %} block
         """
         return (
+            "tethys_sdk/js/csrf.js",
             "tethys_gizmos/js/gizmo_utilities.js",
             "tethys_gizmos/js/tethys_map_view.js",
         )

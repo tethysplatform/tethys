@@ -10,6 +10,7 @@
 
 {% block scripts %}
   {{ block.super }}
+  <script src="{% static 'tethys_sdk/js/csrf.js' %}"></script>
   <script src="{% static 'tethys_portal/js/social_token_refresh.js' %}"></script>
 {% endblock %}
 

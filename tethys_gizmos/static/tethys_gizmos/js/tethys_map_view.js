@@ -150,7 +150,7 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, get_csrf_token, build_ol_objects, add_default_base_map_layer, resolve_gml_projection, resolve_geojson_projection;
+var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer, resolve_gml_projection, resolve_geojson_projection;
 
 // Token Management Methods
 var create_token_manager, get_token_manager, remove_token_url, fetch_with_token, load_image_or_tile_with_token;
@@ -2541,17 +2541,6 @@ in_array = function(item, array)
 is_defined = function(variable)
 {
   return !!(typeof variable !== typeof undefined && variable !== false && variable !== null);
-};
-
-// Read the CSRF token from the page's hidden input and if that doesn't exist, use the cookie
-get_csrf_token = function() {
-  let match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
-  if (match) { return decodeURIComponent(match[1]); }
-
-  let input = document.querySelector('input[name="csrfmiddlewaretoken"]');
-  if (input) { return input.value; }
-
-  throw new Error('CSRF token not found on page.');
 };
 
 // Remove the token url from the options object

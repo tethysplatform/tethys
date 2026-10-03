@@ -319,7 +319,7 @@ class UserSocialAuthInline(admin.TabularInline):
     readonly_fields = fields
 
     class Media:
-        js = ("tethys_portal/js/social_token_refresh.js",)
+        js = ("tethys_sdk/js/csrf.js", "tethys_portal/js/social_token_refresh.js",)
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -761,7 +761,7 @@ class TethysUserSocialAuthAdmin(UserSocialAuthOption):
     readonly_fields = ("formatted_extra_data", "token_expires", "refresh_button")
 
     class Media:
-        js = ("tethys_portal/js/social_token_refresh.js",)
+        js = ("tethys_sdk/js/csrf.js", "tethys_portal/js/social_token_refresh.js",)
 
     @admin.display(description="Extra data")
     def formatted_extra_data(self, obj):
