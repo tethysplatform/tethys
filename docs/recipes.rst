@@ -15,13 +15,13 @@ Recipes
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/scaffold_an_app_via_the_portal images/recipes/create_app_form.png [scaffold, app, new_app]
     recipes/scaffold_an_app_via_command_line images/recipes/scaffold_pic.png [scaffold, app, new_app]
-    recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
     recipes/add_navigation_buttons images/recipes/app_navigation_menu.png [navigation, app, new_app]
     recipes/get_user_input images/recipes/get_user_input.png [forms, form, input, gizmo]
     recipes/gizmos images/recipes/icons/gizmos_icon.png [gizmo]
     recipes/file_upload images/recipes/icons/file_upload_icon.png [gizmo, form, forms, input]
     recipes/add_new_user images/recipes/icons/create_user_icon.png [new_user, user]
+    recipes/https_development_server images/recipes/icons/https_development_server_icon.png [https, development, server]
 
 Maps
 ++++

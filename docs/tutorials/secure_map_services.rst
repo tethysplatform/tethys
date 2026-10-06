@@ -117,14 +117,14 @@ Then add this to your main App class:
 
     class App(TethysAppBase):
         """
-        Tethys app class for Secure Map App.
+        Tethys app class for Secure Map Tutorial.
         """
-        name = 'Secure Map App'
+        name = 'Secure Map Tutorial'
         description = ''
         package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
-        root_url = 'secure-map-app'
+        root_url = 'secure-map-tutorial'
         color = '#5f27cd'
         tags = ''
         enable_feedback = False
@@ -194,19 +194,39 @@ Notice that if you look at the network traffic in your browser, you will see tha
 
 5. Configure for OAuth2 with GRiD
 =================================
-Next, we want to add a map layer using the GRiD service. Before we can authenticate with OAuth2 to do that, we need to configure the Tethys Portal to use GRiD as an OAuth2 provider. 
+Next, we want to add a map layer using the GRiD service. Before we can authenticate with OAuth2 to do that, we need to make sure your Tethys Portal can be reached over HTTPS and configure it to use GRiD as an OAuth2 provider.
 
-Start by running this command:
+GRiD only accepts ``https://`` redirect URIs, so your portal must be reachable over HTTPS before you can link your GRiD account. Follow the :ref:`https_development_server_recipe` recipe to serve your development portal at ``https://localhost:8443``, then continue with this tutorial.
+
+.. note::
+    From this point on, access your portal at ``https://localhost:8443``, instead of ``http://localhost:8000``.
+
+Now run this command:
 
 .. code-block:: bash
 
     tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.grid.GRiDOAuth2']"
 
-Then configure your portal to require users to link their GRiD account before being able to access the app by running this command:
+Then configure your app to require users to link their GRiD account before being able to access it by adding this code to your `app` class in ``app.py``:
 
-.. code-block:: bash
+.. code-block:: python
+    :emphasize-lines: 15
 
-    tethys settings --set OAUTH2_REQUIREMENTS.secure_map_tutorial grid
+    class App(TethysAppBase):
+        """
+        Tethys app class for Secure Map Tutorial.
+        """
+        name = 'Secure Map Tutorial'
+        description = ''
+        package = 'secure_map_tutorial'  # WARNING: Do not change this value
+        index = 'home'
+        icon = f'{package}/images/icon.gif'
+        root_url = 'secure-map-tutorial'
+        color = '#5f27cd'
+        tags = ''
+        enable_feedback = False
+        feedback_emails = []
+        required_oauth2_providers = ["grid"]
 
 The last step required to configure your application to work with GRiD is to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and setting up a new application with the following settings:
 
@@ -217,7 +237,7 @@ The last step required to configure your application to work with GRiD is to reg
 #. Fill out the form:
 
    :Application Name: Your application's name
-   :Redirect URIs: ``http://localhost:8000/oauth2/complete/grid/``
+   :Redirect URIs: ``https://localhost:8443/oauth2/complete/grid/``
 
 .. note::
 
@@ -236,8 +256,9 @@ Once you've registered your application, you'll need to add the client ID and cl
     tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GRID_KEY [YOUR CLIENT ID]
     tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GRID_SECRET [YOUR CLIENT SECRET]
 
+Make sure to restart your Tethys development server after making these changes.
 
-Now when you try to open your app you will be redirected to your account settings because you haven't linked your account. Scroll down until you find the "Single Sign On" section. Then click on "connect grid". This will redirect you to log in with your GRiD account and bring you back to the account settings. Once you've linked your account, you can go back to the app and you should be able to access it.
+Now when you try to open your app at ``https://localhost:8443``, you will be redirected to your account settings because you haven't linked your account. Scroll down until you find the "Single Sign On" section. Then click on "connect grid". This will redirect you to log in with your GRiD account and bring you back to the account settings. Once you've linked your account, you can go back to the app and you should be able to access it.
 
 6. Add a Map Layer
 ==================
@@ -247,22 +268,23 @@ Next, you'll be setting up your second SecureMapService that you'll be using as 
 Begin by adding a new SecureMapServiceSetting to your app class in ``app.py``:
 
 .. code-block:: python
-    :emphasize-lines: 17, 30-34
+    :emphasize-lines: 18, 31-35
 
     class App(TethysAppBase):
         """
-        Tethys app class for Secure Map App.
+        Tethys app class for Secure Map Tutorial.
         """
-        name = 'Secure Map App'
+        name = 'Secure Map Tutorial'
         description = ''
         package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
-        root_url = 'secure-map-app'
+        root_url = 'secure-map-tutorial'
         color = '#5f27cd'
         tags = ''
         enable_feedback = False
         feedback_emails = []
+        required_oauth2_providers = ["grid"]
 
         GEGD_SECURE_MAP_SERVICE_NAME = "gegd_secure_map_service"
         GRID_SECURE_MAP_SERVICE_NAME = 'grid_secure_map_service'
@@ -315,7 +337,7 @@ Then save your new Secure Map Service and assign it to the GRiD Secure Map Servi
 Our next step will be to add a new map layer to our MapLayout using the GRiD service. Open your ``controllers.py`` and add the following to your MapLayout class:
 
 .. code-block:: python
-    :emphasize-lines: 5-19
+    :emphasize-lines: 5-18
 
     @controller(name='home')
     class SecureMapServiceMapLayout(MapLayout):
@@ -325,7 +347,6 @@ Our next step will be to add a new map layer to our MapLayout using the GRiD ser
             grid_layer = App.get_secure_map_service(
                 App.GRID_SECURE_MAP_SERVICE_NAME,
                 as_layer=True,
-                request_user=request.user
             )
 
             layer_groups = [
@@ -452,22 +473,23 @@ You can access a SecureMapService as a response in order to work directly with t
 First, let's add a new SecureMapServiceSetting to your app class in ``app.py`` for the GRiD AOI service. This service will be used to both display existing AOIs on the map, and to submit new AOIs to the GRiD service. Add the following code to your app class:
 
 .. code-block:: python
-    :emphasize-lines: 18, 36-40
+    :emphasize-lines: 19, 37-41
 
     class App(TethysAppBase):
         """
-        Tethys app class for Secure Map App.
+        Tethys app class for Secure Map Tutorial.
         """
-        name = 'Secure Map App'
+        name = 'Secure Map Tutorial'
         description = ''
         package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
-        root_url = 'secure-map-app'
+        root_url = 'secure-map-tutorial'
         color = '#5f27cd'
         tags = ''
         enable_feedback = False
         feedback_emails = []
+        required_oauth2_providers = ["grid"]
 
         GEGD_SECURE_MAP_SERVICE_NAME = "gegd_secure_map_service"
         GRID_SECURE_MAP_SERVICE_NAME = 'grid_secure_map_service'
@@ -596,13 +618,12 @@ Now add the following helper function to ``controllers.py``. This function will 
 Now update your ``compose_layers()`` method in your MapLayout class to create a new MVLayer for the AOIs:
 
 .. code-block:: python
-    :emphasize-lines: 8-12, 14, 16-34, 40
+    :emphasize-lines: 7-11, 13, 15-33, 39
 
     def compose_layers(self, request, map_view, *args, **kwargs):
         grid_layer = App.get_secure_map_service(
             App.GRID_SECURE_MAP_SERVICE_NAME,
             as_layer=True,
-            request_user=request.user
         )
 
         grid_aoi_response = App.get_secure_map_service(
@@ -656,7 +677,7 @@ First, we'll need to make some updates to your ``controllers.py`` file.
 To start, update your imports:
 
 .. code-block:: python
-    :emphasize-lines: 8
+    :emphasize-lines: 3
 
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
