@@ -4,7 +4,7 @@
 Tethys Services
 ***************
 
-The links under the ``TETHYS SERVICES`` heading can be used to register external services with Tethys Platform for use by apps and extensions. Use the ``Spatial Dataset Services`` link to register your Tethys Portal to GeoServer, the ``Dataset Services`` link to register to CKAN or HydroShare instances, the ``Web Processing Services`` link to register to WPS instances, or the ``PostgreSQL Persistent Store Services`` or ``SQLite Persistent Store Services`` link to register a database.
+The links under the ``TETHYS SERVICES`` heading can be used to register external services with Tethys Platform for use by apps and extensions. Use the ``Spatial Dataset Services`` link to register your Tethys Portal to GeoServer, the ``Dataset Services`` link to register to CKAN or HydroShare instances, the ``Web Processing Services`` link to register to WPS instances, the ``Secure Map Services`` link to register map services that require an API key or OAuth2 access token, or the ``PostgreSQL Persistent Store Services`` or ``SQLite Persistent Store Services`` link to register a database.
 
 .. tip::
 
@@ -13,6 +13,7 @@ The links under the ``TETHYS SERVICES`` heading can be used to register external
         * :doc:`../tethys_sdk/tethys_services/spatial_dataset_services`
         * :doc:`../tethys_sdk/tethys_services/dataset_services`
         * :doc:`../tethys_sdk/tethys_services/web_processing_services`
+        * :doc:`../tethys_sdk/tethys_services/secure_map_services`
         * :doc:`../tethys_sdk/tethys_services/persistent_store`
         * :doc:`../tethys_sdk/tethys_services/spatial_persistent_store`
         * :ref:`tethys_portal_service_settings`

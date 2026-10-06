@@ -19,6 +19,7 @@ from tethys_services.models import (
     SpatialDatasetService,
     DatasetService,
     WebProcessingService,
+    SecureMapService,
 )
 
 
@@ -65,6 +66,15 @@ class TethysAppTests(TethysTestCase):
             password="password",
         )
         self.ss.save()
+
+        self.ms = SecureMapService(
+            name="test_ms",
+            legend_title="Test Map Service",
+            endpoint="https://example.com/map_service",
+            authentication_method="api_key",
+            api_key="test_api_key",
+        )
+        self.ms.save()
 
     def tear_down(self):
         self.wps.delete()
@@ -156,7 +166,7 @@ class TethysAppTests(TethysTestCase):
 
     def test_settings_prop(self):
         ret = self.test_app.settings
-        self.assertEqual(21, len(ret))
+        self.assertEqual(22, len(ret))
 
         for r in ret:
             self.assertIsInstance(r, TethysAppSetting)
@@ -351,6 +361,12 @@ class TethysAppTests(TethysTestCase):
         )
         ps_db_setting.persistent_store_service = self.ps
         ps_db_setting.save()
+
+        secure_map_setting = self.test_app.settings_set.select_subclasses().get(
+            name="secure_map_service"
+        )
+        secure_map_setting.secure_map_service = self.ms
+        secure_map_setting.save()
 
         ret = self.test_app.configured
 

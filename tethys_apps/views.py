@@ -9,9 +9,11 @@
 """
 
 import logging
+import requests
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 
 from tethys_config.models import get_custom_template
@@ -22,6 +24,21 @@ from .models import ProxyApp
 from .decorators import login_required
 
 logger = logging.getLogger("tethys." + __name__)
+
+# Forwarded so the browser's cached-copy check reaches the service and it can
+# reply 304 instead of resending the whole body.
+PROXY_FORWARDED_REQUEST_HEADERS = ("If-None-Match", "If-Modified-Since")
+
+# Forwarded so the browser can cache proxied responses instead of making a new request
+# on every pan and zoom.
+PROXY_FORWARDED_RESPONSE_HEADERS = (
+    "Cache-Control",
+    "ETag",
+    "Expires",
+    "Last-Modified",
+    "Vary",
+    "Age",
+)
 
 
 @login_required()
@@ -150,3 +167,126 @@ def send_beta_feedback_email(request):
 
     json = {"success": True, "result": "Emails sent to specified developers"}
     return JsonResponse(json)
+
+
+@login_required()
+def secure_map_proxy(request, service_id):
+    """
+    Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth2.
+    """
+    from tethys_services.models import SecureMapService
+
+    try:
+        service = SecureMapService.objects.get(id=service_id)
+    except SecureMapService.DoesNotExist:
+        return HttpResponse("Secure Map Service not found.", status=404)
+
+    browser_params = {key: value for key, value in request.GET.items()}
+    service_params = service._get_resolved_params()
+    params = {**service_params, **browser_params}
+
+    headers = {}
+    if service.authentication_method == "oauth2":
+        try:
+            access_token = service._get_oauth_token(request.user)
+        except ValueError:
+            logger.exception(
+                f"Failed to obtain OAuth2 token for SecureMapService {service_id}."
+            )
+            return HttpResponse("Failed to obtain OAuth2 token.", status=403)
+
+        headers["Authorization"] = f"Bearer {access_token}"
+
+    if request.content_type:
+        headers["Content-Type"] = request.content_type
+
+    for header in PROXY_FORWARDED_REQUEST_HEADERS:
+        value = request.headers.get(header)
+        if value:
+            headers[header] = value
+
+    connection_timeout = (
+        service.connection_timeout if service.connection_timeout is not None else 10
+    )
+    read_timeout = service.read_timeout if service.read_timeout is not None else 30
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=service.endpoint,
+            params=params,
+            headers=headers,
+            data=request.body if request.body else None,
+            stream=True,
+            timeout=(connection_timeout, read_timeout),
+        )
+    except requests.Timeout:
+        logger.error(
+            f"Request to {service.endpoint} timed out. "
+            f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+        )
+        return HttpResponse("Request timed out.", status=504)
+
+    except requests.RequestException as e:
+        logger.error(f"Request to {service.endpoint} failed: {type(e).__name__}")
+        return HttpResponse("Request failed.", status=502)
+
+    if not resp.ok:
+        logger.error(
+            f"Upstream request to {service.endpoint} failed with status {resp.status_code}."
+        )
+
+    # A 304 has no body, so return it directly rather than returning an empty response
+    if resp.status_code == 304:
+        proxy_response = HttpResponse(status=304)
+    else:
+        proxy_response = StreamingHttpResponse(
+            resp.iter_content(chunk_size=8192),
+            status=resp.status_code,
+            content_type=resp.headers.get("Content-Type", "application/octet-stream"),
+        )
+
+    for header in PROXY_FORWARDED_RESPONSE_HEADERS:
+        value = resp.headers.get(header)
+        if value:
+            proxy_response[header] = value
+
+    # Prevent shared caches from storing OAuth2 responses fetched with user credentials.
+    if service.authentication_method == "oauth2":
+        proxy_response["Cache-Control"] = "private, no-store"
+
+    return proxy_response
+
+
+@require_POST
+@login_required()
+def secure_map_token(request, service_id):
+    from tethys_services.models import SecureMapService
+
+    if not request.user.is_authenticated:
+        logger.warning(
+            f"Unauthenticated token request for SecureMapService {service_id}."
+        )
+        return JsonResponse({"error": "Authentication required."}, status=401)
+    try:
+        service = SecureMapService.objects.get(id=service_id)
+    except SecureMapService.DoesNotExist:
+        return JsonResponse({"error": "Secure Map Service not found."}, status=404)
+
+    if service.use_proxy or service.authentication_method != "oauth2":
+        return JsonResponse(
+            {"error": "Token not available for this service."}, status=404
+        )
+
+    try:
+        token, expires_in = service._get_oauth_token(request.user, with_expiry=True)
+    except ValueError:
+        logger.exception(
+            f"Failed to obtain OAuth2 token for SecureMapService {service_id}."
+        )
+        return JsonResponse({"error": "Failed to obtain OAuth2 token."}, status=403)
+
+    response = JsonResponse(
+        {"access_token": token, "expires_in": expires_in}, status=200
+    )
+    response["Cache-Control"] = "no-store"
+    return response

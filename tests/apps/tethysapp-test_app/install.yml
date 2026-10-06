@@ -1,6 +1,6 @@
 # This file may be committed to your app code.
 version: 1.0
-# This should match the app - package name in your setup.py
+# This should match the value of the `package` attribute on the app class in app.py.
 name: test_app
 
 # see tethys documentation for how to setup this file

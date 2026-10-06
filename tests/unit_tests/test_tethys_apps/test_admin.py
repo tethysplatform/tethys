@@ -1,9 +1,11 @@
+from datetime import timedelta
+import json
 import pytest
 from pathlib import Path
 import unittest
 from unittest import mock
 from django.db.utils import ProgrammingError
-from django.utils.html import format_html
+from django.utils.html import format_html, escape
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from tethys_apps.admin import (
@@ -13,6 +15,7 @@ from tethys_apps.admin import (
     JSONCustomSettingInline,
     DatasetServiceSettingInline,
     SpatialDatasetServiceSettingInline,
+    SecureMapServiceSettingInline,
     WebProcessingServiceSettingInline,
     PersistentStoreConnectionSettingInline,
     PersistentStoreConnectionSettingForm,
@@ -22,6 +25,8 @@ from tethys_apps.admin import (
     TethysAppAdmin,
     TethysExtensionAdmin,
     CustomUser,
+    UserSocialAuthInline,
+    TethysUserSocialAuthAdmin,
     make_gop_app_access_form,
     register_custom_group,
     register_user_keys_admin,
@@ -514,6 +519,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             PersistentStoreDatabaseSettingInline,
             DatasetServiceSettingInline,
             SpatialDatasetServiceSettingInline,
+            SecureMapServiceSettingInline,
             WebProcessingServiceSettingInline,
             SchedulerSettingInline,
             TethysAppQuotasSettingInline,
@@ -948,3 +954,136 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         mock_register.assert_called()
         mock_logwarning.assert_called_with("Unable to register UserKeys.")
+
+
+class TestUserSocialAuthInline(unittest.TestCase):
+    @pytest.mark.django_db
+    def test_has_add_permission(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertFalse(ret.has_add_permission(mock.MagicMock()))
+
+    @pytest.mark.django_db
+    def test_has_delete_permission(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertFalse(ret.has_delete_permission(mock.MagicMock()))
+
+    @pytest.mark.django_db
+    def test_token_expires_unknown(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = None
+
+        self.assertEqual("Unknown", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_token_expires_expired(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = timedelta(seconds=-1)
+
+        self.assertEqual("Expired", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_token_expires_remaining(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = timedelta(
+            hours=1, microseconds=500
+        )
+
+        self.assertEqual("in 1:00:00", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_refresh_button_no_refresh_token(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.extra_data = {}
+
+        self.assertEqual("No refresh token", ret.refresh_button(mock_obj))
+
+    @pytest.mark.django_db
+    def test_refresh_button(self):
+        ret = UserSocialAuthInline(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.id = 5
+        mock_obj.user_id = 2
+        mock_obj.extra_data = {"refresh_token": "refresh_token"}
+
+        button = ret.refresh_button(mock_obj)
+
+        self.assertIn(
+            f'data-social-refresh-url="{reverse("user:social_refresh", kwargs={"association_id": 5})}"',
+            button,
+        )
+        self.assertIn(
+            f'data-next="{reverse("admin:auth_user_change", args=(2,))}"',
+            button,
+        )
+
+
+class TestTethysUserSocialAuthAdmin(unittest.TestCase):
+    @pytest.mark.django_db
+    def test_formatted_extra_data(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.extra_data = {"expires": 3600}
+
+        self.assertEqual(
+            f"<pre>{escape(json.dumps({'expires': 3600}, indent=2, sort_keys=True))}</pre>",
+            ret.formatted_extra_data(mock_obj),
+        )
+
+    @pytest.mark.django_db
+    def test_token_expires_unknown(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = None
+
+        self.assertEqual("Unknown", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_token_expires_expired(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = timedelta(seconds=-1)
+
+        self.assertEqual("Expired", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_token_expires_remaining(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.expiration_timedelta.return_value = timedelta(
+            hours=1, microseconds=500
+        )
+
+        self.assertEqual("in 1:00:00", ret.token_expires(mock_obj))
+
+    @pytest.mark.django_db
+    def test_refresh_button(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.id = 5
+        mock_obj.pk = 5
+        mock_obj.extra_data = {"refresh_token": "refresh_token"}
+
+        button = ret.refresh_button(mock_obj)
+
+        self.assertIn(
+            f'data-social-refresh-url="{reverse("user:social_refresh", kwargs={"association_id": 5})}"',
+            button,
+        )
+        self.assertIn(
+            f'data-next="{reverse("admin:social_django_usersocialauth_change", args=(5,))}"',
+            button,
+        )
+
+    @pytest.mark.django_db
+    def test_refresh_button_no_refresh_token(self):
+        ret = TethysUserSocialAuthAdmin(mock.MagicMock(), mock.MagicMock())
+        mock_obj = mock.MagicMock()
+        mock_obj.extra_data = {}
+
+        self.assertEqual("No refresh token", ret.refresh_button(mock_obj))

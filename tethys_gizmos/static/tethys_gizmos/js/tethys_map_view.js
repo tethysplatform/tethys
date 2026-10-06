@@ -150,7 +150,13 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer;
+var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer, resolve_gml_projection, resolve_geojson_projection;
+
+// Token Management Methods
+var create_token_manager, get_token_manager, remove_token_url, fetch_with_token, load_image_or_tile_with_token;
+
+// Secure Layers
+var m_token_managers = {};
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -235,6 +241,13 @@ ol_base_map_init = function()
       source_class: ol.source.XYZ,
       default_source_options: {},
       label_property: null,
+  },
+  'WMS': {
+    source_class: function(options) {
+      return new ol.source.TileWMS(options);
+    },
+    default_source_options: {},
+    label_property: null,
   },
 }
 
@@ -792,7 +805,8 @@ ol_layers_init = function()
 {
   // Constants
   var GEOJSON = 'GeoJSON',
-      KML = 'KML';
+      KML = 'KML',
+      GML = 'GML';
 
   var TILE_SOURCES = ['TileDebug', 'TileUTFGrid', 'UrlTile', 'TileImage', 'VectorTile', 'BingMaps', 'TileArcGISRest',
                       'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM'];
@@ -800,7 +814,7 @@ ol_layers_init = function()
   var IMAGE_SOURCES = ['ImageArcGISRest', 'ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageWMS', 'ImageVector',
                        'Raster'];
 
-  var VECTOR_SOURCES = ['GeoJSON', 'KML', 'Vector', 'Cluster'];
+  var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GML', 'Vector', 'Cluster'];
 
   var STYLE_MAP = {
       'fill'  : ol.style.Fill,
@@ -911,9 +925,15 @@ ol_layers_init = function()
 
       // Tile layer case
       if (in_array(current_layer.source, TILE_SOURCES)) {
-        var resolutions, source_options, tile_grid;
+        var resolutions, source_options, tile_grid, token_manager;
 
-        source_options = current_layer.options;
+        token_manager = get_token_manager(current_layer.options);
+        source_options = remove_token_url(current_layer.options);
+
+        // Load the tiles with an Authorization header when a token is given
+        if (token_manager) {
+          source_options['tileLoadFunction'] = load_image_or_tile_with_token(token_manager, ol.TileState.ERROR);
+        }
 
         if (source_options && 'tileGrid' in source_options) {
           source_options['tileGrid'] = new ol.tilegrid.TileGrid(source_options['tileGrid']);
@@ -960,16 +980,80 @@ ol_layers_init = function()
 
       // Image layer case
       else if (in_array(current_layer.source, IMAGE_SOURCES)) {
+        let token_manager = get_token_manager(current_layer.options);
+        let image_source_options = remove_token_url(current_layer.options);
+
+        // Load the images with an Authorization header when a token is given
+        if (token_manager) {
+          image_source_options['imageLoadFunction'] = load_image_or_tile_with_token(token_manager, ol.ImageState.ERROR);
+        }
+
         Source = string_to_function('ol.source.' + current_layer.source);
-        current_layer_layer_options['source'] = new Source(current_layer.options);
+        current_layer_layer_options['source'] = new Source(image_source_options);
         layer = new ol.layer.Image(current_layer_layer_options);
       }
 
       // Vector layer case
       else if (in_array(current_layer.source, VECTOR_SOURCES)) {
 
+        // GeoJSON from URL case
+        if (current_layer.source === GEOJSON && current_layer.options.hasOwnProperty('url')) {
+          let geojson_url = current_layer.options.url;
+          let token_manager = get_token_manager(current_layer.options);
+          let data_projection_override = current_layer.options.data_projection;
+          let geojson_format = new ol.format.GeoJSON();
+
+          let geojson_url_source = new ol.source.Vector({
+            format: geojson_format,
+            strategy: ol.loadingstrategy.all,
+            loader: function(extent, resolution, projection, success, failer) {
+              // Sends an Authorization header only when a token is given
+              fetch_with_token(token_manager, geojson_url)
+                .then(r => {
+                  if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                  return r.json();
+                })
+                .then(json => {
+                  let resolved = resolve_geojson_projection(geojson_format, json, data_projection_override);
+                  let features = geojson_format.readFeatures(
+                    json, 
+                    {'dataProjection': resolved.projection, 'featureProjection': resolved.projection}
+                  );
+                  
+                  if (resolved.assumed && features.length > 0) {
+                    let data_extent = ol.extent.createEmpty();
+                    features.forEach(f => {
+                      let g = f.getGeometry();
+                      if (g) { ol.extent.extend(data_extent, g.getExtent()); }
+                    });
+                    if (!ol.extent.containsExtent([-180, -90, 180, 90], data_extent)) {
+                      throw new Error('GeoJSON: no crs member, and coordinates [' + data_extent.join(', ') +
+                                      '] are outside ' + LAT_LON_PROJECTION + ' bounds. Set data_projection on the layer.');
+                    }
+                  }
+
+                  features.forEach(f => {
+                    let g = f.getGeometry();
+                    if (g) { g.transform(resolved.projection, DEFAULT_PROJECTION); }
+                  });
+                  
+                  geojson_url_source.addFeatures(features);
+                  if (success) { success(features); }
+                })
+                .catch(err => {
+                  console.error('GeoJSON load failed: ', err);
+                  geojson_url_source.removeLoadedExtent(extent);
+                  if (failer) { failer(); }
+                })
+            },
+          });
+
+          current_layer_layer_options['source'] = geojson_url_source;
+          layer = new ol.layer.Vector(current_layer_layer_options);
+        }
+
         // GeoJSON case
-        if (current_layer.source === GEOJSON){
+        else if (current_layer.source === GEOJSON){
           var geojson_source, json, projection, format, features;
 
           json = current_layer.options;
@@ -997,11 +1081,47 @@ ol_layers_init = function()
         else if (current_layer.source === KML){
           // From URL case
           if (current_layer.options.hasOwnProperty('url')) {
-            current_layer_layer_options['source'] = new ol.source.Vector({
-              url: current_layer.options.url,
-              format: new ol.format.KML(),
-              projection: new ol.proj.get(DEFAULT_PROJECTION)
-            });
+            let kml_url = current_layer.options.url;
+            let token_manager = get_token_manager(current_layer.options);
+
+            // Load the KML with an Authorization header when a token is given
+            if (token_manager) {
+              let kml_format = new ol.format.KML();
+
+              let kml_url_source = new ol.source.Vector({
+                format: kml_format,
+                strategy: ol.loadingstrategy.all,
+                projection: new ol.proj.get(DEFAULT_PROJECTION),
+                loader: function(extent, resolution, projection, success, failer) {
+                  fetch_with_token(token_manager, kml_url)
+                    .then(r => {
+                      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                      return r.text();
+                    })
+                    .then(text => {
+                      let features = kml_format.readFeatures(text, {
+                        featureProjection: DEFAULT_PROJECTION,
+                      });
+                      kml_url_source.addFeatures(features);
+                      if (success) { success(features); }
+                    })
+                    .catch(err => {
+                      console.error('KML load failed: ', err);
+                      kml_url_source.removeLoadedExtent(extent);
+                      if (failer) { failer(); }
+                    })
+                },
+              });
+
+              current_layer_layer_options['source'] = kml_url_source;
+            } else {
+              current_layer_layer_options['source'] = new ol.source.Vector({
+                url: kml_url,
+                format: new ol.format.KML(),
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
+              });
+            }
+
             layer = new ol.layer.Vector(current_layer_layer_options);
           }
 
@@ -1017,12 +1137,122 @@ ol_layers_init = function()
             current_layer_layer_options['source'] = kml_source;
             layer = new ol.layer.Vector(current_layer_layer_options);
           }
+        } else if (current_layer.source === GML) {
+          // TODO look into different GML formats
+          let gmlFormat = new ol.format.WFS({
+              version: '1.1.0',
+              gmlFormat: new ol.format.GML3(),
+          });
+
+          if (current_layer.options.hasOwnProperty('url')) {
+            let baseUrl = current_layer.options.url;
+            let token_manager = get_token_manager(current_layer.options);
+            let data_projection_override = current_layer.options.data_projection;
+
+            let gmlSource = new ol.source.Vector({
+              format: gmlFormat,
+              strategy: ol.loadingstrategy.bbox,
+              loader: function(extent, resolution, projection, success, failer) {
+                let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
+                let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
+
+                fetch_with_token(token_manager, url)
+                  .then(r => {
+                    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                    return r.text();
+                  })
+                  .then(text => {
+                      let data_projection = resolve_gml_projection(gmlFormat, text, data_projection_override);
+                      let features = gmlFormat.readFeatures(text, {
+                        dataProjection: data_projection || LAT_LON_PROJECTION,
+                        featureProjection: DEFAULT_PROJECTION,
+                      });
+                    if (!data_projection && features.length > 0) {
+                      console.warn(
+                        'GML: could not read a projection from the data, so ' + LAT_LON_PROJECTION +
+                        ' is assumed. Set data_projection on the layer to use a different one.'
+                      );
+                    }
+                    gmlSource.addFeatures(features);
+                    if (success) { success(features); }
+                  })
+                  .catch(err => {
+                    console.error('GML load failed: ', err);
+                    gmlSource.removeLoadedExtent(extent);
+                    if (failer) { failer(); }
+                  })
+              }
+            })
+
+            current_layer_layer_options['source'] = gmlSource;
+            layer = new ol.layer.Vector(current_layer_layer_options);
+          }
+
+          else if (current_layer.options.hasOwnProperty('gml')) {
+              let data_projection = resolve_gml_projection(gmlFormat, current_layer.options.gml, current_layer.options.data_projection);            
+              let gmlFeatures = gmlFormat.readFeatures(current_layer.options.gml, {
+              dataProjection: data_projection || LAT_LON_PROJECTION,
+              featureProjection: DEFAULT_PROJECTION,
+            });
+            if (!data_projection && gmlFeatures.length > 0) {
+              console.warn(
+                'GML: could not read a projection from the data, so ' + LAT_LON_PROJECTION +
+                ' is assumed. Set data_projection on the layer to use a different one.');
+            }
+            let gmlSource = new ol.source.Vector({features: gmlFeatures});
+            current_layer_layer_options['source'] = gmlSource;
+            layer = new ol.layer.Vector(current_layer_layer_options);
+          }
         }
 
         // Generic vector case
         else {
-          Source = string_to_function('ol.source.' + current_layer.source);
-          current_layer_layer_options['source'] = new Source(current_layer.options);
+          let token_manager = get_token_manager(current_layer.options);
+          let baseUrl = current_layer.options ? current_layer.options.url: null;
+          let data_projection_override = current_layer.options ? current_layer.options.data_projection : null;
+
+          if (token_manager && baseUrl) {
+            let format_name = current_layer.options.format || 'GeoJSON';
+            let VectorFormat = string_to_function('ol.format.' + format_name);
+            let vector_format = new VectorFormat();
+            let use_bbox = current_layer.options.strategy === 'bbox';
+
+            let vector_source = new ol.source.Vector({
+              format: vector_format,
+              strategy: use_bbox ? ol.loadingstrategy.bbox : ol.loadingstrategy.all,
+              loader: function(extent, resolution, projection, success, failer) {
+                let url = baseUrl;
+                if (use_bbox) {
+                  let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
+                  url += sep + 'bbox=' + extent.join(',') + ',' + DEFAULT_PROJECTION;
+                }
+                fetch_with_token(token_manager, url)
+                  .then(r => {
+                    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+                    return r.text();
+                  })
+                  .then(text => {
+                    let data_projection = data_projection_override || vector_format.readProjection(text) || LAT_LON_PROJECTION;
+                    let features = vector_format.readFeatures(text, {
+                      dataProjection: data_projection,
+                      featureProjection: DEFAULT_PROJECTION,
+                    });
+                    vector_source.addFeatures(features);
+                    if (success) { success(features); }
+                  })
+                  .catch(err => {
+                    console.error('Vector load failed: ', err);
+                    vector_source.removeLoadedExtent(extent);
+                    if (failer) { failer(); }
+                  })
+              },
+            });
+            current_layer_layer_options['source'] = vector_source;
+          } else {
+            Source = string_to_function('ol.source.' + current_layer.source);
+            current_layer_layer_options['source'] = new Source(remove_token_url(current_layer.options));
+          }
+
           layer = new ol.layer.Vector(current_layer_layer_options);
         }
       }
@@ -2311,6 +2541,173 @@ in_array = function(item, array)
 is_defined = function(variable)
 {
   return !!(typeof variable !== typeof undefined && variable !== false && variable !== null);
+};
+
+// Remove the token url from the options object
+remove_token_url = function(options) {
+  if (!options) { return options; }
+
+  let stripped_options = Object.assign({}, options);
+  delete stripped_options.token_url;
+  return stripped_options;
+};
+
+resolve_gml_projection = function(gml_format, gml, data_projection_override) {
+  if (data_projection_override) {
+    return data_projection_override;
+  }
+
+  let declared_projection = gml_format.readProjection(gml);
+  if (declared_projection) {
+    return declared_projection;
+  }
+  
+  if (typeof gml === 'string') {
+    // MapServer puts a <gml:boundedBy> before the first feature, and readProjection
+    // doesn't look past it. Fall back to the first srsName in the document.
+    let match = gml.match(/srsName=["']([^"']+)["']/);
+    if (match) {
+      let projection = ol.proj.get(match[1]);
+      if (projection) {
+        return projection;
+      }
+      console.warn('GML: srsName "' + match[1] + '" is not a known projection. Register it with proj4 or set data_projection on the layer.');
+    }    
+  }
+
+  return null;
+};
+
+resolve_geojson_projection = function(geojson_format, json, data_projection_override) {
+  if (data_projection_override) {
+    let projection = ol.proj.get(data_projection_override);
+    if (!projection) {
+      throw new Error('GeoJSON: data_projection "' + data_projection_override +
+                      '" is not a known projection. Register it with proj4.');
+    }
+    return {projection: projection, assumed: false};
+  }
+
+  if (json && json.crs) {
+    // Throws on crs types OL doesn't support; returns null for unknown names
+    let projection = geojson_format.readProjection(json);
+    if (!projection) {
+      throw new Error('GeoJSON: crs ' + JSON.stringify(json.crs) +
+                      ' is not a known projection. Register it with proj4 or set data_projection on the layer.');
+    }
+    return {projection: projection, assumed: false};
+  }
+
+  return {projection: ol.proj.get(LAT_LON_PROJECTION), assumed: true};
+};
+
+// Create a manager that fetches, caches, and refreshes access tokens from a token endpoint
+create_token_manager = function(token_url) {
+  // Saves as {token, expires_at}
+  let cached = null;   
+  let pending = null;
+  let failed_until = 0;
+  let last_error = null;
+  const REFRESH_BEFORE_EXPIRY_MS = 60000;
+  const FAILURE_RETRY_MS = 30000;
+
+  let request_token = function() {
+    pending = Promise.resolve()
+      .then(() => fetch(token_url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'X-CSRFToken': get_csrf_token()},
+      }))
+      .then(r => {
+        if (!r.ok) { throw new Error('Token request to ' + token_url + ' failed: HTTP ' + r.status); }
+        return r.json();
+      })
+      .then(data => {
+        let lifetime_ms = data.expires_in ? data.expires_in * 1000 : null;
+        cached = {
+          token: data.access_token,
+          expires_at: lifetime_ms
+            ? Date.now() + lifetime_ms - Math.min(REFRESH_BEFORE_EXPIRY_MS, lifetime_ms / 2)
+            : null,
+        };
+        return cached.token;
+      })
+      .catch(err => {
+        // Make sure to record the failure so that future requests know to wait before retrying.
+        failed_until = Date.now() + FAILURE_RETRY_MS;
+        last_error = err;
+        throw err;
+      })
+      .finally(() => { pending = null; });
+    return pending;
+  };
+
+  return {
+    get: function() {
+      if (Date.now() < failed_until) {
+        return Promise.reject(new Error(
+          'Token request skipped: waiting after a recent failure (' + last_error.message + ')'
+        ));
+      }
+      if (cached && (!cached.expires_at || Date.now() < cached.expires_at)) {
+        return Promise.resolve(cached.token);
+      }
+      return pending || request_token();
+    },
+    invalidate: function() { cached = null; },
+  };
+};
+
+// Get the token manager for a layer, or null if the layer has no token endpoint
+get_token_manager = function(options) {
+  if (!options || !options.token_url) { return null; }
+
+  if (!m_token_managers[options.token_url]) {
+    m_token_managers[options.token_url] = create_token_manager(options.token_url);
+  }
+  return m_token_managers[options.token_url];
+};
+
+// Run fetch request with a bearer token using a token manager
+fetch_with_token = function(token_manager, url, init) {
+  init = Object.assign({credentials: 'same-origin'}, init);
+  if (!token_manager) { return fetch(url, init); }
+
+  let attempt = function(token) {
+    let headers = new Headers(init.headers || {});
+    headers.set('Authorization', 'Bearer ' + token);
+    return fetch(url, Object.assign({}, init, {headers: headers}));
+  };
+  
+  // If response is a 401, delete cached token and retry once with a new token
+  return token_manager.get().then(attempt).then(r => {
+    if (r.status !== 401) { return r; }
+    token_manager.invalidate();
+    return token_manager.get().then(attempt);
+  });
+};
+
+// Load an image or tile with an Authorization header from a token manager
+load_image_or_tile_with_token = function(token_manager, error_state) {
+  return function(image_or_tile, src) {
+    fetch_with_token(token_manager, src)
+      .then(r => {
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.blob();
+      })
+      .then(blob => {
+        let object_url = URL.createObjectURL(blob);
+        let img = image_or_tile.getImage();
+        img.onload = img.onerror = function() { URL.revokeObjectURL(object_url); };
+        img.src = object_url;
+      })
+      .catch(err => {
+        console.error('Load failed for ' + src + ': ', err);
+        if (is_defined(error_state) && image_or_tile.setState) {
+          image_or_tile.setState(error_state);
+        }
+      });
+  };
 };
 
 // Instantiate a function from a string

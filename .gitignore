@@ -12,6 +12,7 @@
 build/
 dist/
 docs/_build
+*.env
 *~
 tethys_gizmos/static/tethys_gizmos/less/bower_components/*
 node_modules
