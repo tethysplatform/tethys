@@ -263,6 +263,9 @@ urlpatterns = [
         tethys_apps_views.basemap_source_file,
         name="basemap_source_file",
     ),
+    re_path(
+        r"^basemaps/capture/$", tethys_apps_views.basemap_capture, name="basemap_capture"
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 

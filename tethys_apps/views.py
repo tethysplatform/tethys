@@ -9,13 +9,16 @@
 """
 
 from functools import lru_cache
+import json
 import logging
 import os
 import requests
+import tempfile
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse, FileResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse, FileResponse, HttpResponseBadRequest
 from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
 from large_image_source_rasterio import open as rio_open
 
 
@@ -42,6 +45,10 @@ PROXY_FORWARDED_RESPONSE_HEADERS = (
     "Vary",
     "Age",
 )
+
+MBTILES_MAX_TILES = 10_000    # Keep in sync with MBTILES_MAX_TILES in tethys_map_view.js
+MBTILES_MAX_ZOOM = 24
+WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 
 
 @login_required()
@@ -229,8 +236,40 @@ def secure_map_proxy(request, setting_id):
 
     return proxy_response
 
+def _tile_style(path):
+    """
+    Explicit large_image style: RGB at the full 8-bit range (no per-band min/max stretch)
+    and an alpha band applied as transparency. The default stretch turns a constant
+    alpha band (e.g. fully opaque) into fully transparent tiles.
+    """
+    import rasterio
+    from rasterio.enums import ColorInterp
+
+    palettes = {ColorInterp.red: "#f00", ColorInterp.green: "#0f0", ColorInterp.blue: "#00f"}
+
+    with rasterio.open(path) as ds:
+        interp = ds.colorinterp
+
+    bands = []
+    for index, ci in enumerate(interp, start=1):
+        if ci in palettes:
+            bands.append({"band": index, "palette": palettes[ci], "min": 0, "max": 255})
+        elif ci == ColorInterp.alpha:
+            bands.append({
+                "band": index,
+                "palette": ["#ffffff00", "#ffffffff"],
+                "min": 0,
+                "max": 255,
+                "composite": "multiply",
+            })
+
+    return {"bands": bands} if bands else None
+
 @lru_cache(maxsize=32)
 def _open_source(path, mtime):
+    style = _tile_style(path)
+    if style:
+        return rio_open(path, projection="EPSG:3857", encoding="PNG", style=json.dumps(style))
     return rio_open(path, projection="EPSG:3857", encoding="PNG")
 
 def _get_source(path):
@@ -248,6 +287,12 @@ def basemap_tile(request, image_id, z, x, y):
 
     except BasemapImage.DoesNotExist:
         return HttpResponse("Basemap image not found or not ready.", status=404)
+
+    if image.capture_id:
+        tile = image.capture.get_tile(z, x, y)
+        if tile is None:
+            return HttpResponse(status=204)
+        return HttpResponse(tile, content_type=image.capture.tile_content_type)
 
     ts = _get_source(image.generated_file.path)
 
@@ -276,3 +321,150 @@ def basemap_source_file(request, image_id):
         image.source_file.open("rb"),
         content_type=content_type or "application/octet-stream"
     )
+
+def _mercator_to_lonlat(x, y):
+    import math
+
+    lon = x / WEB_MERCATOR_HALF_WORLD * 180
+    lat = math.degrees(2 * math.atan(math.exp(y / WEB_MERCATOR_HALF_WORLD * math.pi)) - math.pi / 2)
+    return lon, lat
+
+
+def _tile_format(data):
+    if data.startswith(b"\x89PNG"):
+        return "png"
+    if data.startswith(b"\xff\xd8"):
+        return "jpg"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
+@login_required()
+@require_POST
+def basemap_capture(request):
+    """
+    Save basemap tiles fetched by the map view as a BasemapCapture (an MBTiles file),
+    which can then be assigned to basemap services.
+
+    The tiles arrive as one packed file (the tile images concatenated) plus an
+    "index" of [z, x, y, length] entries in XYZ order, so the upload is a single
+    file no matter how many tiles there are.
+    """
+    import sqlite3
+    from collections import Counter
+    from django.core.files import File
+    from django.utils.text import slugify
+    from tethys_services.models import BasemapCapture
+
+    tiles = request.FILES.get("tiles")
+    if tiles is None:
+        return HttpResponseBadRequest("No tiles were provided.")
+
+    try:
+        index = json.loads(request.POST.get("index", ""))
+        bbox = [float(v) for v in request.POST.get("bbox", "").split(",")]
+    except ValueError:
+        return HttpResponseBadRequest("Invalid tile index or bbox.")
+    if len(bbox) != 4 or bbox[0] >= bbox[2] or bbox[1] >= bbox[3]:
+        return HttpResponseBadRequest("Invalid bbox.")
+    if not isinstance(index, list) or not index:
+        return HttpResponseBadRequest("No tiles were provided.")
+    if len(index) > MBTILES_MAX_TILES:
+        return HttpResponseBadRequest(f"Too many tiles (the limit is {MBTILES_MAX_TILES}).")
+
+    try:
+        entries = [tuple(int(v) for v in entry) for entry in index]
+    except (TypeError, ValueError):
+        return HttpResponseBadRequest("Invalid tile index.")
+    for z, x, y, length in entries:
+        if not (0 <= z <= MBTILES_MAX_ZOOM and 0 <= x < 2**z and 0 <= y < 2**z and length > 0):
+            return HttpResponseBadRequest("Invalid tile index.")
+    if sum(entry[3] for entry in entries) != tiles.size:
+        return HttpResponseBadRequest("The tile index does not match the uploaded tiles.")
+
+    name = request.POST.get("name", "").strip()[:100]
+    if not name:
+        return HttpResponseBadRequest("Enter a name for the basemap.")
+    source_name = request.POST.get("source", "").strip()
+
+    out = tempfile.NamedTemporaryFile(suffix=".mbtiles", delete=False)
+    out.close()
+
+    try:
+        formats = Counter()
+        conn = sqlite3.connect(out.name)
+        try:
+            conn.executescript(
+                """
+                CREATE TABLE metadata (name TEXT, value TEXT);
+                CREATE TABLE tiles (
+                    zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB
+                );
+                CREATE UNIQUE INDEX tile_index ON tiles (zoom_level, tile_column, tile_row);
+                """
+            )
+
+            with tiles.open("rb") as fh:
+                for z, x, y, length in entries:
+                    data = fh.read(length)
+                    tile_format = _tile_format(data)
+                    if tile_format is None:
+                        return HttpResponseBadRequest("A tile is not a PNG, JPEG or WebP image.")
+                    formats[tile_format] += 1
+                    # MBTiles rows use the TMS scheme: row 0 is the southernmost row
+                    conn.execute(
+                        "INSERT OR REPLACE INTO tiles VALUES (?, ?, ?, ?)",
+                        (z, x, (2**z - 1) - y, sqlite3.Binary(data)),
+                    )
+
+            west, south = _mercator_to_lonlat(bbox[0], bbox[1])
+            east, north = _mercator_to_lonlat(bbox[2], bbox[3])
+            zooms = [entry[0] for entry in entries]
+            tile_format = formats.most_common(1)[0][0]
+            metadata = {
+                "name": name,
+                "type": "baselayer",
+                "version": "1.0",
+                "description": f"Captured from the {source_name} basemap" if source_name else name,
+                "format": tile_format,
+                "bounds": f"{west},{south},{east},{north}",
+                "center": f"{(west + east) / 2},{(south + north) / 2},{min(zooms)}",
+                "minzoom": str(min(zooms)),
+                "maxzoom": str(max(zooms)),
+            }
+            conn.executemany("INSERT INTO metadata VALUES (?, ?)", metadata.items())
+            conn.commit()
+        finally:
+            conn.close()
+
+        capture = BasemapCapture(
+            name=name,
+            owner=request.user,
+            tile_format=tile_format,
+            min_zoom=min(zooms),
+            max_zoom=max(zooms),
+            min_x=bbox[0],
+            min_y=bbox[1],
+            max_x=bbox[2],
+            max_y=bbox[3],
+        )
+        with open(out.name, "rb") as fh:
+            capture.mbtiles_file.save(
+                f"{slugify(name) or 'basemap'}.mbtiles", File(fh), save=False
+            )
+        try:
+            capture.save()
+        except Exception:
+            capture.mbtiles_file.delete(save=False)
+            raise
+    finally:
+        os.unlink(out.name)
+
+    return JsonResponse({
+        "id": capture.pk,
+        "name": capture.name,
+        "tiles": len(entries),
+        "min_zoom": capture.min_zoom,
+        "max_zoom": capture.max_zoom,
+    })

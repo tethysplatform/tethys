@@ -151,11 +151,28 @@ var update_field;
 
 // Utility Methods
 var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer,
-    get_token_headers, remove_token, load_tile_token, load_image_token;
+    get_token_headers, remove_token, load_tile_token, load_image_token, get_current_basemap;
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
 
+// Basemap Capture
+var m_download_aoi_extent, m_download_aoi_layer, m_download_drag_box, m_download_drawing;
+
+var ol_download_panel_init, get_download_mode, get_download_extent;
+
+var m_basemap_capture_url,
+    m_download_busy;
+
+var MBTILES_MAX_TILES = 10000,        // Keep in sync with MBTILES_MAX_TILES in tethys_apps/views.py
+    MBTILES_FETCH_CONCURRENCY = 6,
+    MBTILES_MAX_GRID_ZOOM = 24;
+
+var get_basemap_tile_layers, get_xyz_tile_grid, get_mbtiles_plan,
+    fetch_tile, composite_tiles, save_basemap_capture, check_save_response, get_csrf_token;
+
+// Variables
+var m_basemap_layers = [];
  /************************************************************************
  *                    PRIVATE FUNCTION IMPLEMENTATIONS
  *************************************************************************/
@@ -167,6 +184,10 @@ var base_map_labels = [];
 // Initialize the background map
 ol_base_map_init = function()
 {
+  // Reset the base map labels and layers arrays
+  base_map_labels = [];
+  m_basemap_layers = [];
+
   // Constants
   var SUPPORTED_BASE_MAPS = {
   'OpenStreetMap': {
@@ -259,12 +280,21 @@ ol_base_map_init = function()
           var base_map_metadata = SUPPORTED_BASE_MAPS[layer_name];
           var LayerSource = base_map_metadata.source_class;
           var source_options = argument ? argument : base_map_metadata.default_source_options;
+
+          let layer_extent;
   
+          if (source_options && source_options.layer_extent) {
+            source_options = Object.assign({}, source_options);
+            layer_extent = source_options.layer_extent;
+            delete source_options.layer_extent;
+          }
+
           let layer, label = layer_name;
-  
+
           if(source_options){
             layer = new ol.layer.Tile({
               source: new LayerSource(source_options),
+              extent: layer_extent,
               visible: base_map_layer_names.length > 1 ? true : visible
             });
           }
@@ -293,6 +323,10 @@ ol_base_map_init = function()
     }
     base_map_layer.tethys_legend_title = 'Basemap: ' + base_map_layer_label;
     base_map_labels.push(base_map_layer_label);
+    m_basemap_layers.push({
+      layer: base_map_layer,
+      label: base_map_layer_label
+    })
     return base_map_layer;
   }
 
@@ -1362,6 +1396,7 @@ parse_options = function()
   m_disable_base_map = $map_element.data(DISABLE_BASE_MAP_DATA);
   m_feature_selection_options = $map_element.data(FEAT_SELECTION_DATA);
   m_show_clicks = $map_element.data(SHOW_CLICKS_DATA);
+  m_basemap_capture_url = $map_element.data('basemap-capture-url');
 };
 
 ol_initialize_all = function() {
@@ -1407,6 +1442,480 @@ ol_initialize_all = function() {
 
   // Initialize tooltips
   $('[data-toggle="tooltip"]').tooltip();
+
+  // Initialize basemap capture panel
+  ol_download_panel_init();
+};
+
+// Basemap Capture Methods
+get_download_mode = function() {
+  return $('input[name="map_view_download_mode"]:checked').val();
+};
+
+// Extent to capture in EPSG:3857, or null if an area is required but not selected
+get_download_extent = function() {
+  if (get_download_mode() === 'area') {
+    return m_download_aoi_extent;
+  }
+  var view = m_map.getView();
+  return ol.proj.transformExtent(
+    view.calculateExtent(m_map.getSize()), view.getProjection(), DEFAULT_PROJECTION
+  );
+};
+
+ol_download_panel_init = function() {
+  var $wrapper = $('.tethys-map-view-download');
+  if (!$wrapper.length) { return; }
+
+  var $toggle = $('#map_view_download_toggle'),
+      $panel = $('#map_view_download_panel'),
+      $basemap = $('#map_view_download_basemap'),
+      $mode = $('input[name="map_view_download_mode"]'),
+      $area_controls = $('#map_view_download_area_controls'),
+      $draw = $('#map_view_download_draw'),
+      $clear = $('#map_view_download_clear'),
+      $status = $('#map_view_download_status'),
+      $submit = $('#map_view_download_submit'),
+      $cancel = $('#map_view_download_cancel'),
+      $name = $('#map_view_download_name'),
+      $min_zoom = $('#map_view_download_min_zoom'),
+      $max_zoom = $('#map_view_download_max_zoom');
+
+  var refresh, stop_drawing, set_open, sync_zoom_range, get_zoom_range;
+
+  m_download_aoi_extent = null;
+  m_download_drawing = false;
+  m_download_busy = false;
+
+  m_download_aoi_layer = new ol.layer.Vector({
+    source: new ol.source.Vector(),
+    style: new ol.style.Style({
+      stroke: new ol.style.Stroke({ color: '#ffcc00', width: 2, lineDash: [6, 4] }),
+      fill: new ol.style.Fill({ color: 'rgba(255, 204, 0, 0.1)' })
+    }),
+    visible: false
+  });
+  m_download_aoi_layer.setMap(m_map);
+
+  m_download_drag_box = new ol.interaction.DragBox({ condition: ol.events.condition.always });
+  m_download_drag_box.setActive(false);
+  m_map.addInteraction(m_download_drag_box);
+
+  get_zoom_range = function() {
+    return [Number($min_zoom.val()), Number($max_zoom.val())];
+  };
+
+
+
+  // Min zoom follows the map's current zoom; only the max zoom is chosen.
+  // reset_max puts the max back to its default (min + 2), e.g. when the panel opens  
+  sync_zoom_range = function(reset_max) {
+    var basemap = get_current_basemap(),
+      plan = basemap ? get_mbtiles_plan(basemap, get_download_extent() || [0, 0, 1, 1], 0, 0) : null,
+      limit = plan && !plan.error ? plan.zoom_limit : MBTILES_MAX_GRID_ZOOM,
+      min_zoom = Math.max(0, Math.min(Math.round(m_map.getView().getZoom()), limit)),
+      max_zoom = Number($max_zoom.val());
+
+    $min_zoom.val(min_zoom);
+    $max_zoom.attr({ min: min_zoom, max: limit });
+
+    if (reset_max || !Number.isInteger(max_zoom) || max_zoom < min_zoom || max_zoom > limit) {
+      $max_zoom.val(Math.min(min_zoom + 2, limit));
+    }
+  };
+
+  refresh = function() {
+    var basemap = get_current_basemap(),
+        area_mode = get_download_mode() === 'area',
+        extent = get_download_extent(),
+        status = '', is_error = false, blocked = false, zooms, plan;
+
+    $basemap.text(basemap ? basemap.label : 'None');
+    $area_controls.prop('hidden', !area_mode);
+    $draw.toggleClass('active', m_download_drawing);
+    $clear.prop('disabled', !m_download_aoi_extent);
+
+    if (!basemap) {
+      status = 'Select a basemap to save.';
+    } else if (area_mode && m_download_drawing) {
+      status = 'Drag a box on the map.';
+    } else if (area_mode && !m_download_aoi_extent) {
+      status = 'Draw an area on the map.';
+    } else if (!$name.val().trim()) {
+      status = 'Enter a name for the basemap.';
+      blocked = true;
+    } else {
+      zooms = get_zoom_range();
+      plan = get_mbtiles_plan(basemap, extent, zooms[0], zooms[1]);
+      if (plan.error) {
+        status = plan.error;
+        is_error = blocked = true;
+      } else if (plan.count > MBTILES_MAX_TILES) {
+        status = plan.count.toLocaleString() + ' tiles: the limit is ' + MBTILES_MAX_TILES.toLocaleString() +
+                 '. Choose a smaller area or a lower max zoom.';
+        is_error = blocked = true;
+      } else {
+        status = plan.count.toLocaleString() + ' tiles';
+      }
+    }
+    $status.text(status).prop('hidden', !status)
+           .toggleClass('text-danger', is_error).toggleClass('text-muted', !is_error);
+
+    $submit.prop('disabled', m_download_busy || blocked || !basemap || !extent);
+  };
+
+  stop_drawing = function() {
+    m_download_drawing = false;
+    m_download_drag_box.setActive(false);
+  };
+
+  set_open = function(open) {
+    if (!open) { stop_drawing(); }
+    $panel.prop('hidden', !open);
+    $toggle.attr('aria-expanded', open);
+    // Only show the selected area while the panel is open
+    m_download_aoi_layer.setVisible(open && get_download_mode() === 'area');
+    if (open) {
+      sync_zoom_range(true);
+      refresh();
+    }
+  };
+
+  // Keep the tile count in step with the current view
+  m_map.on('moveend', function() {
+    if (!$panel.prop('hidden') && !m_download_busy) {
+      sync_zoom_range(false);
+      refresh();
+    }
+  });
+
+  m_download_drag_box.on('boxend', function() {
+    var geometry = m_download_drag_box.getGeometry(),
+        source = m_download_aoi_layer.getSource();
+
+    source.clear();
+    source.addFeature(new ol.Feature(geometry));
+    m_download_aoi_extent = ol.proj.transformExtent(
+      geometry.getExtent(), m_map.getView().getProjection(), DEFAULT_PROJECTION
+    );
+
+    stop_drawing();
+    refresh();
+  });
+
+  // Namespaced so reInitializeMap doesn't stack duplicate handlers
+  $toggle.off('.tethysDownload').on('click.tethysDownload', function() {
+    set_open($panel.prop('hidden'));
+  });
+
+  $cancel.off('.tethysDownload').on('click.tethysDownload', function() {
+    set_open(false);
+  });
+
+  $mode.off('.tethysDownload').on('change.tethysDownload', function() {
+    var area_mode = get_download_mode() === 'area';
+    if (!area_mode) { stop_drawing(); }
+    m_download_aoi_layer.setVisible(area_mode);
+    refresh();
+  });
+
+  $name.add($max_zoom).off('.tethysDownload').on('input.tethysDownload', function() {
+    refresh();
+  });
+
+  $draw.off('.tethysDownload').on('click.tethysDownload', function() {
+    m_download_drawing = true;
+    m_download_drag_box.setActive(true);
+    refresh();
+  });
+
+  $clear.off('.tethysDownload').on('click.tethysDownload', function() {
+    m_download_aoi_layer.getSource().clear();
+    m_download_aoi_extent = null;
+    stop_drawing();
+    refresh();
+  });
+
+  $submit.off('.tethysDownload').on('click.tethysDownload', function() {
+    var basemap = get_current_basemap(),
+        extent = get_download_extent(),
+        name = $name.val().trim(),
+        zooms = get_zoom_range(),
+        job;
+
+    if (!basemap || !extent || !name) { return; }
+
+    job = save_basemap_capture(basemap, extent, name, zooms[0], zooms[1], function(done, total) {
+      $status.text('Fetching tiles: ' + done.toLocaleString() + ' / ' + total.toLocaleString())
+             .prop('hidden', false);
+    });
+
+    m_download_busy = true;
+    $submit.text('Saving...');
+    refresh();
+
+    job.then(function(capture) {
+      m_download_busy = false;
+      $submit.text('Save');
+      refresh();
+      $status.text('Saved "' + capture.name + '" (' + capture.tiles.toLocaleString() + ' tiles, zoom ' +
+                   capture.min_zoom + '-' + capture.max_zoom + '). It can now be assigned to a basemap service.')
+             .removeClass('text-danger').addClass('text-muted').prop('hidden', false);
+    }).catch(function(error) {
+      m_download_busy = false;
+      $submit.text('Save');
+      refresh();
+      $status.text(error.message || 'The basemap could not be saved.')
+        .removeClass('text-muted').addClass('text-danger').prop('hidden', false);
+    });
+  });
+
+  // Close on outside press, except while drawing (drawing happens on the map, outside the panel)
+  $(document).off('.tethysDownload').on('pointerdown.tethysDownload', function(e) {
+    if (m_download_drawing || $panel.prop('hidden')) { return; }
+    if (!$(e.target).closest('.tethys-map-view-download').length) {
+      set_open(false);
+    }
+  }).on('keydown.tethysDownload', function(e) {
+    if (e.key !== 'Escape') { return; }
+    if (m_download_drawing) {
+      stop_drawing();
+      refresh();
+    } else {
+      set_open(false);
+    }
+  });
+};
+
+
+check_save_response = function(response) {
+  if (!response.ok) {
+    return response.text().then(function(message) {
+      throw new Error(message || 'The basemap could not be saved (HTTP ' + response.status + ').');
+    });
+  }
+  return response.json();
+};
+
+get_csrf_token = function() {
+  var match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
+};
+
+// The visible tile layers that make up the basemap, bottom to top
+get_basemap_tile_layers = function(basemap) {
+  var layers = basemap.layer instanceof ol.layer.Group ? basemap.layer.getLayersArray() : [basemap.layer];
+  return layers.filter(function(layer) {
+    return layer.getVisible() && layer instanceof ol.layer.Tile;
+  });
+};
+
+// The source's tile grid if it is the standard web mercator XYZ grid that MBTiles uses, otherwise null
+get_xyz_tile_grid = function(source) {
+  var projection = source.getProjection() || ol.proj.get(DEFAULT_PROJECTION),
+      half_world = ol.proj.get(DEFAULT_PROJECTION).getExtent()[2],
+      grid, max_zoom, z, origin, tile_size, expected;
+
+  if (!ol.proj.equivalent(projection, ol.proj.get(DEFAULT_PROJECTION))) { return null; }
+
+  grid = source.getTileGridForProjection(projection);
+  if (!grid || grid.getMinZoom() !== 0) { return null; }
+
+  max_zoom = Math.min(grid.getMaxZoom(), MBTILES_MAX_GRID_ZOOM);
+  for (z = 0; z <= max_zoom; z++) {
+    origin = grid.getOrigin(z);
+    tile_size = grid.getTileSize(z);
+    tile_size = Array.isArray(tile_size) ? tile_size : [tile_size, tile_size];
+    expected = 2 * half_world / (tile_size[0] * Math.pow(2, z));
+
+    if (tile_size[0] !== tile_size[1] ||
+        Math.abs(origin[0] + half_world) > 1 || Math.abs(origin[1] - half_world) > 1 ||
+        Math.abs(grid.getResolution(z) - expected) / expected > 1e-6) {
+      return null;
+    }
+  }
+  return grid;
+};
+
+// Work out which tiles to fetch. Returns {error} if the basemap or zoom range can't be downloaded
+get_mbtiles_plan = function(basemap, extent, min_zoom, max_zoom) {
+  var layers = get_basemap_tile_layers(basemap),
+      group_opacity = basemap.layer.getOpacity(),
+      plan = { sources: [], opacities: [], count: 0, zoom_limit: MBTILES_MAX_GRID_ZOOM },
+      i, source, grid, tile_size, z, range;
+
+  if (!layers.length) {
+    return { error: 'This basemap has no tile layers to download.' };
+  }
+
+  for (i = 0; i < layers.length; i++) {
+    source = layers[i].getSource();
+    grid = source.getTileUrlFunction ? get_xyz_tile_grid(source) : null;
+    if (!grid) {
+      return { error: 'The "' + basemap.label + '" basemap does not use the standard web map tile grid, ' +
+                      'so it can\'t be saved as MBTiles.' };
+    }
+    if (source.getState() !== 'ready') {
+      return { error: 'The basemap is still loading.' };
+    }
+
+    tile_size = grid.getTileSize(0);
+    tile_size = Array.isArray(tile_size) ? tile_size : [tile_size, tile_size];
+    if (plan.tile_size && plan.tile_size[0] !== tile_size[0]) {
+      return { error: 'The "' + basemap.label + '" basemap mixes tile sizes, so it can\'t be saved as MBTiles.' };
+    }
+
+    plan.tile_size = tile_size;
+    plan.grid = grid;
+    plan.zoom_limit = Math.min(plan.zoom_limit, grid.getMaxZoom());
+    plan.sources.push(source);
+    plan.opacities.push(layers[i].getOpacity() * group_opacity);
+  }
+
+  if (!Number.isInteger(min_zoom) || !Number.isInteger(max_zoom) || min_zoom < 0 || min_zoom > max_zoom) {
+    return { error: 'Enter a valid zoom range.' };
+  }
+  if (max_zoom > plan.zoom_limit) {
+    return { error: 'The max zoom for this basemap is ' + plan.zoom_limit + '.' };
+  }
+
+  // Clip to the world so a zoomed-out or wrapped view doesn't count tiles that don't exist
+  plan.extent = ol.extent.getIntersection(extent, ol.proj.get(DEFAULT_PROJECTION).getExtent());
+  if (ol.extent.isEmpty(plan.extent)) {
+    return { error: 'The selected area is outside the map.' };
+  }
+
+  plan.min_zoom = min_zoom;
+  plan.max_zoom = max_zoom;
+  for (z = min_zoom; z <= max_zoom; z++) {
+    range = plan.grid.getTileRangeForExtentAndZ(plan.extent, z);
+    plan.count += range.getWidth() * range.getHeight();
+  }
+  return plan;
+};
+
+// Resolves with the tile Blob, or null where the server has no tile
+fetch_tile = function(url, attempts) {
+  return fetch(url, { credentials: 'same-origin' }).then(function(response) {
+    if (response.status === 204 || response.status === 404) { return null; }
+    if (!response.ok) { throw new Error('HTTP ' + response.status); }
+    return response.blob();
+  }).catch(function(error) {
+    if (attempts > 1) { return fetch_tile(url, attempts - 1); }
+    throw error;
+  }).then(function(blob) {
+    return blob && blob.size ? blob : null;
+  });
+};
+
+// Draw one tile from each basemap layer into a single PNG
+// A single-layer basemap keeps its original tile bytes (e.g. JPEG imagery)
+composite_tiles = function(blobs, opacities, tile_size) {
+  if (blobs.length === 1) { return Promise.resolve(blobs[0]); }
+  if (!blobs.some(Boolean)) { return Promise.resolve(null); }
+
+  return Promise.all(blobs.map(function(blob) {
+    return blob ? createImageBitmap(blob) : null;
+  })).then(function(images) {
+    var canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+
+    canvas.width = tile_size[0];
+    canvas.height = tile_size[1];
+    images.forEach(function(image, i) {
+      if (!image) { return; }
+      ctx.globalAlpha = opacities[i];
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      image.close();
+    });
+
+    return new Promise(function(resolve, reject) {
+      canvas.toBlob(function(blob) {
+        blob ? resolve(blob) : reject(new Error('A tile could not be combined.'));
+      }, 'image/png');
+    });
+  });
+};
+
+// Fetch the basemap's tiles over a zoom range and have the server save them as a basemap capture (MBTiles)
+save_basemap_capture = function(basemap, extent, name, min_zoom, max_zoom, on_progress) {
+  var plan = get_mbtiles_plan(basemap, extent, min_zoom, max_zoom),
+      projection = ol.proj.get(DEFAULT_PROJECTION),
+      coords = [], results, next = 0, done = 0, failed = false,
+      z, x, y, range, run_worker, workers = [], i;
+
+  if (!m_basemap_capture_url) {
+    return Promise.reject(new Error('Saving basemaps is not configured for this map.'));
+  }
+  if (plan.error) { return Promise.reject(new Error(plan.error)); }
+  if (plan.count > MBTILES_MAX_TILES) {
+    return Promise.reject(new Error('Too many tiles (the limit is ' + MBTILES_MAX_TILES.toLocaleString() + ').'));
+  }
+
+  for (z = plan.min_zoom; z <= plan.max_zoom; z++) {
+    range = plan.grid.getTileRangeForExtentAndZ(plan.extent, z);
+    for (x = range.minX; x <= range.maxX; x++) {
+      for (y = range.minY; y <= range.maxY; y++) {
+        coords.push([z, x, y]);
+      }
+    }
+  }
+  results = new Array(coords.length);
+
+  run_worker = function() {
+    if (failed || next >= coords.length) { return Promise.resolve(); }
+    var index = next++, coord = coords[index];
+
+    return Promise.all(plan.sources.map(function(source) {
+      var url = source.getTileUrlFunction()(coord, 1, projection);
+      return url ? fetch_tile(url, 3) : null;
+    })).then(function(blobs) {
+      return composite_tiles(blobs, plan.opacities, plan.tile_size);
+    }).then(function(blob) {
+      results[index] = blob;
+      done++;
+      if (on_progress) { on_progress(done, coords.length); }
+      return run_worker();
+    });
+  };
+
+  for (i = 0; i < Math.min(MBTILES_FETCH_CONCURRENCY, coords.length); i++) {
+    workers.push(run_worker());
+  }
+
+  return Promise.all(workers).catch(function(error) {
+    failed = true;
+    // fetch rejects with a TypeError when the server doesn't send CORS headers
+    if (error instanceof TypeError) {
+      throw new Error('The "' + basemap.label + '" server does not allow its tiles to be downloaded ' +
+                      '(it does not send CORS headers).');
+    }
+    throw new Error('A tile could not be downloaded (' + error.message + ').');
+  }).then(function() {
+    var parts = [], index = [], form = new FormData();
+
+    results.forEach(function(blob, i) {
+      if (!blob) { return; }
+      parts.push(blob);
+      index.push(coords[i].concat(blob.size));
+    });
+    if (!index.length) {
+      throw new Error('The basemap has no tiles in the selected area.');
+    }
+
+    form.append('tiles', new Blob(parts), 'tiles.bin');
+    form.append('index', JSON.stringify(index));
+    form.append('bbox', plan.extent.join(','));
+    form.append('name', name);
+    form.append('source', basemap.label);
+
+    return fetch(m_basemap_capture_url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'X-CSRFToken': get_csrf_token() },
+      body: form
+    });
+  }).then(check_save_response);
 };
 
 /***********************************
@@ -2524,6 +3033,10 @@ load_image_token = function(token) {
   };
 };
 
+get_current_basemap = function() {
+  return m_basemap_layers.find(function(b) { return b.layer.getVisible(); }) || null;
+}
+
 // Instantiate a function from a string
 // credits: http://stackoverflow.com/questions/1366127/instantiate-a-javascript-object-using-a-string-to-define-the-class-name
 string_to_function = function(str) {
@@ -2584,6 +3097,10 @@ add_default_base_map_layer = function() {
   // Add the base map to layers
   m_map.addLayer(default_base_map_layer);
   base_map_labels.push("Open Street Map");
+  m_basemap_layers.push({
+    layer: default_base_map_layer,
+    label: "Open Street Map"
+  });
 }
 
 /***********************************

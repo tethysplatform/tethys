@@ -23,6 +23,7 @@ from .models import (
     WebProcessingService,
     PostgresPersistentStoreService,
     SQLitePersistentStoreService,
+    BasemapCapture,
     BasemapImage,
     BasemapService,
 )
@@ -238,7 +239,10 @@ class BasemapImageInlineForm(ModelForm):
 
     class Meta:
         model = BasemapImage
-        fields = ("source_file",)
+        fields = ("source_file", "capture")
+        help_texts = {
+            "capture": "A basemap saved from a map view. Use instead of uploading a source file.",
+        }
 
 class BasemapImageInline(admin.StackedInline):
     model = BasemapImage
@@ -247,6 +251,7 @@ class BasemapImageInline(admin.StackedInline):
 
     fields = (
         "source_file",
+        "capture",
         "georeference",
         "display_status",
         "error_message",
@@ -320,10 +325,10 @@ class BasemapServiceAdmin(admin.ModelAdmin):
                 if f in fs.deleted_forms or not f.instance.pk:
                     continue
                 raw = f.cleaned_data.get("georeference")
-                replaced = "source_file" in f.changed_data
+                replaced = "source_file" in f.changed_data or "capture" in f.changed_data
                 updates = []
 
-                if replaced:
+                if "source_file" in f.changed_data:
                     old = f.initial.get("source_file")
                     old_name = getattr(old, "name", old)
                     if old_name and old_name != f.instance.source_file.name:
@@ -389,5 +394,41 @@ admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
 admin.site.register(PostgresPersistentStoreService, PostgresPersistentStoreServiceAdmin)
 admin.site.register(SQLitePersistentStoreService, SQLitePersistentStoreServiceAdmin)
 admin.site.register(SecureMapService, SecureMapServiceAdmin)
+class BasemapCaptureAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "min_zoom", "max_zoom", "tile_format", "created_at", "service_count")
+    list_filter = ("owner",)
+    search_fields = ("name",)
+    readonly_fields = (
+        "owner", "mbtiles_file", "tile_format", "min_zoom", "max_zoom",
+        "min_x", "min_y", "max_x", "max_y", "created_at", "services",
+    )
+
+    @admin.display(description="Services")
+    def service_count(self, obj):
+        return obj.images.values("basemap_service").distinct().count()
+
+    @admin.display(description="Used by")
+    def services(self, obj):
+        names = obj.images.values_list("basemap_service__name", flat=True).distinct()
+        return ", ".join(names) or "Not assigned to a basemap service"
+
+    def has_add_permission(self, request):
+        # Captures are created from a map view
+        return False
+
+    # Remove the MBTiles file once the row is gone (captures in use by a service are protected)
+    def delete_model(self, request, obj):
+        mbtiles_file = obj.mbtiles_file
+        super().delete_model(request, obj)
+        mbtiles_file.delete(save=False)
+
+    def delete_queryset(self, request, queryset):
+        mbtiles_files = [obj.mbtiles_file for obj in queryset]
+        super().delete_queryset(request, queryset)
+        for mbtiles_file in mbtiles_files:
+            mbtiles_file.delete(save=False)
+
+
 admin.site.register(BasemapService, BasemapServiceAdmin)
+admin.site.register(BasemapCapture, BasemapCaptureAdmin)
 admin.site.register(BasemapImage, BasemapImageAdmin)

@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
@@ -16,6 +17,7 @@ from encrypted_fields.fields import EncryptedTextField
 from string import Template
 
 from tethys_portal.optional_dependencies import optional_import, has_module
+
 
 # optional imports
 VALID_ENGINES, VALID_SPATIAL_ENGINES = optional_import(
@@ -519,6 +521,67 @@ def original_basemap_upload_path(instance, filename):
 
 def generated_basemap_upload_path(instance, filename):
     return f"basemaps/generated/{instance.basemap_service.name}/{filename}"
+
+def basemap_capture_upload_path(instance, filename):
+    return f"basemaps/captures/{filename}"
+
+
+class BasemapCapture(models.Model):
+    """
+    A basemap area saved from a map view as MBTiles, which can then be
+    assigned to one or more basemap services.
+    """
+
+    TILE_CONTENT_TYPES = {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}
+
+    name = models.CharField(max_length=100)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="basemap_captures",
+    )
+    mbtiles_file = models.FileField(upload_to=basemap_capture_upload_path)
+    tile_format = models.CharField(max_length=10, default="png")
+    min_zoom = models.PositiveSmallIntegerField()
+    max_zoom = models.PositiveSmallIntegerField()
+    # Bounds in EPSG:3857
+    min_x = models.FloatField()
+    min_y = models.FloatField()
+    max_x = models.FloatField()
+    max_y = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.name} (z{self.min_zoom}-{self.max_zoom})"
+
+    @property
+    def tile_content_type(self):
+        return self.TILE_CONTENT_TYPES.get(self.tile_format, "application/octet-stream")
+
+    def get_tile(self, z, x, y):
+        """
+        Return the bytes of the XYZ tile at z/x/y, or None if the capture doesn't have it.
+        """
+        import sqlite3
+        from pathlib import Path
+
+        uri = Path(self.mbtiles_file.path).as_uri() + "?mode=ro"
+        conn = sqlite3.connect(uri, uri=True)
+        try:
+            # MBTiles rows use the TMS scheme: row 0 is the southernmost row
+            row = conn.execute(
+                "SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?",
+                (z, x, (2**z - 1) - y),
+            ).fetchone()
+        finally:
+            conn.close()
+        return row[0] if row else None
+
 class BasemapService(models.Model):
 
     name = models.CharField(max_length=30, unique=True)
@@ -554,14 +617,29 @@ class BasemapService(models.Model):
         if not self.images.exists():
             raise ValueError("No basemap images available for this service.")
         image = self.images.first()
-        return {"XYZ": 
-                {
-                    "url": lazy_tile_url(image.pk),
-                    "control_label": self.name,
-                    "attribution": self.attribution,
-                    "min_zoom": self.min_zoom,
-                    "max_zoom": self.max_zoom,
-                }}
+
+        options = {
+            "url": lazy_tile_url(image.pk),
+            "control_label": self.name,
+            "attribution": self.attribution,
+            "min_zoom": self.min_zoom,
+            "max_zoom": self.max_zoom,
+        }
+
+        bounds = [image.min_x, image.min_y, image.max_x, image.max_y]
+        if None not in bounds:
+            options["layer_extent"] = bounds
+
+        if image.capture_id:
+            options["minZoom"] = image.capture.min_zoom
+            options["maxZoom"] = image.capture.max_zoom
+
+        
+        if image.capture_id:
+            # Past the capture's deepest zoom, have OpenLayers scale up those tiles
+            # instead of requesting tiles that don't exist
+            options["maxZoom"] = image.capture.max_zoom
+        return {"XYZ": options}
 
 class BasemapImage(models.Model):
     class StatusChoices(models.TextChoices):
@@ -572,7 +650,11 @@ class BasemapImage(models.Model):
         NEEDS_GEOREFERENCE = 'needs_georeference', 'Needs Georeference'
 
     basemap_service = models.ForeignKey(BasemapService, on_delete=models.CASCADE, related_name="images")
-    source_file = models.FileField(upload_to=original_basemap_upload_path)
+    source_file = models.FileField(upload_to=original_basemap_upload_path, blank=True)
+    # Set instead of source_file when the image is a capture saved from a map view
+    capture = models.ForeignKey(
+        BasemapCapture, on_delete=models.PROTECT, blank=True, null=True, related_name="images"
+    )
     generated_file = models.FileField(upload_to=generated_basemap_upload_path, blank=True, null=True)
     status = models.CharField(max_length=30, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     error_message = models.TextField(blank=True, null=True)
@@ -586,7 +668,27 @@ class BasemapImage(models.Model):
     georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
+        if self.capture_id:
+            return f"{self.capture.name} ({self.basemap_service.name})"
         return f"{self.source_file.name.split('/')[-1].split('.')[0]} ({self.basemap_service.name})"
+
+    def clean(self):
+        if bool(self.source_file) == bool(self.capture_id):
+            raise ValidationError("Upload a source file or choose a capture, but not both.")
+
+    def generate_from_capture(self):
+        """
+        Captures are already web mercator tiles, so they are served as-is: just copy the bounds.
+        """
+        capture = self.capture
+        self.min_x, self.min_y, self.max_x, self.max_y = (
+            capture.min_x, capture.min_y, capture.max_x, capture.max_y
+        )
+        self.srs = "3857"
+        self.wkt = ""
+        self.status = self.StatusChoices.READY
+        self.error_message = ""
+        self.save()
 
     def generate(self):
         import tempfile
@@ -600,6 +702,10 @@ class BasemapImage(models.Model):
         except ImportError:
             raise ImportError("rasterio is required to generate basemap images.")
         
+        if self.capture_id:
+            self.generate_from_capture()
+            return
+
         self.status = self.StatusChoices.PROCESSING
         self.save(update_fields=["status"])
 

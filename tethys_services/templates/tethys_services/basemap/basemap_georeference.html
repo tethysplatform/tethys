@@ -1,0 +1,7 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<p>Source: <code>{{ source_url }}</code></p>
+<img src="{{ source_url }}" style="max-width: 600px;">
+{% endblock %}

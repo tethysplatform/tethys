@@ -46,7 +46,68 @@
          {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}
          {% if disable_basemap %}data-disable-base-map="{{ disable_basemap|jsonify }}"{% endif %}
          {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}
+         {% if basemap_download %}data-basemap-download="{{ basemap_download|jsonify }}"{% endif %}
+         data-basemap-capture-url="{% url 'basemap_capture' %}"
          data-show-clicks="{{ show_clicks|jsonify }}"></div>
-    <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden {% if form_id %}form="{{ form_id }}"{% endif %}></textarea>
+         <div class="tethys-map-view-download">
+          <div class="tethys-map-view-download-control ol-unselectable ol-control">
+            <button type="button" title="Save basemap" id="map_view_download_toggle" aria-expanded="false" aria-controls="map_view_download_panel">Save basemap</button>
+          </div>
+          <div class="tethys-map-view-download-panel card shadow-sm" id="map_view_download_panel" hidden>
+            <div class="card-body p-2">
+              <div class="mb-2 small">
+                <span class="text-muted">Basemap:</span>
+                <span id="map_view_download_basemap" class="fw-semibold">None</span>
+              </div>
+
+              <div class="mb-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="map_view_download_mode"
+                        id="map_view_download_mode_view" value="view" checked>
+                  <label class="form-check-label small" for="map_view_download_mode_view">Current view</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="map_view_download_mode"
+                        id="map_view_download_mode_area" value="area">
+                  <label class="form-check-label small" for="map_view_download_mode_area">Select an area</label>
+                </div>
+              </div>
+
+              <div id="map_view_download_area_controls" hidden>
+                <div class="mb-2 d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" id="map_view_download_draw">Draw area</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" id="map_view_download_clear" disabled>Clear</button>
+                </div>
+              </div>
+
+              <div class="mb-2 d-flex gap-2">
+                <div>
+                  <label for="map_view_download_min_zoom" class="form-label mb-1 small">Min zoom (current)</label>
+                  <input type="number" class="form-control form-control-sm" id="map_view_download_min_zoom" disabled>
+                </div>
+                <div>
+                  <label for="map_view_download_max_zoom" class="form-label mb-1 small">Max zoom</label>
+                  <input type="number" class="form-control form-control-sm" id="map_view_download_max_zoom" min="0" step="1">
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label for="map_view_download_name" class="form-label mb-1 small">Name</label>
+                <input type="text" class="form-control form-control-sm" id="map_view_download_name" maxlength="100">
+              </div>
+
+              <p class="small text-muted mb-2" id="map_view_download_status"></p>
+
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-sm btn-secondary" id="map_view_download_cancel">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" id="map_view_download_submit" disabled>Save</button>
+              </div>
+            </div>
+          </div>
+
+         </div>
+         
+         <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden {% if form_id %}form="{{ form_id }}"{% endif %}></textarea>
+    
   </div>
 </div> <!-- end outerContainer -->
