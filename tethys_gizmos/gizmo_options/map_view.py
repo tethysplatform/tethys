@@ -340,6 +340,7 @@ class MapView(TethysGizmoOptions):
 
     def __init__(
         self,
+        app=None,
         height="100%",
         width="100%",
         basemap=None,
@@ -375,8 +376,26 @@ class MapView(TethysGizmoOptions):
                     f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
                 )
 
+        def resolve_uploaded_basemap(layer_group, app):
+            if layer_group.lower().startswith("uploaded:"):
+                # Logic to resolve uploaded basemap
+                return app.get_basemap_service(layer_group.replace("uploaded:", ""), as_basemap=True)
+            return None
+
+        uploaded_prefix = "uploaded:"
+        resolved_basemaps = []
         for layer_group in basemap:
             if isinstance(layer_group, str):
+                if layer_group.lower().startswith("uploaded:"):
+                    setting_name = layer_group[len(uploaded_prefix):].strip()
+                    if app is None:
+                        print(f"Basemap {layer_group} requires an app instance to resolve uploaded basemap services.")
+                        continue
+                    
+                    resolved = app.get_basemap_service(setting_name, as_basemap=True)
+                    if resolved:
+                        resolved_basemaps.append(resolved)
+                    continue
                 check_bing_map(layer_group)
             elif isinstance(layer_group, list):
                 for layer in layer_group:
@@ -386,7 +405,9 @@ class MapView(TethysGizmoOptions):
                 for map_type, _ in layer_group.items():
                     check_bing_map(map_type)
 
-        self.basemap = basemap
+            resolved_basemaps.append(layer_group)
+
+        self.basemap = resolved_basemaps
         self.view = view or {"center": [-100, 40], "zoom": 2}
         self.controls = controls or []
         self.layers = layers or []

@@ -314,7 +314,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         # Compose the Map
         log.debug("Building MapView...")
-        map_view = self._build_map_view(request, view, extent, *args, **kwargs)
+        map_view = self._build_map_view(request, view, extent, self.app, *args, **kwargs)
 
         # Add layers to the Map
         log.debug("Composing layers...")
@@ -450,7 +450,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         return map_permissions
 
     # Private View Helpers -------------------------------------------------- #
-    def _build_map_view(self, request, view, extent, *args, **kwargs):
+    def _build_map_view(self, request, view, extent, app, *args, **kwargs):
         """
         Build the MapView gizmo.
 
@@ -463,6 +463,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             MapView: the MapView gizmo.
         """
         map_view = MapView(
+            app=app,
             height="100%",
             width="100%",
             controls=[
