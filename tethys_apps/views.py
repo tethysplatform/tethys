@@ -275,7 +275,7 @@ def _open_source(path, mtime):
 def _get_source(path):
     return _open_source(path, os.path.getmtime(path))
 
-# @login_required()
+@login_required()
 def basemap_tile(request, image_id, z, x, y):
     from tethys_services.models import BasemapImage
     z, x, y = int(z), int(x), int(y)

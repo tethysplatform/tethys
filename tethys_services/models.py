@@ -613,32 +613,32 @@ class BasemapService(models.Model):
 
         lazy_tile_url = lazy(_tile_url, str)
 
-        # TODO fix this
-        if not self.images.exists():
+        image = self.images.filter(status=BasemapImage.StatusChoices.READY).order_by("-pk").first()
+
+        if image is None:
+            if self.images.exists():
+                raise ValueError("No ready basemap images available for this service.")
             raise ValueError("No basemap images available for this service.")
-        image = self.images.first()
+
+        min_zoom = self.min_zoom
+        max_zoom = self.max_zoom
+        if image.capture_id:
+            min_zoom = image.capture.min_zoom
+            max_zoom = image.capture.max_zoom
 
         options = {
             "url": lazy_tile_url(image.pk),
             "control_label": self.name,
-            "attribution": self.attribution,
-            "min_zoom": self.min_zoom,
-            "max_zoom": self.max_zoom,
+            "minZoom": min_zoom,
+            "maxZoom": max_zoom,
         }
+        if self.attribution:
+            options["attributions"] = self.attribution
 
         bounds = [image.min_x, image.min_y, image.max_x, image.max_y]
         if None not in bounds:
             options["layer_extent"] = bounds
 
-        if image.capture_id:
-            options["minZoom"] = image.capture.min_zoom
-            options["maxZoom"] = image.capture.max_zoom
-
-        
-        if image.capture_id:
-            # Past the capture's deepest zoom, have OpenLayers scale up those tiles
-            # instead of requesting tiles that don't exist
-            options["maxZoom"] = image.capture.max_zoom
         return {"XYZ": options}
 
 class BasemapImage(models.Model):
