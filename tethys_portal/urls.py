@@ -266,6 +266,21 @@ urlpatterns = [
     re_path(
         r"^basemaps/capture/$", tethys_apps_views.basemap_capture, name="basemap_capture"
     ),
+    re_path(
+        r"^basemaps/capture/(?P<capture_id>\d+)/status/$",
+        tethys_apps_views.basemap_capture_status,
+        name="basemap_capture_status",
+    ),
+    re_path(
+        r"^basemaps/capture/config/$",
+        tethys_apps_views.basemap_capture_config,
+        name="basemap_capture_config",
+    ),
+    re_path(
+        r"^basemaps/capture/server/$",
+        tethys_apps_views.basemap_capture_server,
+        name="basemap_capture_server"
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 

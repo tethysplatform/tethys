@@ -715,6 +715,10 @@ for settings_module in ADDITIONAL_SETTINGS_FILES:
 # TODO backward compatibility setting. Remove in Tethys 5.0
 USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", True)
 
+BASEMAP_DASK_SCHEDULER = portal_config_settings.pop("BASEMAP_DASK_SCHEDULER", None)
+
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
+
+

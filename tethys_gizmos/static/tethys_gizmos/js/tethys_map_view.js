@@ -162,14 +162,16 @@ var m_download_aoi_extent, m_download_aoi_layer, m_download_drag_box, m_download
 var ol_download_panel_init, get_download_mode, get_download_extent;
 
 var m_basemap_capture_url,
-    m_download_busy;
+    m_download_busy,
+    m_capture_config_promise;
 
-var MBTILES_MAX_TILES = 10000,        // Keep in sync with MBTILES_MAX_TILES in tethys_apps/views.py
-    MBTILES_FETCH_CONCURRENCY = 6,
+var MBTILES_FETCH_CONCURRENCY=6,
+    CAPTURE_POLL_INTERVAL = 2000,
     MBTILES_MAX_GRID_ZOOM = 24;
 
 var get_basemap_tile_layers, get_xyz_tile_grid, get_mbtiles_plan,
-    fetch_tile, composite_tiles, save_basemap_capture, check_save_response, get_csrf_token;
+    fetch_tile, composite_tiles, save_basemap_capture, check_save_response, get_csrf_token,
+    capture_endpoint, get_capture_config, start_server_capture, wait_for_capture;
 
 // Variables
 var m_basemap_layers = [];
@@ -1483,6 +1485,35 @@ ol_download_panel_init = function() {
 
   var refresh, stop_drawing, set_open, sync_zoom_range, get_zoom_range;
 
+  var $dask_options, $on_server, $process_dask;
+
+  // Dask switches: shown only when the portal has a Dask scheduler for basemaps
+  $('#map_view_download_dask').remove();  // don't duplicate on reInitializeMap
+  $dask_options = $(
+    '<div id="map_view_download_dask" class="mb-2" hidden>' +
+      '<div class="form-check form-switch">' +
+        '<input class="form-check-input" type="checkbox" id="map_view_download_on_server">' +
+        '<label class="form-check-label" for="map_view_download_on_server">Download tiles on the server</label>' +
+      '</div>' +
+      '<div class="form-check form-switch">' +
+        '<input class="form-check-input" type="checkbox" id="map_view_download_process_dask" checked>' +
+        '<label class="form-check-label" for="map_view_download_process_dask">Process with Dask</label>' +
+      '</div>' +
+    '</div>'
+  ).insertBefore($status);
+  $on_server = $('#map_view_download_on_server');
+  $process_dask = $('#map_view_download_process_dask');
+
+  // A server download is built on the server as it streams, so processing is locked on
+  $on_server.on('change', function() {
+    if (this.checked) { $process_dask.prop('checked', true); }
+    $process_dask.prop('disabled', this.checked);
+  });
+
+  get_capture_config().then(function(config) {
+    $dask_options.prop('hidden', !config.dask_available);
+  });
+
   m_download_aoi_extent = null;
   m_download_drawing = false;
   m_download_busy = false;
@@ -1549,10 +1580,6 @@ ol_download_panel_init = function() {
       plan = get_mbtiles_plan(basemap, extent, zooms[0], zooms[1]);
       if (plan.error) {
         status = plan.error;
-        is_error = blocked = true;
-      } else if (plan.count > MBTILES_MAX_TILES) {
-        status = plan.count.toLocaleString() + ' tiles: the limit is ' + MBTILES_MAX_TILES.toLocaleString() +
-                 '. Choose a smaller area or a lower max zoom.';
         is_error = blocked = true;
       } else {
         status = plan.count.toLocaleString() + ' tiles';
@@ -1641,30 +1668,64 @@ ol_download_panel_init = function() {
         extent = get_download_extent(),
         name = $name.val().trim(),
         zooms = get_zoom_range(),
-        job;
+        dask_shown = !$dask_options.prop('hidden'),
+        on_server = dask_shown && $on_server.prop('checked'),
+        use_dask = dask_shown && (on_server || $process_dask.prop('checked')),
+        show = function(text) {
+          $status.text(text).removeClass('text-danger').addClass('text-muted').prop('hidden', false);
+        },
+        browser_capture, job;
 
     if (!basemap || !extent || !name) { return; }
 
-    job = save_basemap_capture(basemap, extent, name, zooms[0], zooms[1], function(done, total) {
-      $status.text('Fetching tiles: ' + done.toLocaleString() + ' / ' + total.toLocaleString())
-             .prop('hidden', false);
-    });
+    browser_capture = function() {
+      return save_basemap_capture(basemap, extent, name, zooms[0], zooms[1], use_dask,
+        function(done, total) {
+          show('Fetching tiles: ' + done.toLocaleString() + ' / ' + total.toLocaleString());
+        },
+        function(count) {
+          show('Uploading ' + count.toLocaleString() + ' tiles...');
+        }
+      );
+    };
 
     m_download_busy = true;
     $submit.text('Saving...');
+    $dask_options.find('input').prop('disabled', true);
     refresh();
 
+    if (on_server) {
+      show('Starting the download on the server...');
+      job = start_server_capture(basemap, extent, name, zooms[0], zooms[1]).catch(function(error) {
+        if (!error.browser_only) { throw error; }
+        // The server can't download this basemap (e.g. WMS or a restricted host); fetch it here instead
+        return browser_capture();
+      });
+    } else {
+      job = browser_capture();
+    }
+
+    var finish = function() {
+      m_download_busy = false;
+      $submit.text('Save');
+      $on_server.prop('disabled', false);
+      $process_dask.prop('disabled', $on_server.prop('checked'));
+      refresh();
+    };
+
     job.then(function(capture) {
-      m_download_busy = false;
-      $submit.text('Save');
-      refresh();
-      $status.text('Saved "' + capture.name + '" (' + capture.tiles.toLocaleString() + ' tiles, zoom ' +
-                   capture.min_zoom + '-' + capture.max_zoom + '). It can now be assigned to a basemap service.')
-             .removeClass('text-danger').addClass('text-muted').prop('hidden', false);
+      show(use_dask ? 'Processing on the server...' : 'Processing...');
+      return wait_for_capture(capture, function(s) {
+        if (s.total) {
+          show('Downloading on the server: ' + s.done.toLocaleString() + ' / ' + s.total.toLocaleString());
+        }
+      });
+    }).then(function(capture) {
+      finish();
+      show('Saved "' + capture.name + '" (' + capture.tiles.toLocaleString() + ' tiles, zoom ' +
+           capture.min_zoom + '-' + capture.max_zoom + '). It can now be assigned to a basemap service.');
     }).catch(function(error) {
-      m_download_busy = false;
-      $submit.text('Save');
-      refresh();
+      finish();
       $status.text(error.message || 'The basemap could not be saved.')
         .removeClass('text-muted').addClass('text-danger').prop('hidden', false);
     });
@@ -1690,11 +1751,102 @@ ol_download_panel_init = function() {
 
 check_save_response = function(response) {
   if (!response.ok) {
-    return response.text().then(function(message) {
+    return response.text().then(function(text) {
+      var message = text;
+      try { message = JSON.parse(text).error || text; } catch (e) {}
       throw new Error(message || 'The basemap could not be saved (HTTP ' + response.status + ').');
     });
   }
   return response.json();
+};
+
+// URL of a capture endpoint under the capture URL, e.g. 'config/', 'server/' or '12/status/'
+capture_endpoint = function(path) {
+  return m_basemap_capture_url.replace(/\/?$/, '/') + path;
+};
+
+// 'server' if the portal has Dask download captures, otherwise 'browser'. Asked once per page.
+get_capture_config = function() {
+  if (!m_basemap_capture_url) { return Promise.resolve({ dask_available: false }); }
+  if (!m_capture_config_promise) {
+    m_capture_config_promise = fetch(capture_endpoint('config/'), { credentials: 'same-origin' })
+      .then(function(response) { return response.ok ? response.json() : {}; })
+      .then(function(config) { return { dask_available: !!config.dask_available }; })
+      .catch(function() { return { dask_available: false }; });
+  }
+  return m_capture_config_promise;
+};
+
+// Have the server download the basemap's tiles itself. Only the plan is sent: each layer's
+// tile URL templates and opacity, the area and the zoom range.
+start_server_capture = function(basemap, extent, name, min_zoom, max_zoom) {
+  var plan = get_mbtiles_plan(basemap, extent, min_zoom, max_zoom),
+      layers;
+
+  if (!m_basemap_capture_url) {
+    return Promise.reject(new Error('Saving basemaps is not configured for this map.'));
+  }
+  if (plan.error) { return Promise.reject(new Error(plan.error)); }
+
+  // The server fills in {z}/{x}/{y} itself, so it needs absolute URL templates.
+  // (new URL() would percent-encode the braces, so build them by hand.)
+  var absolute_template = function(url) {
+    if (/^https?:\/\//i.test(url)) { return url; }
+    if (url.indexOf('//') === 0) { return window.location.protocol + url; }
+    return window.location.origin + (url.charAt(0) === '/' ? '' : '/') + url;
+  };
+
+  layers = plan.sources.map(function(source, i) {
+    var urls = source instanceof ol.source.XYZ ? source.getUrls() : null;
+    return urls && urls.length ? { urls: urls.map(absolute_template), opacity: plan.opacities[i] } : null;
+  });
+  if (layers.some(function(layer) { return !layer; })) {
+    return Promise.reject(new Error('The "' + basemap.label + '" basemap can\'t be downloaded on the server.'));
+  }
+
+  return fetch(capture_endpoint('server/'), {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-CSRFToken': get_csrf_token(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: name,
+      source: basemap.label,
+      bbox: plan.extent,
+      min_zoom: plan.min_zoom,
+      max_zoom: plan.max_zoom,
+      tile_size: plan.tile_size[0],
+      layers: layers
+    })
+  }).then(check_save_response);
+};
+
+// Poll the capture's status until the server finishes it. on_status(s) is called on each check
+// (server downloads include s.done and s.total).
+wait_for_capture = function(capture, on_status) {
+  if (capture.status !== 'processing') { return Promise.resolve(capture); }
+
+  var status_url = capture_endpoint(capture.id + '/status/');
+
+  var poll = function() {
+    return new Promise(function(resolve) { setTimeout(resolve, CAPTURE_POLL_INTERVAL); })
+      .then(function() {
+        return fetch(status_url, { credentials: 'same-origin' });
+      })
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Could not check the capture status (HTTP ' + response.status + ').');
+        }
+        return response.json();
+      })
+      .then(function(s) {
+        if (s.status === 'ready') { return Object.assign({}, capture, s); }
+        if (s.status === 'failed') { throw new Error(s.error || 'The basemap could not be saved.'); }
+        if (on_status) { on_status(s); }
+        return poll();
+      });
+  };
+
+  return poll();
 };
 
 get_csrf_token = function() {
@@ -1838,8 +1990,7 @@ composite_tiles = function(blobs, opacities, tile_size) {
 };
 
 // Fetch the basemap's tiles over a zoom range and have the server save them as a basemap capture (MBTiles)
-save_basemap_capture = function(basemap, extent, name, min_zoom, max_zoom, on_progress) {
-  var plan = get_mbtiles_plan(basemap, extent, min_zoom, max_zoom),
+save_basemap_capture = function(basemap, extent, name, min_zoom, max_zoom, use_dask, on_progress, on_uploading) {  var plan = get_mbtiles_plan(basemap, extent, min_zoom, max_zoom),
       projection = ol.proj.get(DEFAULT_PROJECTION),
       coords = [], results, next = 0, done = 0, failed = false,
       z, x, y, range, run_worker, workers = [], i;
@@ -1848,9 +1999,6 @@ save_basemap_capture = function(basemap, extent, name, min_zoom, max_zoom, on_pr
     return Promise.reject(new Error('Saving basemaps is not configured for this map.'));
   }
   if (plan.error) { return Promise.reject(new Error(plan.error)); }
-  if (plan.count > MBTILES_MAX_TILES) {
-    return Promise.reject(new Error('Too many tiles (the limit is ' + MBTILES_MAX_TILES.toLocaleString() + ').'));
-  }
 
   for (z = plan.min_zoom; z <= plan.max_zoom; z++) {
     range = plan.grid.getTileRangeForExtentAndZ(plan.extent, z);
@@ -1908,6 +2056,10 @@ save_basemap_capture = function(basemap, extent, name, min_zoom, max_zoom, on_pr
     form.append('bbox', plan.extent.join(','));
     form.append('name', name);
     form.append('source', basemap.label);
+    form.append('use_dask', use_dask ? 'true' : 'false');
+
+
+    if (on_uploading) { on_uploading(index.length); }
 
     return fetch(m_basemap_capture_url, {
       method: 'POST',

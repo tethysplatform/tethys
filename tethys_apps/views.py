@@ -8,16 +8,23 @@
 ********************************************************************************
 """
 
+import contextlib
 from functools import lru_cache
+import ipaddress
 import json
 import logging
 import os
-import requests
-import tempfile
+import re
+import socket
+import uuid
+from urllib.parse import urlparse
 
+import requests
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse, FileResponse, HttpResponseBadRequest
 from django.core.mail import send_mail
+from django.urls import Resolver404, resolve
 from django.views.decorators.http import require_POST
 from large_image_source_rasterio import open as rio_open
 
@@ -45,10 +52,6 @@ PROXY_FORWARDED_RESPONSE_HEADERS = (
     "Vary",
     "Age",
 )
-
-MBTILES_MAX_TILES = 10_000    # Keep in sync with MBTILES_MAX_TILES in tethys_map_view.js
-MBTILES_MAX_ZOOM = 24
-WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 
 
 @login_required()
@@ -322,23 +325,7 @@ def basemap_source_file(request, image_id):
         content_type=content_type or "application/octet-stream"
     )
 
-def _mercator_to_lonlat(x, y):
-    import math
-
-    lon = x / WEB_MERCATOR_HALF_WORLD * 180
-    lat = math.degrees(2 * math.atan(math.exp(y / WEB_MERCATOR_HALF_WORLD * math.pi)) - math.pi / 2)
-    return lon, lat
-
-
-def _tile_format(data):
-    if data.startswith(b"\x89PNG"):
-        return "png"
-    if data.startswith(b"\xff\xd8"):
-        return "jpg"
-    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
-        return "webp"
-    return None
-
+MBTILES_MAX_ZOOM = 24
 
 @login_required()
 @require_POST
@@ -348,14 +335,15 @@ def basemap_capture(request):
     which can then be assigned to basemap services.
 
     The tiles arrive as one packed file (the tile images concatenated) plus an
-    "index" of [z, x, y, length] entries in XYZ order, so the upload is a single
-    file no matter how many tiles there are.
+    "index" of [z, x, y, length] entries in XYZ order. The MBTiles file is built in a
+    background job; the response returns right away with the capture's status, and
+    the client polls basemap_capture_status until it's ready.
     """
-    import sqlite3
-    from collections import Counter
-    from django.core.files import File
+    from django.core.files.storage import default_storage
     from django.utils.text import slugify
-    from tethys_services.models import BasemapCapture
+    from tethys_services.basemap_jobs import run_basemap_task
+    from tethys_services.basemap_tasks import build_mbtiles
+    from tethys_services.models import BasemapCapture, basemap_capture_upload_path
 
     tiles = request.FILES.get("tiles")
     if tiles is None:
@@ -370,8 +358,6 @@ def basemap_capture(request):
         return HttpResponseBadRequest("Invalid bbox.")
     if not isinstance(index, list) or not index:
         return HttpResponseBadRequest("No tiles were provided.")
-    if len(index) > MBTILES_MAX_TILES:
-        return HttpResponseBadRequest(f"Too many tiles (the limit is {MBTILES_MAX_TILES}).")
 
     try:
         entries = [tuple(int(v) for v in entry) for entry in index]
@@ -388,83 +374,314 @@ def basemap_capture(request):
         return HttpResponseBadRequest("Enter a name for the basemap.")
     source_name = request.POST.get("source", "").strip()
 
-    out = tempfile.NamedTemporaryFile(suffix=".mbtiles", delete=False)
-    out.close()
+    use_dask = request.POST.get("use_dask") == "true"
+    if use_dask and not _dask_available():
+        return HttpResponseBadRequest("Dask is not available for basemap captures.")
+
+    # Stage the packed tiles where workers can read them; the task deletes this file
+    staging_name = default_storage.save(
+        f"basemaps/captures/staging/{uuid.uuid4().hex}.tiles", tiles
+    )
+
+    # Pick the output name up front (get_available_name keeps same-name captures from
+    # overwriting each other) and record it, so refresh_status() knows where the result goes
+    output_name = default_storage.get_available_name(
+        basemap_capture_upload_path(None, f"{slugify(name) or 'basemap'}.mbtiles")
+    )
+
+    zooms = [entry[0] for entry in entries]
+    capture = BasemapCapture.objects.create(
+        name=name,
+        owner=request.user,
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        mbtiles_file=output_name,
+        min_zoom=min(zooms),
+        max_zoom=max(zooms),
+        min_x=bbox[0],
+        min_y=bbox[1],
+        max_x=bbox[2],
+        max_y=bbox[3],
+    )
 
     try:
-        formats = Counter()
-        conn = sqlite3.connect(out.name)
-        try:
-            conn.executescript(
-                """
-                CREATE TABLE metadata (name TEXT, value TEXT);
-                CREATE TABLE tiles (
-                    zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB
-                );
-                CREATE UNIQUE INDEX tile_index ON tiles (zoom_level, tile_column, tile_row);
-                """
-            )
-
-            with tiles.open("rb") as fh:
-                for z, x, y, length in entries:
-                    data = fh.read(length)
-                    tile_format = _tile_format(data)
-                    if tile_format is None:
-                        return HttpResponseBadRequest("A tile is not a PNG, JPEG or WebP image.")
-                    formats[tile_format] += 1
-                    # MBTiles rows use the TMS scheme: row 0 is the southernmost row
-                    conn.execute(
-                        "INSERT OR REPLACE INTO tiles VALUES (?, ?, ?, ?)",
-                        (z, x, (2**z - 1) - y, sqlite3.Binary(data)),
-                    )
-
-            west, south = _mercator_to_lonlat(bbox[0], bbox[1])
-            east, north = _mercator_to_lonlat(bbox[2], bbox[3])
-            zooms = [entry[0] for entry in entries]
-            tile_format = formats.most_common(1)[0][0]
-            metadata = {
-                "name": name,
-                "type": "baselayer",
-                "version": "1.0",
-                "description": f"Captured from the {source_name} basemap" if source_name else name,
-                "format": tile_format,
-                "bounds": f"{west},{south},{east},{north}",
-                "center": f"{(west + east) / 2},{(south + north) / 2},{min(zooms)}",
-                "minzoom": str(min(zooms)),
-                "maxzoom": str(max(zooms)),
-            }
-            conn.executemany("INSERT INTO metadata VALUES (?, ?)", metadata.items())
-            conn.commit()
-        finally:
-            conn.close()
-
-        capture = BasemapCapture(
-            name=name,
-            owner=request.user,
-            tile_format=tile_format,
-            min_zoom=min(zooms),
-            max_zoom=max(zooms),
-            min_x=bbox[0],
-            min_y=bbox[1],
-            max_x=bbox[2],
-            max_y=bbox[3],
+        job = run_basemap_task(
+            build_mbtiles,
+            capture.pk,
+            default_storage.path(staging_name),
+            [list(entry) for entry in entries],
+            bbox,
+            name,
+            source_name,
+            default_storage.path(output_name),
+            name=f"Build basemap capture {capture.pk}",
+            user=request.user,
+            result_path=capture.result_path,
+            apply_inline=capture.apply_build_result,
+            use_dask=use_dask
         )
-        with open(out.name, "rb") as fh:
-            capture.mbtiles_file.save(
-                f"{slugify(name) or 'basemap'}.mbtiles", File(fh), save=False
-            )
-        try:
-            capture.save()
-        except Exception:
-            capture.mbtiles_file.delete(save=False)
-            raise
-    finally:
-        os.unlink(out.name)
+    except Exception as e:
+        logger.exception("Could not start basemap capture job")
+        BasemapCapture.objects.filter(pk=capture.pk).update(
+            status=BasemapCapture.StatusChoices.FAILED, error_message=str(e)
+        )
+        return JsonResponse({"error": "Could not start the capture job."}, status=500)
 
-    return JsonResponse({
-        "id": capture.pk,
-        "name": capture.name,
-        "tiles": len(entries),
-        "min_zoom": capture.min_zoom,
-        "max_zoom": capture.max_zoom,
-    })
+    if job:
+        BasemapCapture.objects.filter(pk=capture.pk).update(job=job)
+    capture.refresh_from_db()
+
+    return JsonResponse(
+        {
+            "id": capture.pk,
+            "name": capture.name,
+            "tiles": len(entries),
+            "min_zoom": capture.min_zoom,
+            "max_zoom": capture.max_zoom,
+            "status": capture.status,
+            "error": capture.error_message,
+        },
+        status=202 if capture.status == BasemapCapture.StatusChoices.PROCESSING else 200,
+    )
+
+@login_required()
+def basemap_capture_status(request, capture_id):
+    from tethys_services.models import BasemapCapture
+
+    try:
+        capture = BasemapCapture.objects.get(pk=capture_id, owner=request.user)
+    except BasemapCapture.DoesNotExist:
+        return HttpResponse(status=404)
+
+    status = capture.refresh_status()
+    data = {"id": capture.pk, "status": status, "error": capture.error_message}
+
+    # Server-downloaded captures report {"done", "total"} while they run
+    if status == BasemapCapture.StatusChoices.PROCESSING and capture.progress_path:
+        with contextlib.suppress(OSError, ValueError):
+            with open(capture.progress_path) as fh:
+                data.update(json.load(fh))
+
+    return JsonResponse(data)
+
+
+# OpenStreetMap's tile usage policy prohibits bulk downloading from its servers
+BLOCKED_CAPTURE_HOSTS = ("tile.openstreetmap.org",)
+
+
+def _host_matches(host, patterns):
+    return any(host == p or host.endswith("." + p) for p in patterns)
+
+
+def _is_public_host(host):
+    """True if every address the host resolves to is public (keeps captures from probing internal hosts)."""
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except socket.gaierror:
+        return False
+    for info in infos:
+        ip = ipaddress.ip_address(info[4][0])
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+            return False
+    return True
+
+class _BrowserOnlyLayer(ValueError):
+    """The server can't download this layer, but the browser can."""
+
+def _resolve_capture_layer(layer, request):
+    """
+    Turn a layer from the browser's capture plan into something the capture task can read.
+
+    Basemaps served by this portal are read straight from their files (the tile view
+    needs a login the task doesn't have). Other basemaps are downloaded from their
+    {z}/{x}/{y} URL templates, after checking the host.
+
+    Raises:
+        ValueError: with a message to show the user.
+    """
+    from tethys_services.models import BasemapImage
+
+    if not isinstance(layer, dict):
+        raise ValueError("Invalid basemap layer.")
+    urls = layer.get("urls")
+    if not isinstance(urls, list) or not urls or not all(isinstance(u, str) for u in urls):
+        raise ValueError("Invalid basemap layer URLs.")
+    try:
+        opacity = min(1.0, max(0.0, float(layer.get("opacity", 1))))
+    except (TypeError, ValueError):
+        raise ValueError("Invalid basemap layer opacity.")
+
+    # Browsers may percent-encode the braces in {z}/{x}/{y}
+    templates = [re.sub("%7d", "}", re.sub("%7b", "{", u, flags=re.I), flags=re.I) for u in urls]
+
+    # A basemap served by this portal: read its file directly
+    parsed = urlparse(templates[0])
+    if parsed.netloc in ("", request.get_host()):
+        concrete = re.sub(r"\{-?[xyz]\}", "0", parsed.path)
+        try:
+            match = resolve(concrete)
+        except Resolver404:
+            match = None
+        if match and match.url_name == "basemap_tile":
+            try:
+                image = BasemapImage.objects.get(
+                    pk=match.kwargs["image_id"], status=BasemapImage.StatusChoices.READY
+                )
+            except BasemapImage.DoesNotExist:
+                raise ValueError("That uploaded basemap isn't ready.")
+            if image.capture_id:
+                return {"kind": "mbtiles", "path": image.capture.mbtiles_file.path, "opacity": opacity}
+            path = image.generated_file.path
+            return {"kind": "cog", "path": path, "style": _tile_style(path), "opacity": opacity}
+
+    # Anything else: download it, if the host is allowed
+    allowed_hosts = getattr(settings, "BASEMAP_CAPTURE_ALLOWED_HOSTS", None) or []
+    for template in templates:
+        p = urlparse(template)
+        if p.scheme not in ("http", "https") or not p.hostname:
+            raise ValueError(f"Unsupported tile URL: {template}")
+        if "{z}" not in template or "{x}" not in template or not ("{y}" in template or "{-y}" in template):
+            raise ValueError(f"Not a {{z}}/{{x}}/{{y}} tile URL: {template}")
+
+        host = p.hostname.lower()
+        if _host_matches(host, BLOCKED_CAPTURE_HOSTS):
+            raise _BrowserOnlyLayer(f'Tiles from "{host}" aren\'t downloaded on the server.')
+        if allowed_hosts:
+            if not _host_matches(host, [h.lower() for h in allowed_hosts]):
+                raise _BrowserOnlyLayer(f'Tiles from "{host}" aren\'t downloaded on the server.')
+        elif not _is_public_host(host):
+            raise _BrowserOnlyLayer(f'Tiles from "{host}" aren\'t downloaded on the server.')
+
+    return {"kind": "xyz", "urls": templates, "opacity": opacity}
+
+
+def _dask_available():
+    """True when BASEMAP_DASK_SCHEDULER names an existing Dask scheduler."""
+    from tethys_services.basemap_jobs import get_basemap_scheduler
+
+    return get_basemap_scheduler() is not None
+
+
+@login_required()
+def basemap_capture_config(request):
+    """Tell the map view whether it can offer the Dask options for captures."""
+    return JsonResponse({"dask_available": _dask_available()})
+
+
+@login_required()
+@require_POST
+def basemap_capture_server(request):
+    """
+    Start a capture that a Dask worker downloads itself (USE_BASEMAP_UPLOAD_DASK on).
+
+    The browser sends only the plan as JSON: name, source label, bbox (EPSG:3857),
+    zoom range, tile size and each layer's {z}/{x}/{y} URL templates and opacity.
+    A background job downloads the tiles into an MBTiles file; the client polls
+    basemap_capture_status for progress and completion.
+    """
+    from django.core.files.storage import default_storage
+    from django.utils.text import slugify
+    from tethys_services.basemap_jobs import run_basemap_task
+    from tethys_services.basemap_tasks import count_tiles, fetch_and_build_mbtiles
+    from tethys_services.models import BasemapCapture, basemap_capture_upload_path
+
+    if not _dask_available():
+        return HttpResponseBadRequest("Downloading basemaps on the server is not available.")
+
+    try:
+        plan = json.loads(request.body)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid capture plan.")
+    if not isinstance(plan, dict):
+        return HttpResponseBadRequest("Invalid capture plan.")
+
+    name = str(plan.get("name", "")).strip()[:100]
+    if not name:
+        return HttpResponseBadRequest("Enter a name for the basemap.")
+    source_name = str(plan.get("source", "")).strip()
+
+    try:
+        bbox = [float(v) for v in plan.get("bbox") or []]
+        min_zoom = int(plan.get("min_zoom"))
+        max_zoom = int(plan.get("max_zoom"))
+        tile_size = int(plan.get("tile_size", 256))
+    except (TypeError, ValueError):
+        return HttpResponseBadRequest("Invalid bbox, zoom range or tile size.")
+    if len(bbox) != 4 or bbox[0] >= bbox[2] or bbox[1] >= bbox[3]:
+        return HttpResponseBadRequest("Invalid bbox.")
+    if not (0 <= min_zoom <= max_zoom <= MBTILES_MAX_ZOOM):
+        return HttpResponseBadRequest("Invalid zoom range.")
+    if tile_size not in (256, 512):
+        return HttpResponseBadRequest("Invalid tile size.")
+
+    layers = plan.get("layers")
+    if not isinstance(layers, list) or not layers:
+        return HttpResponseBadRequest("The basemap has no layers to download.")
+    try:
+        resolved_layers = [_resolve_capture_layer(layer, request) for layer in layers]
+    except _BrowserOnlyLayer as e:
+        return JsonResponse({"error": str(e), "browser_only": True}, status=400)
+    except ValueError as e:
+        return HttpResponseBadRequest(str(e))
+    total = count_tiles(bbox, min_zoom, max_zoom)
+    if not total:
+        return HttpResponseBadRequest("The selected area is outside the map.")
+
+    output_name = default_storage.get_available_name(
+        basemap_capture_upload_path(None, f"{slugify(name) or 'basemap'}.mbtiles")
+    )
+    capture = BasemapCapture.objects.create(
+        name=name,
+        owner=request.user,
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        mbtiles_file=output_name,
+        min_zoom=min_zoom,
+        max_zoom=max_zoom,
+        min_x=bbox[0],
+        min_y=bbox[1],
+        max_x=bbox[2],
+        max_y=bbox[3],
+    )
+
+    try:
+        job = run_basemap_task(
+            fetch_and_build_mbtiles,
+            capture.pk,
+            resolved_layers,
+            bbox,
+            min_zoom,
+            max_zoom,
+            tile_size,
+            name,
+            source_name,
+            default_storage.path(output_name),
+            name=f"Download basemap capture {capture.pk}",
+            user=request.user,
+            result_path=capture.result_path,
+            apply_inline=capture.apply_build_result,
+            use_dask=True,
+            progress_path=capture.progress_path,
+            concurrency=int(getattr(settings, "BASEMAP_CAPTURE_CONCURRENCY", 16)),
+        )
+    except Exception as e:
+        logger.exception("Could not start basemap capture job")
+        BasemapCapture.objects.filter(pk=capture.pk).update(
+            status=BasemapCapture.StatusChoices.FAILED, error_message=str(e)
+        )
+        return JsonResponse({"error": "Could not start the capture job."}, status=500)
+
+    if job:
+        BasemapCapture.objects.filter(pk=capture.pk).update(job=job)
+    capture.refresh_from_db()
+
+    return JsonResponse(
+        {
+            "id": capture.pk,
+            "name": capture.name,
+            "tiles": total,
+            "min_zoom": capture.min_zoom,
+            "max_zoom": capture.max_zoom,
+            "status": capture.status,
+            "error": capture.error_message,
+        },
+        status=202 if capture.status == BasemapCapture.StatusChoices.PROCESSING else 200,
+    )

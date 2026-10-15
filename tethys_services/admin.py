@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ValidationError
@@ -33,6 +34,7 @@ from tethys_portal.optional_dependencies import (
     optional_import,
     has_module,
 )
+from .basemap_jobs import get_basemap_scheduler
 
 JSONEditorWidget = optional_import(
     "JSONEditorWidget", from_module="django_json_widget.widgets"
@@ -351,7 +353,7 @@ class BasemapServiceAdmin(admin.ModelAdmin):
         )
         for image in pending:
             try:
-                image.generate()
+                image.start_generation(request.user)
             except Exception as e:
                 print(f"Error generating basemap image {image.pk}: {e}")
 
@@ -361,6 +363,19 @@ class BasemapServiceAdmin(admin.ModelAdmin):
             "https://cdn.jsdelivr.net/npm/ol@9.2.4/dist/ol.js",
             "tethys_services/js/basemap_georeference.js",
         )
+
+class BasemapImageAdminForm(forms.ModelForm):
+    process_with_dask = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Process with Dask",
+        help_text="Process this image in the background on the Dask scheduler instead of during the save.",
+    )
+
+    class Meta:
+        model = BasemapImage
+        fields = "__all__"
+
 class BasemapImageAdmin(admin.ModelAdmin):
     list_display = ("__str__", "basemap_service", "status")
     list_filter = ("status", "basemap_service")
@@ -387,6 +402,15 @@ class BasemapImageAdmin(admin.ModelAdmin):
 
         return render(request, "tethys_services/basemap/basemap_georeference.html", context)
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if get_basemap_scheduler() is None:
+            form.base_fields.pop("process_with_dask", None)  # hide when Dask isn't available
+        return form
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        obj.start_generation(request.user, use_dask=form.cleaned_data.get("process_with_dask", False))
 
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)

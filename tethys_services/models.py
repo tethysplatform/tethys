@@ -13,8 +13,11 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
 import os
+from pathlib import Path
 from encrypted_fields.fields import EncryptedTextField
 from string import Template
+import contextlib
+import json
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -525,12 +528,89 @@ def generated_basemap_upload_path(instance, filename):
 def basemap_capture_upload_path(instance, filename):
     return f"basemaps/captures/{filename}"
 
+def _remove_quietly(path):
+    """Delete a file if it exists; a concurrent refresh may already have removed it."""
+    if path:
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(path)
+
+def _dask_task_state(job):
+    """
+    The job's task state straight from the Dask scheduler: (state, error).
+    (None, None) if the scheduler no longer knows the task; ("unknown", None) if it can't be reached.
+    Tethys's own job status isn't usable here: it marks forget=True jobs complete as soon as they start.
+    """
+    from .basemap_tasks import dask_task_state
+
+    if not job.key or job.scheduler is None:
+        return "unknown", None
+    try:
+        client = job.scheduler.client
+    except Exception:
+        return "unknown", None
+    try:
+        return tuple(client.run_on_scheduler(dask_task_state, key=job.key))
+    except Exception:
+        return "unknown", None
+    finally:
+        client.close()
+
+def _refresh_from_result_file(record, apply_result, what):
+    """
+    Shared refresh for BasemapCapture and BasemapImage while they're processing.
+
+    Applies the task's result file if it has appeared. Otherwise asks the Dask scheduler
+    about the task, and marks the record failed only if the task errored, or finished
+    without writing a result.
+    """
+    progress_path = getattr(record, "progress_path", None)
+
+    def apply_if_ready():
+        path = record.result_path
+        if not (path and os.path.exists(path)):
+            return False
+        with open(path) as fh:
+            result = json.load(fh)
+        apply_result(result)
+        _remove_quietly(path)  # a concurrent refresh may already have removed it
+        _remove_quietly(progress_path)
+        return True
+
+    if apply_if_ready():
+        return
+
+    job = record.job if record.job_id else None
+    if job is None:
+        return
+
+    state, error = _dask_task_state(job)
+    if state == "erred":
+        message = f"The {what} job failed on the Dask worker." + (f"\n{error}" if error else "")
+    elif state is None:
+        # The scheduler let go of the task, so it finished. Its result may have landed just now.
+        if apply_if_ready():
+            return
+        message = (
+            f"The {what} job finished without writing a result file. Check that the Dask workers "
+            "share the Tethys media directory, and that the Dask scheduler wasn't restarted mid-job."
+        )
+    else:
+        return  # queued, running, or the scheduler can't be reached right now
+
+    type(record).objects.filter(pk=record.pk).update(status="failed", error_message=message)
+    _remove_quietly(progress_path)
+    record.refresh_from_db()
 
 class BasemapCapture(models.Model):
     """
     A basemap area saved from a map view as MBTiles, which can then be
     assigned to one or more basemap services.
     """
+
+    class StatusChoices(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+        FAILED = "failed", "Failed"
 
     TILE_CONTENT_TYPES = {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}
 
@@ -542,7 +622,20 @@ class BasemapCapture(models.Model):
         null=True,
         related_name="basemap_captures",
     )
-    mbtiles_file = models.FileField(upload_to=basemap_capture_upload_path)
+    mbtiles_file = models.FileField(upload_to=basemap_capture_upload_path, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=StatusChoices.choices,
+        default=StatusChoices.READY,
+    )
+    error_message = models.TextField(blank=True, default="")
+    job = models.ForeignKey(
+        "tethys_compute.DaskJob", 
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
     tile_format = models.CharField(max_length=10, default="png")
     min_zoom = models.PositiveSmallIntegerField()
     max_zoom = models.PositiveSmallIntegerField()
@@ -563,12 +656,23 @@ class BasemapCapture(models.Model):
     def tile_content_type(self):
         return self.TILE_CONTENT_TYPES.get(self.tile_format, "application/octet-stream")
 
+    @property
+    def result_path(self):
+        return f"{self.mbtiles_file.path}.result.json" if self.mbtiles_file else None
+
+    @property
+    def progress_path(self):
+        return f"{self.mbtiles_file.path}.progress.json" if self.mbtiles_file else None
+
     def get_tile(self, z, x, y):
         """
         Return the bytes of the XYZ tile at z/x/y, or None if the capture doesn't have it.
         """
         import sqlite3
         from pathlib import Path
+
+        if self.status != self.StatusChoices.READY or not self.mbtiles_file:
+            return None
 
         uri = Path(self.mbtiles_file.path).as_uri() + "?mode=ro"
         conn = sqlite3.connect(uri, uri=True)
@@ -581,6 +685,23 @@ class BasemapCapture(models.Model):
         finally:
             conn.close()
         return row[0] if row else None
+
+    def apply_build_result(self, result):
+        if result.get("ok"):
+            self.mbtiles_file.name = os.path.relpath(result["output_path"], settings.MEDIA_ROOT)
+            self.tile_format = result["tile_format"]
+            self.status = self.StatusChoices.READY
+            self.error_message = ""
+        else:
+            self.status = self.StatusChoices.FAILED
+            self.error_message = result.get("error", "Unknown error")
+        self.save()
+
+    def refresh_status(self):
+        """Apply the build job's result once it's available, and return the status."""
+        if self.status == self.StatusChoices.PROCESSING:
+            _refresh_from_result_file(self, self.apply_build_result, "capture")
+        return self.status
 
 class BasemapService(models.Model):
 
@@ -658,6 +779,13 @@ class BasemapImage(models.Model):
     generated_file = models.FileField(upload_to=generated_basemap_upload_path, blank=True, null=True)
     status = models.CharField(max_length=30, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     error_message = models.TextField(blank=True, null=True)
+    job = models.ForeignKey(
+        "tethys_compute.DaskJob",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
     srs = models.CharField(max_length=64, blank=True, null=True)
     wkt = models.TextField(blank=True, null=True)
     min_x = models.FloatField(blank=True, null=True)
@@ -675,6 +803,16 @@ class BasemapImage(models.Model):
     def clean(self):
         if bool(self.source_file) == bool(self.capture_id):
             raise ValidationError("Upload a source file or choose a capture, but not both.")
+        if self.capture_id:
+            status = self.capture.refresh_status()  # applies a finished job's result if it's waiting
+            if status == BasemapCapture.StatusChoices.FAILED:
+                raise ValidationError(f"That capture failed: {self.capture.error_message}")
+            if status != BasemapCapture.StatusChoices.READY:
+                raise ValidationError("That capture is still being built. Try again in a moment.")
+
+    @property
+    def result_path(self):
+        return f"{self.generated_file.path}.result.json" if self.generated_file else None
 
     def generate_from_capture(self):
         """
@@ -690,111 +828,73 @@ class BasemapImage(models.Model):
         self.error_message = ""
         self.save()
 
-    def generate(self):
-        import tempfile
-        from pathlib import Path
-        from django.core.files import File
-        try:
-            import rasterio
-            from rasterio.warp import calculate_default_transform, reproject, Resampling
-            from rasterio.shutil import copy as rio_copy
-            from rasterio.transform import from_bounds
-        except ImportError:
-            raise ImportError("rasterio is required to generate basemap images.")
-        
+    def start_generation(self, user, use_dask=False):
+        """Generate the served file: inline for captures, as a background job for uploads."""
         if self.capture_id:
-            self.generate_from_capture()
+            self.generate_from_capture()  # just copies bounds; no job needed
             return
 
+        from .basemap_jobs import run_basemap_task
+        from .basemap_tasks import build_cog
+
+        # Record the output path up front so refresh_status() knows where the result file goes.
+        # The tile view only serves READY images, so nothing reads it early.
+        self.generated_file.name = generated_basemap_upload_path(
+            self, Path(self.source_file.name).stem + "_cog.tif"
+        )
         self.status = self.StatusChoices.PROCESSING
-        self.save(update_fields=["status"])
+        self.error_message = ""
+        self.save(update_fields=["generated_file", "status", "error_message"])
+
+        # Clear a result left over from an earlier run of this image
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(self.result_path)
 
         try:
-            with rasterio.open(self.source_file.path) as src:
-                src_crs = src.crs
-                src_transform = src.transform
+            job = run_basemap_task(
+                build_cog,
+                self.pk,
+                self.source_file.path,
+                self.generated_file.path,
+                georeference_bounds=self.georeference_bounds,
+                georeference_epsg=self.georeference_epsg,
+                name=f"Generate basemap image {self.pk}",
+                user=user,
+                result_path=self.result_path,
+                apply_inline=self.apply_generation_result,
+                use_dask=use_dask,
+            )
+        except Exception as e:
+            BasemapImage.objects.filter(pk=self.pk).update(
+                status=self.StatusChoices.FAILED, error_message=str(e)
+            )
+            raise
 
-                if src_crs is None:
-                    if not self.georeference_bounds:
-                        self.status = self.StatusChoices.NEEDS_GEOREFERENCE
-                        self.error_message = ""
-                        self.save(update_fields=["status", "error_message"])
-                        return
+        if job:
+            # update() so we don't overwrite fields a fast job may already have set
+            BasemapImage.objects.filter(pk=self.pk).update(job=job)
+        self.refresh_from_db()
 
-                    min_x, min_y, max_x, max_y = self.georeference_bounds
-                    src_crs = rasterio.crs.CRS.from_epsg(self.georeference_epsg)
-                    src_transform = from_bounds(min_x, min_y, max_x, max_y, src.width, src.height)
-                    self.srs = str(src_crs.to_epsg() or "")
-                    self.wkt = src_crs.to_wkt()
-
-                else:
-                    self.srs = str(src_crs.to_epsg() or "")
-                    self.wkt = src_crs.to_wkt()
-                    self.georeference_epsg = src_crs.to_epsg()
-
-                dst_crs = "EPSG:3857"
-                src_bounds = (
-                    tuple(self.georeference_bounds) if src.crs is None else src.bounds
-                )
-                transform, width, height = calculate_default_transform(
-                    src_crs, dst_crs, src.width, src.height, *src_bounds
-                )
-
-                profile = src.profile.copy()
-
-                profile = {
-                    "driver": "GTiff",
-                    "dtype": src.dtypes[0],
-                    "count": src.count,
-                    "crs": dst_crs,
-                    "transform": transform,
-                    "width": width,
-                    "height": height,
-                    "tiled": True,
-                    "blockxsize": 512,
-                    "blockysize": 512,
-                    "compress": "DEFLATE",
-                }
-
-                with tempfile.TemporaryDirectory() as tmpdir:
-                    warped = Path(tmpdir) / "warped.tif"
-
-                    with rasterio.open(warped, "w", **profile) as dst:
-                        for i in range(1, src.count + 1):
-                            reproject(
-                                source = src.read(i) if src.crs is None else rasterio.band(src, i),
-                                destination=rasterio.band(dst, i),
-                                src_transform=src_transform,
-                                src_crs=src_crs,
-                                dst_transform=transform,
-                                dst_crs=dst_crs,
-                                resampling=Resampling.bilinear,
-                                src_nodata=None,
-                                dst_nodata=0
-                            )
-
-                    cog = Path(tmpdir) / "cog.tif"
-                    rio_copy(warped, cog, driver="COG", compress="DEFLATE", overview_resampling="nearest")
-
-                    with rasterio.open(cog) as final:
-                        self.min_x, self.min_y, self.max_x, self.max_y = final.bounds
-                        self.srs = str(final.crs.to_epsg() or "")
-                        self.wkt = final.crs.to_wkt()
-
-                    if self.generated_file:
-                        self.generated_file.delete(save=False)
-
-                    generated_name = Path(self.source_file.name).stem + "_cog.tif"
-                    with open(cog, "rb") as fh:
-                        self.generated_file.save(generated_name, File(fh), save=False)
-
+    def apply_generation_result(self, result):
+        if not result.get("ok"):
+            self.status = self.StatusChoices.FAILED
+            self.error_message = result.get("error", "Unknown error")
+        elif result.get("needs_georeference"):
+            self.status = self.StatusChoices.NEEDS_GEOREFERENCE
+            self.error_message = ""
+        else:
+            self.min_x, self.min_y, self.max_x, self.max_y = result["bounds"]
+            self.srs = result["srs"]
+            self.wkt = result["wkt"]
+            if result.get("source_epsg") and not self.georeference_epsg:
+                self.georeference_epsg = result["source_epsg"]
+            self.generated_file.name = os.path.relpath(result["output_path"], settings.MEDIA_ROOT)
             self.status = self.StatusChoices.READY
             self.error_message = ""
-            self.save()
+        self.save()
 
-        except Exception as e:
-            print(f"Error occurred: {e}")
-            self.status = self.StatusChoices.FAILED
-            self.error_message = str(e)
-            self.save(update_fields=["status", "error_message"])
-            raise
+    def refresh_status(self):
+        """Apply the generation job's result once it's available, and return the status."""
+        if self.status == self.StatusChoices.PROCESSING:
+            _refresh_from_result_file(self, self.apply_generation_result, "generation")
+        return self.status
