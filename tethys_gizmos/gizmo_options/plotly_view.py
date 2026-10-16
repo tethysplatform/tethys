@@ -1,4 +1,6 @@
 # coding=utf-8
+import warnings
+
 from .base import TethysGizmoOptions
 from tethys_portal.optional_dependencies import optional_import
 
@@ -6,6 +8,8 @@ from tethys_portal.optional_dependencies import optional_import
 opy = optional_import("plotly.offline")
 
 __all__ = ["PlotlyView"]
+
+_SHOW_LINK_UNSET = object()
 
 
 class PlotlyView(TethysGizmoOptions):
@@ -21,7 +25,6 @@ class PlotlyView(TethysGizmoOptions):
         attributes(Optional[dict]): Dictionary of attributed to add to the outer div.
         classes(Optional[str]): Space separated string of classes to add to the outer div.
         hidden(Optional[bool]): If True, the plot will be hidden. Default is False.
-        show_link(Optional[bool]): If True, the link to export plot to view in plotly is shown. Default is False.
 
     Controller Code Basic Example::
 
@@ -214,7 +217,7 @@ class PlotlyView(TethysGizmoOptions):
         classes="",
         divid="",
         hidden=False,
-        show_link=False,
+        show_link=_SHOW_LINK_UNSET,
     ):
         """
         Constructor
@@ -222,12 +225,18 @@ class PlotlyView(TethysGizmoOptions):
         # Initialize the super class
         super().__init__()
 
+        if show_link is not _SHOW_LINK_UNSET:
+            warnings.warn(
+                "The 'show_link' argument has no effect and is deprecated; it will be removed in a future tethys version.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         self.plotly_div = opy.plot(
             plot_input,
             auto_open=False,
             output_type="div",
             include_plotlyjs=False,
-            show_link=show_link,
         )
         self.height = height
         self.width = width
