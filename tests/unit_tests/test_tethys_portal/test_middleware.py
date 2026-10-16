@@ -5,8 +5,21 @@ from tethys_portal.middleware import (
     TethysSocialAuthExceptionMiddleware,
     TethysAppAccessMiddleware,
     TethysMfaRequiredMiddleware,
+    is_disconnect_disallowed,
 )
 from django.core.exceptions import PermissionDenied
+
+
+# Replaces social-auth-core version 5 NotAllowedToDisconnect
+class MockNotAllowedToDisconnect(Exception):
+    pass
+
+
+# Replaces social-auth-core version 6 AuthPolicyError
+class MockAuthPolicyError(Exception):
+    def __init__(self, code=None):
+        super().__init__()
+        self.code = code
 
 
 class TethysPortalMiddlewareTests(unittest.TestCase):
@@ -281,6 +294,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "disconnect_disallowed"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
@@ -312,6 +326,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "disconnect_disallowed"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
@@ -329,6 +344,24 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         )
 
         mock_redirect.assert_called_once_with("accounts:login")
+
+    @mock.patch(
+        "tethys_portal.middleware.NotAllowedToDisconnect", MockNotAllowedToDisconnect
+    )
+    def test_is_disconnect_disallowed_legacy(self):
+        # social-auth-core version 5
+        self.assertTrue(is_disconnect_disallowed(MockNotAllowedToDisconnect()))
+        self.assertFalse(is_disconnect_disallowed(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.AuthPolicyError", MockAuthPolicyError)
+    @mock.patch("tethys_portal.middleware.NotAllowedToDisconnect", None)
+    def test_is_disconnect_disallowed_policy_error(self):
+        # social-auth-core version 6
+        self.assertTrue(
+            is_disconnect_disallowed(MockAuthPolicyError("disconnect_disallowed"))
+        )
+        self.assertFalse(is_disconnect_disallowed(MockAuthPolicyError("other_policy")))
+        self.assertFalse(is_disconnect_disallowed(ValueError()))
 
     @mock.patch("tethys_portal.middleware.get_active_app")
     def test_app_access_app_none(self, mock_app):

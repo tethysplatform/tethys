@@ -33,6 +33,22 @@ AuthenticationFailed = optional_import(
 
 
 if has_module(SocialAuthExceptionMiddleware):
+    # New versions of social-auth-core (version 6 and above) renamed AuthAlreadyAssociated to AuthAssociationError
+    # and replaced NotAllowedToDisconnect with AuthPolicyError(code="disconnect_disallowed")
+    # python 3.10 gets earlier versions of social-auth-core (version 5)
+    AuthAssociationError = getattr(
+        social_exceptions, "AuthAssociationError", None
+    ) or getattr(social_exceptions, "AuthAlreadyAssociated")
+    NotAllowedToDisconnect = getattr(social_exceptions, "NotAllowedToDisconnect", None)
+    AuthPolicyError = getattr(social_exceptions, "AuthPolicyError", None)
+
+    def is_disconnect_disallowed(exception):
+        if NotAllowedToDisconnect is not None:
+            return isinstance(exception, NotAllowedToDisconnect)
+        return (
+            isinstance(exception, AuthPolicyError)
+            and getattr(exception, "code", None) == "disconnect_disallowed"
+        )
 
     class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
         def process_exception(self, request, exception):
@@ -42,7 +58,7 @@ if has_module(SocialAuthExceptionMiddleware):
                         return redirect("accounts:login")
                     else:
                         return redirect("user:settings")
-                elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
+                elif isinstance(exception, AuthAssociationError):
                     blurb = "The {0} account you tried to connect to has already been associated with another account."
                     with pretty_output(FG_WHITE) as p:
                         p.write(exception.backend.name)
@@ -63,7 +79,7 @@ if has_module(SocialAuthExceptionMiddleware):
                         return redirect("accounts:login")
                     else:
                         return redirect("user:settings")
-                elif isinstance(exception, social_exceptions.NotAllowedToDisconnect):
+                elif is_disconnect_disallowed(exception):
                     blurb = "Unable to disconnect from this social account."
                     messages.success(request, blurb)
                     if request.user.is_anonymous:
