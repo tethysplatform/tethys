@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('[data-social-refresh-url]').forEach(function(button) {
     button.addEventListener('click', function() {
-      var token = get_csrf_token() || document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
+      var token = get_csrf_token();
       if (!token) {
         console.error('Social token refresh: CSRF token not found on page.');
         return;
