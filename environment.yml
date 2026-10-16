@@ -70,6 +70,7 @@ dependencies:
   - django-json-widget # enable json widget for app settings
   - djangorestframework # enable REST API framework
   - djangorestframework_simplejwt # JWT authentication for REST API
+  - django-fernet-encrypted-fields # enable encrypted fields for models
 
   # Map Layout
   - PyShp

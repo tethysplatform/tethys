@@ -28,6 +28,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
     @mock.patch("tethys_apps.models.DatasetServiceSetting")
     @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
+    @mock.patch("tethys_apps.models.SecureMapServiceSetting")
     @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_cli.app_settings_commands.pretty_output")
     def test_app_settings_list_command_unlinked(
@@ -38,6 +39,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         ____,
         _____,
         ______,
+        _______,
         MockPscs,
         MockTethysApp,
         _,
@@ -52,6 +54,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         del mock_setting.spatial_dataset_service
         del mock_setting.dataset_service
         del mock_setting.web_processing_service
+        del mock_setting.secure_map_service
         del mock_setting.value
 
         # mock the PersistentStoreConnectionSetting filter return value
@@ -87,6 +90,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
     @mock.patch("tethys_apps.models.DatasetServiceSetting")
     @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
+    @mock.patch("tethys_apps.models.SecureMapServiceSetting")
     @mock.patch("tethys_apps.models.CustomSetting")
     @mock.patch("tethys_apps.models.SecretCustomSetting")
     @mock.patch("tethys_apps.models.JSONCustomSetting")
@@ -101,6 +105,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         MockCsimple,
         MockCsecret,
         MockCjson,
+        MockSmss,
         MockWpss,
         MockDss,
         MockSdss,
@@ -154,35 +159,49 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         del wpss.dataset_service
         MockWpss.objects.filter.return_value = [wpss]
 
+        # mock the Secure Map ServiceSetting filter return value
+        smss = MockSmss()
+        smss.name = "n006"
+        smss.pk = "p006"
+        smss.secure_map_service.name = ""
+        del smss.persistent_store_service
+        del smss.spatial_dataset_service
+        del smss.dataset_service
+        del smss.web_processing_service
+        MockSmss.objects.filter.return_value = [smss]
+
         # mock the Custom Setting filter.select_subclasses return value
         cs = MockCs()
 
         cs_simple = MockCsimple()
-        cs_simple.name = "n006"
-        cs_simple.pk = "p006"
+        cs_simple.name = "n007"
+        cs_simple.pk = "p007"
         cs_simple.value = "5"
         del cs_simple.persistent_store_service
         del cs_simple.spatial_dataset_service
         del cs_simple.dataset_service
         del cs_simple.web_processing_service
+        del cs_simple.secure_map_service
 
         cs_secret = MockCsecret()
-        cs_secret.name = "n007"
-        cs_secret.pk = "p007"
+        cs_secret.name = "n008"
+        cs_secret.pk = "p008"
         cs_secret.value = "xxxxJJJJ2ASF352AAAS%$%@$@"
         del cs_secret.persistent_store_service
         del cs_secret.spatial_dataset_service
         del cs_secret.dataset_service
         del cs_secret.web_processing_service
+        del cs_secret.secure_map_service
 
         cs_json = MockCjson()
-        cs_json.name = "n008"
-        cs_json.pk = "p008"
+        cs_json.name = "n009"
+        cs_json.pk = "p009"
         cs_json.value = {"key_tst": "water_val"}
         del cs_json.persistent_store_service
         del cs_json.spatial_dataset_service
         del cs_json.dataset_service
         del cs_json.web_processing_service
+        del cs_json.secure_map_service
 
         del cs.persistent_store_service
         del cs.spatial_dataset_service
@@ -204,6 +223,8 @@ class TestCliAppSettingsCommand(unittest.TestCase):
                 return MockPsds
             elif obj is sdss:
                 return MockSdss
+            elif obj is smss:
+                return MockSmss
 
         mock_type.side_effect = mock_type_func
 
@@ -225,6 +246,8 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         MockDss.objects.filter.assert_called_with(tethys_app=app)
         # check WepProcessingServiceSetting.objects.filter is called with 'app'
         MockWpss.objects.filter.assert_called_with(tethys_app=app)
+        # check SecureMapServiceSetting.objects.filter is called with 'app'
+        MockSmss.objects.filter.assert_called_with(tethys_app=app)
         # check CustomSetting.objects.filter is called with 'app'
         MockCs.objects.filter.assert_called_with(tethys_app=app)
 
@@ -240,6 +263,9 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         self.assertIn("n004", po_call_args[7][0][0])
         self.assertIn("n005", po_call_args[8][0][0])
         self.assertIn("n006", po_call_args[9][0][0])
+        self.assertIn("n007", po_call_args[10][0][0])
+        self.assertIn("n008", po_call_args[11][0][0])
+        self.assertIn("n009", po_call_args[12][0][0])
 
     @mock.patch("tethys_apps.models.TethysApp")
     @mock.patch("tethys_cli.cli_colors.pretty_output")

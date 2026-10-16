@@ -5,6 +5,7 @@ from tethys_portal.middleware import (
     TethysSocialAuthExceptionMiddleware,
     TethysAppAccessMiddleware,
     TethysMfaRequiredMiddleware,
+    TethysOauth2RequiredMiddleware,
 )
 from django.core.exceptions import PermissionDenied
 
@@ -843,3 +844,184 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         # required for all users
         mock_redirect.assert_called_once_with("mfa_home")
+
+    def test_oauth_required_init(self):
+        mock_get_response = mock.MagicMock()
+        obj = TethysOauth2RequiredMiddleware(mock_get_response)
+        self.assertEqual(obj.get_response, mock_get_response)
+
+    def test_oauth_required_no_requirements(self):
+        mock_get_response = mock.MagicMock()
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    @mock.patch("tethys_portal.middleware.settings")
+    def test_oauth_required_no_active_app(self, mock_settings, mock_gap):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = None
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_no_requirements_for_app(self, mock_gap):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_has_provider(self, mock_gap, mock_gcop):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_value"]
+        )
+        mock_gcop.return_value = ["test_value"]
+        mock_request = mock.MagicMock()
+        mock_request.user.social_auth.filter.return_value.exists.return_value = True
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+        mock_request.user.social_auth.filter.assert_called_once_with(
+            provider="test_value"
+        )
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    @mock.patch("tethys_portal.middleware.messages.error")
+    @mock.patch("tethys_portal.middleware.logger")
+    def test_oauth_required_unconfigured_providers(
+        self, mock_logger, mock_messages, mock_gap, mock_gcop
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_provider"]
+        )
+        mock_gcop.return_value = ["configured_provider"]
+
+        mock_request = mock.MagicMock()
+
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 provider 'test_provider' is not configured on this portal. Please contact your portal administrator.",
+        )
+
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
+        )
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1 and test_provider2 are not configured on this portal. Please contact your portal administrator.",
+        )
+
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
+        )
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2, test_provider3"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1, test_provider2, and test_provider3 are not configured on this portal. Please contact your portal administrator.",
+        )
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.urlencode")
+    @mock.patch("tethys_portal.middleware.reverse")
+    @mock.patch("tethys_portal.middleware.messages.info")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_no_provider(
+        self,
+        mock_gap,
+        mock_redirect,
+        mock_messages,
+        mock_reverse,
+        mock_urlencode,
+        mock_gcop,
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_provider"]
+        )
+        mock_request = mock.MagicMock()
+        mock_request.get_full_path.return_value = "/apps/test_package/test_path"
+        mock_request.user.social_auth.filter.return_value.exists.return_value = False
+        mock_reverse.return_value = "/user/settings/"
+        mock_urlencode.return_value = "next=/apps/test_package/test_path"
+        mock_gcop.return_value = ["test_provider"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_once_with(
+            mock_request,
+            "This application requires authenticating with test_provider. Please link your account.",
+        )
+        mock_reverse.assert_called_once_with("user:settings")
+        mock_redirect.assert_called_with(
+            f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
+        )
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
+        )
+        mock_gcop.return_value = ["test_provider1", "test_provider2"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_with(
+            mock_request,
+            "This application requires authenticating with test_provider1 and test_provider2. Please link your accounts.",
+        )
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
+        )
+        mock_gcop.return_value = ["test_provider1", "test_provider2", "test_provider3"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_with(
+            mock_request,
+            "This application requires authenticating with test_provider1, test_provider2, and test_provider3. Please link your accounts.",
+        )
+
+    @mock.patch("tethys_portal.middleware.urlencode")
+    @mock.patch("tethys_portal.middleware.reverse")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_user_not_authenticated(
+        self,
+        mock_gap,
+        mock_redirect,
+        mock_reverse,
+        mock_urlencode,
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_request = mock.MagicMock()
+        mock_request.get_full_path.return_value = "/apps/test_package/test_path"
+        mock_request.user.is_authenticated = False
+        mock_reverse.return_value = "/accounts/login/"
+        mock_urlencode.return_value = "next=/apps/test_package/test_path"
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_reverse.assert_called_once_with("accounts:login")
+        mock_redirect.assert_called_once_with(
+            f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
+        )
