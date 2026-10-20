@@ -6,6 +6,7 @@ from tethys_portal.middleware import (
     TethysAppAccessMiddleware,
     TethysMfaRequiredMiddleware,
     is_disconnect_disallowed,
+    is_identity_in_use,
 )
 from django.core.exceptions import PermissionDenied
 
@@ -20,6 +21,23 @@ class MockAuthPolicyError(Exception):
     def __init__(self, code=None):
         super().__init__()
         self.code = code
+
+
+# Replaces social-auth-core version 5 AuthAlreadyAssociated
+class MockAuthAlreadyAssociated(Exception):
+    def __init__(self, backend_name="google"):
+        super().__init__()
+        self.backend = mock.MagicMock()
+        self.backend.name = backend_name
+
+
+# Replaces social-auth-core version 6 AuthAssociationError
+class MockAuthAssociationError(Exception):
+    def __init__(self, code="identity_in_use", backend_name="google"):
+        super().__init__()
+        self.code = code
+        self.backend = mock.MagicMock()
+        self.backend.name = backend_name
 
 
 class TethysPortalMiddlewareTests(unittest.TestCase):
@@ -83,6 +101,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "google"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -126,6 +145,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "linkedin"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -169,6 +189,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "hydroshare"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -212,6 +233,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "facebook"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -256,6 +278,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -362,6 +385,106 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         )
         self.assertFalse(is_disconnect_disallowed(MockAuthPolicyError("other_policy")))
         self.assertFalse(is_disconnect_disallowed(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.AuthAssociationError", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAlreadyAssociated", MockAuthAlreadyAssociated
+    )
+    def test_is_identity_in_use_legacy(self):
+        # social-auth-core version 5
+        self.assertTrue(is_identity_in_use(MockAuthAlreadyAssociated()))
+        self.assertFalse(is_identity_in_use(ValueError()))
+
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_is_identity_in_use_association_error(self):
+        # social-auth-core version 6
+        self.assertTrue(
+            is_identity_in_use(MockAuthAssociationError(code="identity_in_use"))
+        )
+        self.assertFalse(
+            is_identity_in_use(
+                MockAuthAssociationError(code="identifier_migration_conflict")
+            )
+        )
+        self.assertFalse(
+            is_identity_in_use(MockAuthAssociationError(code="email_in_use"))
+        )
+        self.assertFalse(is_identity_in_use(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch("tethys_portal.middleware.AuthPolicyError", MockAuthPolicyError)
+    @mock.patch("tethys_portal.middleware.NotAllowedToDisconnect", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_process_exception_identifier_migration_conflict(
+        self, _, mock_redirect, mock_success, mock_pretty_output
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = True
+        exception = MockAuthAssociationError(code="identifier_migration_conflict")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        ret = obj.process_exception(mock_request, exception)
+
+        self.assertIsNone(ret)
+        mock_success.assert_not_called()
+        mock_redirect.assert_not_called()
+        mock_pretty_output.assert_not_called()
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_process_exception_identity_in_use_v6(
+        self, _, mock_redirect, mock_success, __
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = True
+        exception = MockAuthAssociationError(code="identity_in_use")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        obj.process_exception(mock_request, exception)
+
+        self.assertEqual(
+            "The Google account you tried to connect to has already been associated with another "
+            "account.",
+            mock_success.call_args[0][1],
+        )
+        mock_redirect.assert_called_once_with("accounts:login")
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch("tethys_portal.middleware.AuthAssociationError", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAlreadyAssociated", MockAuthAlreadyAssociated
+    )
+    def test_process_exception_already_associated_v5(
+        self, _, mock_redirect, mock_success, __
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = False
+        exception = MockAuthAlreadyAssociated(backend_name="linkedin")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        obj.process_exception(mock_request, exception)
+
+        self.assertEqual(
+            "The LinkedIn account you tried to connect to has already been associated with "
+            "another account.",
+            mock_success.call_args[0][1],
+        )
+        mock_redirect.assert_called_once_with("user:settings")
 
     @mock.patch("tethys_portal.middleware.get_active_app")
     def test_app_access_app_none(self, mock_app):
