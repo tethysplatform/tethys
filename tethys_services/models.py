@@ -8,12 +8,18 @@
 ********************************************************************************
 """
 
+import logging
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.urls import reverse, reverse_lazy
+from django.utils.functional import lazy
+from tethys_sdk.gizmos import MVLayer
+import requests
 from urllib.error import HTTPError, URLError
 import os
 from encrypted_fields.fields import EncryptedTextField
 from string import Template
+from urllib.parse import urlencode
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -40,6 +46,8 @@ PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
     ("postgresql", "PostgreSQL"),
     ("sqlite", "SQLite"),
 )
+
+log = logging.getLogger("tethys")
 
 
 def validate_url(value):
@@ -551,3 +559,106 @@ class SecureMapService(models.Model):
         params.update(new_params)
         self.params = params
         self.save()
+
+    def _generate_request(self, param_overrides=None):
+        """
+        Generate a URL for making requests to the secure map service.
+
+        For services using API key authentication, the API key is included in the returned URL as a query parameter.
+
+        For services using OAuth2 authentication, the return URL does not include the access token.
+        You must retrieve the access token separately and include the token as a Authorization: Bearer <token> header in your request.
+        You can retrieve the access token by calling ``App.get_secure_map_service('setting_name', as_token=True, request_user=request.user)``.
+        Another option is to use ``as_layer=True`` when calling ``App.get_secure_map_service`` to get a map layer object that handles the token automatically.
+
+        For services with a proxy endpoint enabled, the returned URL points to Tethys's secure map proxy endpoint, which handles authentication server-side.
+        """
+        if self.use_proxy:
+            # Use lazy URL resolution so the proxy endpoint is resolved at
+            # runtime. This allows the url to be referenced before apps are
+            # fully loaded and the urls are registered. This helps in cases
+            # like using a map service for a MapLayout basemap
+            def build_proxy_url():
+                url = reverse("secure_map_proxy", kwargs={"service_id": self.pk})
+                if param_overrides:
+                    return f"{url}?{urlencode(param_overrides)}"
+                return url
+
+            return lazy(build_proxy_url, str)()
+
+        endpoint = self.endpoint
+        params = self._get_resolved_params()
+        if param_overrides:
+            params.update(param_overrides)
+
+        query_string = urlencode(params)
+        separator = "&" if "?" in endpoint else "?"
+        url = f"{endpoint}{separator}{query_string}" if query_string else endpoint
+        return url
+
+    def _build_layer(
+        self,
+        param_overrides=None,
+        source_options=None,
+        layer_options=None,
+    ):
+        # Caller's source options first; url and token are set by the service and always win.
+        options = dict(source_options or {})
+        options["url"] = self._generate_request(param_overrides=param_overrides)
+
+        if not self.use_proxy and self.authentication_method == "oauth2":
+            options["token_url"] = reverse_lazy(
+                "secure_map_token", kwargs={"service_id": self.pk}
+            )
+
+        return MVLayer(
+            source=self.service_type,
+            layer_options={"visible": True, **(layer_options or {})},
+            options=options,
+            legend_title=self.legend_title,
+            data={"show_legend": True, "layer_id": self.pk},
+        )
+
+    def _fetch_response(self, param_overrides=None, request_user=None):
+        service = self.secure_map_service
+        params = dict(service._get_resolved_params() or {})
+        if param_overrides:
+            params.update(param_overrides)
+
+        headers = {}
+        if service.authentication_method == "oauth2":
+            if not request_user:
+                raise ValueError(
+                    "Request user must be provided to fetch response for OAuth2 authenticated service."
+                )
+            headers["Authorization"] = (
+                f"Bearer {service._get_oauth_token(request_user)}"
+            )
+
+        connection_timeout = (
+            service.connection_timeout if service.connection_timeout is not None else 10
+        )
+        read_timeout = service.read_timeout if service.read_timeout is not None else 30
+        try:
+            resp = requests.get(
+                service.endpoint,
+                params=params,
+                headers=headers,
+                timeout=(connection_timeout, read_timeout),
+            )
+
+        except requests.Timeout:
+            log.error(
+                f"SecureMapService with name {service.name} request timed out. "
+                f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+            )
+            raise
+
+        if not resp.ok:
+            log.error(
+                f"SecureMapService with name {service.name} request failed: \n"
+                f"status_code: {resp.status_code}\n"
+                f"response text: {resp.text[:200]}"
+            )
+        resp.raise_for_status()
+        return resp
