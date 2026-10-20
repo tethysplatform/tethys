@@ -33,6 +33,32 @@ AuthenticationFailed = optional_import(
 
 
 if has_module(SocialAuthExceptionMiddleware):
+    # New versions of social-auth-core (version 6 and above) renamed AuthAlreadyAssociated to AuthAssociationError
+    # and replaced NotAllowedToDisconnect with AuthPolicyError(code="disconnect_disallowed")
+    # python 3.10 gets earlier versions of social-auth-core (version 5)
+    AuthAlreadyAssociated = getattr(social_exceptions, "AuthAlreadyAssociated", None)
+    AuthAssociationError = getattr(social_exceptions, "AuthAssociationError", None)
+    NotAllowedToDisconnect = getattr(social_exceptions, "NotAllowedToDisconnect", None)
+    AuthPolicyError = getattr(social_exceptions, "AuthPolicyError", None)
+
+    def is_identity_in_use(exception):
+        if AuthAssociationError is None:
+            # v5: the class alone identifies this case
+            return isinstance(exception, AuthAlreadyAssociated)
+        # v6: AuthAssociationError also covers e.g. identifier_migration_conflict,
+        # which needs admin attention and must not be reported as "already associated"
+        return (
+            isinstance(exception, AuthAssociationError)
+            and getattr(exception, "code", None) == "identity_in_use"
+        )
+
+    def is_disconnect_disallowed(exception):
+        if NotAllowedToDisconnect is not None:
+            return isinstance(exception, NotAllowedToDisconnect)
+        return (
+            isinstance(exception, AuthPolicyError)
+            and getattr(exception, "code", None) == "disconnect_disallowed"
+        )
 
     class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
         def process_exception(self, request, exception):
@@ -42,7 +68,7 @@ if has_module(SocialAuthExceptionMiddleware):
                         return redirect("accounts:login")
                     else:
                         return redirect("user:settings")
-                elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
+                elif is_identity_in_use(exception):
                     blurb = "The {0} account you tried to connect to has already been associated with another account."
                     with pretty_output(FG_WHITE) as p:
                         p.write(exception.backend.name)
@@ -63,7 +89,7 @@ if has_module(SocialAuthExceptionMiddleware):
                         return redirect("accounts:login")
                     else:
                         return redirect("user:settings")
-                elif isinstance(exception, social_exceptions.NotAllowedToDisconnect):
+                elif is_disconnect_disallowed(exception):
                     blurb = "Unable to disconnect from this social account."
                     messages.success(request, blurb)
                     if request.user.is_anonymous:
