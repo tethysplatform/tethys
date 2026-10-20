@@ -1,10 +1,97 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_services.models import SecureMapService
+import requests
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.functional import Promise
+from django.utils.encoding import force_str
 
 
 class SecureMapServiceTests(TethysTestCase):
+    def set_up(self):
+        self.test_user = self.create_test_user(
+            username="testuser", password="testpassword"
+        )
+        self.params_with_api_key = {"param1": "value1", "api_key": "${api_key}"}
+        self.params_without_api_key = {"param1": "value1"}
+
+        self.map_service_with_api_key_no_proxy = SecureMapService(
+            name="api_key_no_proxy",
+            legend_title="Map Service with API Token No Proxy",
+            endpoint="https://example.com/map_service",
+            authentication_method="api_key",
+            api_key="test_api_key",
+            service_type="WMS",
+            params=self.params_with_api_key,
+            use_proxy=False,
+            connection_timeout=14,
+            read_timeout=29,
+        )
+        self.map_service_with_api_key_no_proxy.save()
+
+        self.map_service_without_api_key_param_no_proxy = SecureMapService(
+            name="no_api_key_params_no_proxy",
+            legend_title="Map Service without API Token Param No Proxy",
+            endpoint="https://example.com/map_service",
+            authentication_method="api_key",
+            api_key="test_api_key",
+            service_type="WMS",
+            params=self.params_without_api_key,
+            use_proxy=False,
+            connection_timeout=12,
+            read_timeout=16,
+        )
+        self.map_service_without_api_key_param_no_proxy.save()
+
+        self.map_service_with_api_key_with_proxy = SecureMapService(
+            name="api_key_with_proxy",
+            legend_title="Map Service with API Token With Proxy",
+            endpoint="https://example.com/map_service",
+            authentication_method="api_key",
+            api_key="test_api_key",
+            service_type="GML",
+            params=self.params_with_api_key,
+            use_proxy=True,
+            connection_timeout=15,
+            read_timeout=20,
+        )
+        self.map_service_with_api_key_with_proxy.save()
+
+        self.map_service_with_oauth_no_proxy = SecureMapService(
+            name="oauth_no_proxy",
+            legend_title="Map Service with OAuth2 No Proxy",
+            endpoint="https://example.com/map_service",
+            authentication_method="oauth2",
+            oauth2_provider="test_oauth2_provider",
+            service_type="GML",
+            params=self.params_without_api_key,
+            use_proxy=False,
+            connection_timeout=17,
+            read_timeout=21,
+        )
+        self.map_service_with_oauth_no_proxy.save()
+
+        self.map_service_with_oauth_with_proxy = SecureMapService(
+            name="oauth_with_proxy",
+            legend_title="Map Service with OAuth2 With Proxy",
+            endpoint="https://example.com/map_service",
+            authentication_method="oauth2",
+            oauth2_provider="test_oauth2_provider",
+            service_type="WMS",
+            params=self.params_without_api_key,
+            use_proxy=True,
+            connection_timeout=16,
+            read_timeout=27,
+        )
+        self.map_service_with_oauth_with_proxy.save()
+
+    def tear_down(self):
+        self.map_service_with_api_key_no_proxy.delete()
+        self.map_service_with_api_key_with_proxy.delete()
+        self.map_service_without_api_key_param_no_proxy.delete()
+        self.map_service_with_oauth_no_proxy.delete()
+        self.map_service_with_oauth_with_proxy.delete()
+
     def test_str(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service", endpoint="http://example.com"
@@ -313,4 +400,258 @@ class SecureMapServiceTests(TethysTestCase):
 
         self.assertEqual(
             str(context.exception), "new_params must be a JSON object (dict)."
+        )
+
+    def test__generate_request_with_proxy(self):
+        service = self.map_service_with_api_key_with_proxy
+
+        url = service._generate_request()
+
+        self.assertIsInstance(url, Promise)
+        self.assertEqual(f"/secure-map-proxy/{service.pk}/", force_str(url))
+
+    def test__generate_request_without_proxy_with_api_key(self):
+        service = self.map_service_with_api_key_no_proxy
+        url = service._generate_request()
+
+        self.assertEqual(
+            url, "https://example.com/map_service?param1=value1&api_key=test_api_key"
+        )
+
+    def test__generate_request_without_proxy_without_api_key_param(self):
+        service = self.map_service_without_api_key_param_no_proxy
+        url = service._generate_request()
+
+        self.assertEqual(
+            url, "https://example.com/map_service?param1=value1&api_key=test_api_key"
+        )
+
+    def test__generate_request_param_overrides_no_proxy(self):
+        service = self.map_service_with_api_key_no_proxy
+
+        url = service._generate_request(
+            param_overrides={"param1": "overridden_value", "param2": "value2"}
+        )
+
+        self.assertEqual(
+            url,
+            "https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
+        )
+
+    def test__generate_request__param_overrides_with_proxy(self):
+        service = self.map_service_with_api_key_with_proxy
+
+        url = service._generate_request(
+            param_overrides={"param1": "overridden_value", "param2": "value2"}
+        )
+
+        self.assertIsInstance(url, Promise)
+        self.assertEqual(
+            f"/secure-map-proxy/{service.pk}/?param1=overridden_value&param2=value2",
+            force_str(url),
+        )
+
+    def test__build_layer_with_api_key(self):
+        service = self.map_service_with_api_key_no_proxy
+
+        layer = service._build_layer()
+
+        self.assertEqual(layer["source"], service.service_type)
+
+        self.assertEqual(
+            layer["options"]["url"],
+            "https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+
+    def test__build_layer_without_api_key_param(self):
+        service = self.map_service_without_api_key_param_no_proxy
+        layer = service._build_layer()
+
+        self.assertEqual(layer["source"], service.service_type)
+        self.assertEqual(
+            layer["options"]["url"],
+            "https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+
+    def test__build_layer_with_proxy(self):
+        service = self.map_service_with_api_key_with_proxy
+
+        layer = service._build_layer()
+
+        self.assertEqual(layer["source"], service.service_type)
+        self.assertIsInstance(layer["options"]["url"], Promise)
+        self.assertEqual(
+            force_str(layer["options"]["url"]),
+            f"/secure-map-proxy/{service.pk}/",
+        )
+
+    def test__build_layer_param_overrides(self):
+        service = self.map_service_with_api_key_no_proxy
+
+        layer = service._build_layer(
+            param_overrides={"param1": "overridden_value", "param2": "value2"}
+        )
+
+        self.assertEqual(layer["source"], service.service_type)
+        self.assertEqual(
+            layer["options"]["url"],
+            "https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
+        )
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+        return_value="test_oauth_token",
+    )
+    def test__build_Layer_oauth(self, mock_got):
+        service = self.map_service_with_oauth_no_proxy
+
+        layer = service._build_layer()
+        self.assertEqual(layer["source"], service.service_type)
+        self.assertEqual(
+            layer["options"]["url"], "https://example.com/map_service?param1=value1"
+        )
+        self.assertEqual(
+            layer["options"]["token_url"],
+            f"/secure-map-token/{service.id}/",
+        )
+
+    def test__fetch_response_no_request_user(self):
+        service = self.map_service_with_oauth_no_proxy
+
+        self.assertRaises(
+            ValueError,
+            service._fetch_response,
+            request_user=None,
+        )
+
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_with_api_key(self, mock_get):
+        service = self.map_service_with_api_key_no_proxy
+
+        mock_response = mock.MagicMock(
+            status_code=200,
+            ok=True,
+            url="https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+        mock_get.return_value = mock_response
+
+        response = service._fetch_response()
+
+        self.assertEqual(
+            response.url,
+            "https://example.com/map_service?param1=value1&api_key=test_api_key",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+        return_value="test_oauth_token",
+    )
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_with_oauth_header(self, mock_get, mock_got):
+        service = self.map_service_with_oauth_no_proxy
+
+        mock_response = mock.MagicMock(
+            status_code=200,
+            ok=True,
+            url="https://example.com/map_service?param1=value1",
+        )
+        mock_get.return_value = mock_response
+
+        response = service._fetch_response(request_user=self.test_user)
+
+        mock_got.assert_called_once_with(self.test_user)
+
+        self.assertEqual(response.url, "https://example.com/map_service?param1=value1")
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch("tethys_services.models.log")
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+        return_value="test_oauth_token",
+    )
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_with_oauth_response_not_ok(
+        self, mock_get, mock_got, mock_log
+    ):
+        service = self.map_service_with_oauth_no_proxy
+
+        mock_response = mock.MagicMock(
+            status_code=403,
+            ok=False,
+            url="https://example.com/map_service?param1=value1",
+            text="Forbidden access message",
+            raise_for_status=mock.MagicMock(
+                side_effect=requests.HTTPError("403 Forbidden")
+            ),
+        )
+        mock_get.return_value = mock_response
+
+        with self.assertRaises(requests.HTTPError):
+            service._fetch_response(request_user=self.test_user)
+
+        mock_got.assert_called_once_with(self.test_user)
+        mock_log.error.assert_called_once()
+        logged = mock_log.error.call_args.args[0]
+        self.assertIn(
+            f"SecureMapService with name {service.name} request failed",
+            logged,
+        )
+        self.assertIn("status_code: 403", logged)
+        self.assertIn("Forbidden access message", logged)
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+        return_value="test_oauth_token",
+    )
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_with_oauth_good_response(self, mock_get, mock_got):
+        service = self.map_service_with_oauth_no_proxy
+
+        mock_response = mock.MagicMock(
+            status_code=200,
+            ok=True,
+            url="https://example.com/map_service?param1=value1",
+        )
+        mock_get.return_value = mock_response
+
+        response = service._fetch_response(request_user=self.test_user)
+
+        mock_got.assert_called_once_with(self.test_user)
+
+        self.assertEqual(response, mock_response)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_with_api_key_with_overrides(self, mock_get):
+        service = self.map_service_with_api_key_no_proxy
+
+        mock_response = mock.MagicMock(
+            status_code=200,
+            ok=True,
+            url="https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
+        )
+        mock_get.return_value = mock_response
+
+        response = service._fetch_response(
+            param_overrides={"param1": "overridden_value", "param2": "value2"}
+        )
+
+        self.assertEqual(
+            response.url,
+            "https://example.com/map_service?param1=overridden_value&api_key=test_api_key&param2=value2",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch("tethys_services.models.log")
+    @mock.patch("tethys_services.models.requests.get")
+    def test__fetch_response_request_timeout(self, mock_get, mock_log):
+        service = self.map_service_with_api_key_no_proxy
+
+        mock_get.side_effect = requests.Timeout
+
+        with self.assertRaises(requests.exceptions.Timeout):
+            service._fetch_response()
+        mock_log.error.assert_called_with(
+            "SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)"
         )

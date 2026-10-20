@@ -620,28 +620,27 @@ class SecureMapService(models.Model):
         )
 
     def _fetch_response(self, param_overrides=None, request_user=None):
-        service = self.secure_map_service
-        params = dict(service._get_resolved_params() or {})
+        params = dict(self._get_resolved_params() or {})
         if param_overrides:
             params.update(param_overrides)
 
         headers = {}
-        if service.authentication_method == "oauth2":
+        if self.authentication_method == "oauth2":
             if not request_user:
                 raise ValueError(
                     "Request user must be provided to fetch response for OAuth2 authenticated service."
                 )
             headers["Authorization"] = (
-                f"Bearer {service._get_oauth_token(request_user)}"
+                f"Bearer {self._get_oauth_token(request_user)}"
             )
 
         connection_timeout = (
-            service.connection_timeout if service.connection_timeout is not None else 10
+            self.connection_timeout if self.connection_timeout is not None else 10
         )
-        read_timeout = service.read_timeout if service.read_timeout is not None else 30
+        read_timeout = self.read_timeout if self.read_timeout is not None else 30
         try:
             resp = requests.get(
-                service.endpoint,
+                self.endpoint,
                 params=params,
                 headers=headers,
                 timeout=(connection_timeout, read_timeout),
@@ -649,14 +648,14 @@ class SecureMapService(models.Model):
 
         except requests.Timeout:
             log.error(
-                f"SecureMapService with name {service.name} request timed out. "
+                f"SecureMapService with name {self.name} request timed out. "
                 f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
             )
             raise
 
         if not resp.ok:
             log.error(
-                f"SecureMapService with name {service.name} request failed: \n"
+                f"SecureMapService with name {self.name} request failed: \n"
                 f"status_code: {resp.status_code}\n"
                 f"response text: {resp.text[:200]}"
             )
