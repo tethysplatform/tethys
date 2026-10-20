@@ -209,6 +209,7 @@ class TestUtilites(unittest.TestCase):
             "The required OAuth2 provider 'hydroshare' is not configured on this portal."
         )
         self.assertEqual(response, "/app_library/")
+
     def test_ensure_oauth2_AuthAlreadyAssociated(self, mock_redirect, mock_reverse):
         mock_user = mock.MagicMock()
         mock_request = mock.MagicMock(user=mock_user, path="path")
