@@ -6,7 +6,7 @@ import requests
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test.utils import override_settings
-from social_core.exceptions import AuthAlreadyAssociated, AuthException
+from social_core.exceptions import AuthException
 
 from tethys_dataset_services.engines import HydroShareDatasetEngine
 from tethys_services.utilities import (
@@ -209,13 +209,6 @@ class TestUtilites(unittest.TestCase):
             "The required OAuth2 provider 'hydroshare' is not configured on this portal."
         )
         self.assertEqual(response, "/app_library/")
-
-    def test_ensure_oauth2_AuthAlreadyAssociated(self, mock_redirect, mock_reverse):
-        mock_user = mock.MagicMock()
-        mock_request = mock.MagicMock(user=mock_user, path="path")
-        mock_redirect_url = mock.MagicMock()
-        mock_reverse.return_value = mock_redirect_url
-        mock_user.social_auth.get.side_effect = MockAuthAlreadyAssociated()
 
     @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.load_strategy")
