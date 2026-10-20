@@ -630,9 +630,7 @@ class SecureMapService(models.Model):
                 raise ValueError(
                     "Request user must be provided to fetch response for OAuth2 authenticated service."
                 )
-            headers["Authorization"] = (
-                f"Bearer {self._get_oauth_token(request_user)}"
-            )
+            headers["Authorization"] = f"Bearer {self._get_oauth_token(request_user)}"
 
         connection_timeout = (
             self.connection_timeout if self.connection_timeout is not None else 10
