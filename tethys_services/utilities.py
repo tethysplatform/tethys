@@ -35,9 +35,16 @@ HydroShareDatasetEngine = optional_import(
 )
 WebProcessingService = optional_import("WebProcessingService", from_module="owslib.wps")
 load_strategy = optional_import("load_strategy", from_module="social_django.utils")
-AuthAlreadyAssociated, AuthException = optional_import(
-    ("AuthAlreadyAssociated", "AuthException"), from_module="social_core.exceptions"
-)
+AuthException = optional_import("AuthException", from_module="social_core.exceptions")
+
+# New versions of social-auth-core (version 6 and above) renamed AuthAlreadyAssociated to AuthAssociationError
+# python 3.10 gets earlier versions of social-auth-core (version 5)
+try:
+    from social_core.exceptions import AuthAssociationError as AuthAlreadyAssociated
+except ImportError:
+    AuthAlreadyAssociated = optional_import(
+        "AuthAlreadyAssociated", from_module="social_core.exceptions"
+    )
 
 
 logger = logging.getLogger(__name__)

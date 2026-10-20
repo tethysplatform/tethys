@@ -22,12 +22,20 @@ from tethys_services.utilities import (
     activate_wps,
     list_wps_service_engines,
     get_wps_service_engine,
+    AuthAlreadyAssociated,
 )
 
 try:
     from urllib2 import HTTPError, URLError
 except ImportError:
     from urllib.request import HTTPError, URLError
+
+
+# Mock exception to allow testing for AuthAlreadyAssociated
+# that may not be available in the current social-auth-core version
+class MockAuthAlreadyAssociated(AuthAlreadyAssociated):
+    def __init__(self):
+        pass
 
 
 @ensure_oauth2("hydroshare")
@@ -201,6 +209,12 @@ class TestUtilites(unittest.TestCase):
             "The required OAuth2 provider 'hydroshare' is not configured on this portal."
         )
         self.assertEqual(response, "/app_library/")
+    def test_ensure_oauth2_AuthAlreadyAssociated(self, mock_redirect, mock_reverse):
+        mock_user = mock.MagicMock()
+        mock_request = mock.MagicMock(user=mock_user, path="path")
+        mock_redirect_url = mock.MagicMock()
+        mock_reverse.return_value = mock_redirect_url
+        mock_user.social_auth.get.side_effect = MockAuthAlreadyAssociated()
 
     @mock.patch("tethys_services.utilities.get_configured_oauth2_providers")
     @mock.patch("tethys_services.utilities.load_strategy")
@@ -286,7 +300,7 @@ class TestUtilites(unittest.TestCase):
         mock_request = mock.MagicMock(user=mock_user, path="path")
         mock_social = mock.MagicMock()
         mock_user.social_auth.get.side_effect = [
-            AuthAlreadyAssociated(mock.MagicMock(), mock.MagicMock()),
+            MockAuthAlreadyAssociated(),
             mock_social,
         ]
 
