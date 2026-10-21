@@ -13,7 +13,6 @@ import shutil
 import logging
 from pathlib import Path
 
-from condorpy.static import CONDOR_JOB_STATUSES
 from django.db import models, transaction
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
@@ -22,6 +21,9 @@ from django.utils import timezone
 from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
+from tethys_portal.optional_dependencies import optional_import
+
+CONDOR_JOB_STATUSES = optional_import("CONDOR_JOB_STATUSES", from_module="condorpy.static")
 
 log = logging.getLogger("tethys." + __name__)
 
