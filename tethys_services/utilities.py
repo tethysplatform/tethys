@@ -80,7 +80,10 @@ def refresh_social_token(social_auth):
     try:
         social_auth.refresh_token(load_strategy())
     except (requests.exceptions.HTTPError, AuthException) as e:
-        logger.debug(f"Error refreshing {social_auth.provider} token: {e}.")
+        # detail exists in social-auth-core versions 4 and 5, 
+        # use str(e) for version 6
+        reason = getattr(e, "detail", "") or str(e)
+        logger.debug(f"Error refreshing {social_auth.provider} token: {reason}.")
         raise ValueError(
             f"The provider '{social_auth.provider}' rejected the token refresh. The user may need to reconnect the account."
         ) from e

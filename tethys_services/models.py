@@ -493,10 +493,12 @@ class SecureMapService(models.Model):
         try:
             access_token = auth.get_access_token(load_strategy())
         except AuthException as e:
+            # detail exists in social-auth-core versions 4 and 5, 
+            # use str(e) for version 6
+            reason = getattr(e, "detail", "") or str(e)
             raise ValueError(
-                f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {e}"
-            )
-
+                f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {reason}"
+            ) from e
         if not access_token:
             raise ValueError("No access token found for user.")
         if not with_expiry:
