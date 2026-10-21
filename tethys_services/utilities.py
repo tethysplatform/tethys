@@ -41,7 +41,7 @@ AuthException = optional_import("AuthException", from_module="social_core.except
 # python 3.10 gets earlier versions of social-auth-core (version 5)
 try:
     from social_core.exceptions import AuthAssociationError as AuthAlreadyAssociated
-except ImportError:
+except ImportError:  # pragma: no cover
     AuthAlreadyAssociated = optional_import(
         "AuthAlreadyAssociated", from_module="social_core.exceptions"
     )

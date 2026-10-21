@@ -376,34 +376,49 @@ class SecureMapServiceSettingTests(TethysTestCase):
         setting = self.test_app.settings_set.select_subclasses().get(
             name="secure_map_service"
         )
+        setting.required = False
         setting.secure_map_service = None
         setting.save()
 
-        with self.assertRaises(TethysAppSettingNotAssigned):
+        with self.assertRaises(TethysAppSettingNotAssigned) as e:
             SecureMapServiceSetting.objects.get(name="secure_map_service").get_value(
                 as_endpoint=True
+            )
+            assert (
+                str(e.exception)
+                == f'Cannot generate request for SecureMapServiceSetting "{setting.name}" for app "{self.test_app.package}": no SecureMapService assigned."'
             )
 
     def test_get_value_as_layer_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(
             name="secure_map_service"
         )
+        setting.required = False
         setting.secure_map_service = None
         setting.save()
 
-        with self.assertRaises(TethysAppSettingNotAssigned):
+        with self.assertRaises(TethysAppSettingNotAssigned) as e:
             SecureMapServiceSetting.objects.get(name="secure_map_service").get_value(
                 as_layer=True
+            )
+            assert (
+                str(e.exception)
+                == f'Cannot build layer for SecureMapServiceSetting "{setting.name}" for app "{self.test_app.package}": no SecureMapService assigned."'
             )
 
     def test_get_value_as_response_none(self):
         setting = self.test_app.settings_set.select_subclasses().get(
             name="secure_map_service"
         )
+        setting.required = False
         setting.secure_map_service = None
         setting.save()
 
-        with self.assertRaises(TethysAppSettingNotAssigned):
+        with self.assertRaises(TethysAppSettingNotAssigned) as e:
             SecureMapServiceSetting.objects.get(name="secure_map_service").get_value(
                 as_response=True, request_user=self.test_user
+            )
+            assert (
+                str(e.exception)
+                == f'Cannot fetch response for SecureMapServiceSetting "{setting.name}" for app "{self.test_app.package}": no SecureMapService assigned."'
             )
