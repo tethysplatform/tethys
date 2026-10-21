@@ -23,7 +23,9 @@ from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
 from tethys_portal.optional_dependencies import optional_import
 
-CONDOR_JOB_STATUSES = optional_import("CONDOR_JOB_STATUSES", from_module="condorpy.static")
+CONDOR_JOB_STATUSES = optional_import(
+    "CONDOR_JOB_STATUSES", from_module="condorpy.static"
+)
 
 log = logging.getLogger("tethys." + __name__)
 
