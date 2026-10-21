@@ -49,18 +49,11 @@ def unpatched_run(main):
     doesn't manage the event loop, but relies on one already being there or
     being auto-created by the old behavior of "asyncio.get_event_loop".
     """
-    # If using Python >= 3.11, the asyncio.Runner() must be called directly
-    # rather than use asyncio.run, since nest-asyncio's patched version still
-    # expect asyncio.get_event_loop to create its own event loop if it does
-    # not exist.
-    if hasattr(asyncio, "Runner"):
-        with asyncio.Runner() as runner:
-            return runner.run(main)
-    else:
-        # If using Python 3.10, the nest-asycnio patched version's call to
-        # asyncio.get_event_loop under the hood will automatically create
-        # the loop if missing.
-        asyncio.run(main)
+    # asyncio.Runner() must be called directly rather than use asyncio.run,
+    # since nest-asyncio's patched version still expect asyncio.get_event_loop
+    # to create its own event loop if it does not exist.
+    with asyncio.Runner() as runner:
+        return runner.run(main)
 
 
 def _execute_lifecycle_commands(
