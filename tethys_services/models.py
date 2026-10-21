@@ -493,7 +493,7 @@ class SecureMapService(models.Model):
         try:
             access_token = auth.get_access_token(load_strategy())
         except AuthException as e:
-            # detail exists in social-auth-core versions 4 and 5, 
+            # detail exists in social-auth-core versions 4 and 5,
             # use str(e) for version 6
             reason = getattr(e, "detail", "") or str(e)
             raise ValueError(
