@@ -161,7 +161,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "ubuntu-latest" ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+        python-version: [ "3.11", "3.12", "3.13" ]
         django-version: [ "4.2", "5.2" ]
         include:
           - platform: "macos-latest"
@@ -198,7 +198,7 @@ jobs:
         pytest
     # Generate Coverage Report
     - name: Generate Coverage Report
-      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}
+      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11' && matrix.django-version == '4.2' }}
       run: |
         pip install coveralls
         . ~/miniconda/etc/profile.d/conda.sh
@@ -214,7 +214,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: [ "3.11", "3.12" ]
         django-version: [ "4.2", "5.2" ]
     steps:
     # Checkout the source
@@ -255,7 +255,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: [ "3.11", "3.12" ]
         django-version: [ "4.2", "5.2" ]
     steps:
     # Checkout the source for Grype config
@@ -287,7 +287,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: [ "3.11", "3.12" ]
         django-version: [ "4.2", "5.2" ]
     services:
       tethys-postgis:
