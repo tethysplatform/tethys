@@ -48,6 +48,7 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
+        SecureMapService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -71,6 +72,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     show_in_apps_library = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
     back_url = models.CharField(max_length=512, default="", blank=True)
+    required_oauth2_providers = models.JSONField(default=list, blank=True)
 
     # Developer first attributes
     index = models.CharField(max_length=200, default="")
@@ -164,6 +166,12 @@ class TethysApp(models.Model, TethysBaseMixin):
         return self.settings_set.exclude(
             persistentstoredatabasesetting__isnull=True
         ).select_subclasses("persistentstoredatabasesetting")
+
+    @property
+    def secure_map_service_settings(self):
+        return self.settings_set.exclude(
+            securemapservicesetting__isnull=True
+        ).select_subclasses("securemapservicesetting")
 
     @property
     def configured(self):
@@ -1102,6 +1110,120 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         self.initialized = True
         self.save()
+
+
+class SecureMapServiceSetting(TethysAppSetting):
+    """
+    Used to define a Secure Map Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        legend_title(str): The title to use for the legend when this service is added as a layer on a map.
+        endpoint(str): The endpoint URL for the secure map service.
+        authentication_method(str): The method used for authentication (e.g., "API Key", "OAuth2").
+        api_key(str): The API key used for authentication with the secure map service.
+        oauth2_provider(str): The OAuth2 provider to use for authentication if the secure map service uses OAuth2 for authentication.
+        service_type(str): The type of map service (e.g., "WMS", "GML").
+        params(dict): Additional parameters to include in requests to the secure map service.
+        use_proxy(bool): Whether to route requests through a proxy endpoint to handle authentication instead of sending credentials directly from the client.
+        connection_timeout(int): The timeout value (in seconds) for establishing a connection to the secure map service.
+        read_timeout(int): The timeout value (in seconds) for reading data from the secure map service.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SecureMapServiceSetting
+
+        secure_map_service_setting = SecureMapServiceSetting(
+            name='secure_map_service',
+            description='Secure Map service for app to use',
+            required=True,
+        )
+
+    """
+
+    secure_map_service = models.ForeignKey(
+        SecureMapService, on_delete=models.CASCADE, blank=True, null=True
+    )
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.secure_map_service and self.required:
+            raise ValidationError("Required.")
+
+    def get_value(
+        self,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        as_token=False,
+        param_overrides=None,
+        request_user=None,
+        source_options=None,
+        layer_options=None,
+    ):
+        secure_map_service = None
+        if self.secure_map_service:
+            secure_map_service = self.secure_map_service
+
+        if secure_map_service is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+        if as_token:
+            if not request_user:
+                raise ValueError(
+                    "request_user must be provided to retrieve an OAuth2 token."
+                )
+            return secure_map_service._get_oauth_token(request_user)
+        if as_endpoint:
+            if not secure_map_service:
+                raise TethysAppSettingNotAssigned(
+                    f"Cannot generate request for SecureMapServiceSetting "
+                    f'"{self.name}" for app "{self.tethys_app.package}": '
+                    f"no SecureMapService assigned."
+                )
+            return secure_map_service._generate_request(param_overrides=param_overrides)
+        elif as_layer:
+            if not secure_map_service:
+                raise TethysAppSettingNotAssigned(
+                    f"Cannot build layer for SecureMapServiceSetting "
+                    f'"{self.name}" for app "{self.tethys_app.package}": '
+                    f"no SecureMapService assigned."
+                )
+            return secure_map_service._build_layer(
+                param_overrides=param_overrides,
+                source_options=source_options,
+                layer_options=layer_options,
+            )
+        elif as_response:
+            if not secure_map_service:
+                raise TethysAppSettingNotAssigned(
+                    f"Cannot fetch response for SecureMapServiceSetting "
+                    f'"{self.name}" for app "{self.tethys_app.package}": '
+                    f"no SecureMapService assigned."
+                )
+            return secure_map_service._fetch_response(
+                param_overrides=param_overrides, request_user=request_user
+            )
+
+        return secure_map_service
+
+    def _update_params(self, new_params):
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot update params for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+        self.secure_map_service._update_params(new_params)
 
 
 class SchedulerSetting(TethysAppSetting):

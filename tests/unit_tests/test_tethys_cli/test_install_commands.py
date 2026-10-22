@@ -1,6 +1,7 @@
 import sys
 from os import chdir, devnull
 from pathlib import Path
+import tempfile
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
@@ -23,6 +24,7 @@ class TestServiceInstallHelpers(TestCase):
             package="an_app",
         )
         self.app.save()
+        self.root_app_path = Path(__file__).parents[2] / "apps" / "tethysapp-test_app"
 
     @mock.patch("tethys_cli.install_commands.exit")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
@@ -41,6 +43,28 @@ class TestServiceInstallHelpers(TestCase):
         )
 
         mock_exit.assert_called_with(1)
+
+    def test_get_tethys_package_from_dir(self):
+        ret = install_commands.get_tethys_package_from_dir(self.root_app_path)
+        self.assertEqual("test_app", ret)
+
+    def test_get_tethys_package_from_dir_no_tethysapp_dir(self):
+        # The parent "apps" directory has no tethysapp/ subtree
+        ret = install_commands.get_tethys_package_from_dir(self.root_app_path.parent)
+        self.assertIsNone(ret)
+
+    def test_get_tethys_package_from_dir_ignores_non_packages(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tethysapp = Path(tmp) / "tethysapp"
+            tethysapp.mkdir()
+            (tethysapp / "no_init_dir").mkdir()  # dir without __init__.py
+            (tethysapp / "stray_file.py").touch()  # file, not a dir
+            (tethysapp / "real_app").mkdir(parents=True)
+            (tethysapp / "real_app" / "__init__.py").touch()
+
+            ret = install_commands.get_tethys_package_from_dir(tmp)
+
+        self.assertEqual("real_app", ret)
 
     @mock.patch("tethys_cli.install_commands.input")
     def test_get_interactive_input(self, mock_input):
@@ -85,6 +109,26 @@ class TestServiceInstallHelpers(TestCase):
         mock_call.assert_called_with(
             ["tethys", "syncstores", app_name],
         )
+
+    @mock.patch("tethys_cli.install_commands.validate_service_id")
+    @mock.patch("tethys_cli.install_commands.write_error")
+    def test_find_and_link_invalid_service(
+        self, mock_write_error, mock_validate_service_id
+    ):
+        service_type = "service_type"
+        setting_name = "setting_name"
+        service_id = "service_name"
+        app_name = "app_name"
+        mock_setting = mock.MagicMock()
+
+        mock_validate_service_id.side_effect = ValueError("Invalid service ID test")
+
+        install_commands.find_and_link(
+            service_type, setting_name, service_id, app_name, mock_setting
+        )
+
+        mock_validate_service_id.assert_called_with(service_type, service_id)
+        mock_write_error.assert_called_with("Invalid service ID test")
 
     @mock.patch("tethys_cli.install_commands.validate_service_id", return_value=True)
     @mock.patch(
@@ -280,6 +324,21 @@ class TestServiceInstallHelpers(TestCase):
 
             self.assertEqual("wps", ret)
 
+    def test_get_setting_type_from_setting_secure_map(self):
+        from tethys_apps.models import SecureMapServiceSetting
+
+        with transaction.atomic():
+            setting = SecureMapServiceSetting.objects.create(
+                name="fake_sds",
+                description="The fake secure map service.",
+                required=False,
+                tethys_app=self.app,
+            )
+
+            ret = install_commands.get_setting_type_from_setting(setting)
+
+        self.assertEqual("secure_map", ret)
+
     def test_get_setting_type_from_setting_invalid_setting(self):
         not_a_setting = mock.MagicMock()
         with self.assertRaises(RuntimeError) as cm:
@@ -368,6 +427,21 @@ class TestServiceInstallHelpers(TestCase):
             ret = install_commands.get_service_type_from_setting(setting)
 
             self.assertEqual("wps", ret)
+
+    def test_get_service_type_from_setting_secure_map(self):
+        from tethys_apps.models import SecureMapServiceSetting
+
+        with transaction.atomic():
+            setting = SecureMapServiceSetting.objects.create(
+                name="fake_sds",
+                description="The fake secure map service.",
+                required=False,
+                tethys_app=self.app,
+            )
+
+            ret = install_commands.get_service_type_from_setting(setting)
+
+        self.assertEqual("secure_map", ret)
 
     def test_get_service_type_from_setting_invalid_setting(self):
         not_a_setting = mock.MagicMock()
@@ -776,11 +850,15 @@ class TestInstallCommands(TestCase):
         self.app_model.delete()
         chdir(self.cwd)
 
+    # @mock.patch("tethys_cli.install_commands.")
+    @mock.patch("tethys_cli.install_commands.get_tethys_package_from_dir")
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("builtins.input", side_effect=["x", "n"])
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
-    def test_install_file_not_generate(self, mock_call, _, mock_pretty_output, __):
+    def test_install_file_not_generate_no_package_name_from_dir(
+        self, mock_call, _, mock_pretty_output, __, mock_gtpfd
+    ):
         chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
@@ -789,7 +867,50 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
+        mock_gtpfd.return_value = None
+        install_commands.install_command(args)
+        self.assertEqual(2, len(mock_call.call_args_list))
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("WARNING: No install file found.", po_call_args[0][0][0])
+        self.assertEqual("Generation of Install File cancelled.", po_call_args[1][0][0])
+        self.assertEqual(
+            "Continuing install without configuration.", po_call_args[2][0][0]
+        )
+        self.assertEqual(
+            "Could not determine the app package name. Certain configuration and checks may be skipped.",
+            po_call_args[3][0][0],
+        )
+        self.assertEqual("Running application install....", po_call_args[4][0][0])
+        self.assertEqual(
+            "Could not determine the app package name. MULTIPLE_APP_MODE configuration will be skipped.",
+            po_call_args[5][0][0],
+        )
+        self.assertEqual(
+            "Successfully installed the app into the active Tethys Portal.",
+            po_call_args[6][0][0],
+        )
 
+    # @mock.patch("tethys_cli.install_commands.")
+    @mock.patch("tethys_apps.models.TethysApp.objects.get")
+    @mock.patch("tethys_cli.install_commands.get_tethys_package_from_dir")
+    @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("builtins.input", side_effect=["x", "n"])
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
+    def test_install_file_not_generate_with_package_name_from_dir(
+        self, mock_call, _, mock_pretty_output, __, mock_gtpfd, mock_tethysapp_get
+    ):
+        chdir("..")  # move to a different directory that doesn't have an install.yml
+        args = mock.MagicMock(
+            file=None,
+            quiet=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+        mock_gtpfd.return_value = "package_name_from_dir"
+        mock_app = mock.MagicMock(required_oauth2_providers=None)
+        mock_tethysapp_get.return_value = mock_app
         install_commands.install_command(args)
         self.assertEqual(2, len(mock_call.call_args_list))
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -800,7 +921,7 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Running application install....", po_call_args[3][0][0])
         self.assertEqual(
-            "Successfully installed None into the active Tethys Portal.",
+            "Successfully installed package_name_from_dir into the active Tethys Portal.",
             po_call_args[4][0][0],
         )
 
@@ -817,7 +938,7 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
-        check_call = ["tethys", "gen", "install"]
+        check_call = ["tethys", "gen", "install", "-d", "."]
 
         mock_exit.side_effect = SystemExit
 
@@ -1041,7 +1162,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[2][1][0])
 
@@ -1097,7 +1219,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1159,7 +1282,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1259,7 +1383,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[1][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[2][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
@@ -1312,7 +1437,8 @@ class TestInstallCommands(TestCase):
 
         # Verify that the application install still happens
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[0][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
@@ -1429,7 +1555,8 @@ class TestInstallCommands(TestCase):
             mock_call.mock_calls[0][1][0],
         )
         self.assertEqual(
-            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+            [sys.executable, "-m", "pip", "install", str(Path(args.file).parent)],
+            mock_call.mock_calls[1][1][0],
         )
         mock_mamc.assert_called_once()
 
@@ -2014,6 +2141,67 @@ class TestInstallCommands(TestCase):
 
         mock_exit.assert_called_with(0)
 
+    @mock.patch("builtins.input", side_effect=["1"])
+    @mock.patch(
+        "tethys_cli.install_commands.validate_service_id",
+        side_effect=ValueError("Invalid service ID"),
+    )
+    @mock.patch(
+        "tethys_cli.install_commands.get_setting_type",
+        return_value="persistent",
+    )
+    @mock.patch(
+        "tethys_cli.install_commands.get_setting_type_from_setting",
+        return_value="ps_database",
+    )
+    @mock.patch(
+        "tethys_cli.install_commands.get_service_type_from_setting",
+        return_value="persistent",
+    )
+    @mock.patch("tethys_cli.install_commands.services_list_command")
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.link_service_to_app_setting")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_interactive_service_setting_validate_service_id_error(
+        self,
+        mock_pretty_output,
+        mock_lstas,
+        mock_gas,
+        mock_slc,
+        _,
+        __,
+        ___,
+        mock_vsi,
+        ____,
+    ):
+        mock_ss = mock.MagicMock()
+        del mock_ss.value
+        mock_ss.name = "mock_ss"
+        mock_ss.description = "This is a fake setting for testing."
+        mock_ss.required = True
+        mock_gas.return_value = {"unlinked_settings": [mock_ss]}
+
+        mock_s = mock.MagicMock()
+        mock_slc.return_value = [[mock_s]]
+
+        install_commands.run_interactive_services("foo")
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(
+            "Running Interactive Service Mode. Any configuration options in services.yml or "
+            "portal_config.yml will be ignored...",
+            po_call_args[0][0][0],
+        )
+        self.assertIn("Hit return at any time to skip a step.", po_call_args[1][0][0])
+        self.assertIn("Configuring mock_ss", po_call_args[2][0][0])
+        self.assertIn("Type: MagicMock", po_call_args[3][0][0])
+        self.assertIn("Enter the service ID/Name", po_call_args[4][0][0])
+        self.assertEqual("Invalid service ID", po_call_args[5][0][0])
+        self.assertEqual(6, len(po_call_args))
+
+        mock_vsi.assert_called_once_with("persistent", "1")
+        mock_lstas.assert_not_called()
+
     @mock.patch(
         "builtins.input",
         side_effect=["1", "1", "", "1", "1", KeyboardInterrupt],
@@ -2333,6 +2521,114 @@ class TestInstallCommands(TestCase):
         self.assertIn(
             "ERROR: Application installation failed with exit code 1.",
             warning_messages,
+        )
+
+    @mock.patch("builtins.input", side_effect=["y"])
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.install_commands.exit")
+    def test_install_file_generate_with_file_arg(
+        self, mock_exit, mock_call, mock_input
+    ):
+        nonexistent_file = self.root_app_path / "does_not_exist" / "install.yml"
+        args = mock.MagicMock(
+            file=str(nonexistent_file),
+            quiet=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+        mock_call.return_value = 0
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+
+        mock_input.assert_called_once_with(
+            f"Would you like to generate a template install.yml file at {nonexistent_file} now? (y/n): "
+        )
+        mock_call.assert_called_once_with(
+            ["tethys", "gen", "install", "-d", str(nonexistent_file.parent)]
+        )
+        mock_exit.assert_called_once_with(0)
+
+    @mock.patch("tethys_cli.install_commands.write_error")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("builtins.input", side_effect=["y"])
+    @mock.patch("tethys_cli.install_commands.exit")
+    def test_error_generating_install_file(
+        self, mock_exit, mock_input, mock_call, mock_write_error
+    ):
+        chdir("..")  # move out of the dir that has an install.yml
+
+        args = mock.MagicMock(
+            file=None,
+            develop=False,
+            quiet=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=True,
+        )
+        mock_call.return_value = 1
+        mock_exit.side_effect = SystemExit
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+        mock_call.assert_called_once_with(["tethys", "gen", "install", "-d", "."])
+        mock_write_error.assert_called_with(
+            "ERROR: Failed to generate the install.yml file."
+        )
+        mock_exit.assert_called_once_with(1)
+
+    @mock.patch("tethys_cli.install_commands.write_warning")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_nonexistent_app(self, mock_tethys_app, mock_write_warning):
+        args = mock.MagicMock(
+            file=None,
+            develop=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=True,
+        )
+        mock_tethys_app.objects.get.side_effect = ObjectDoesNotExist
+        install_commands.install_command(args)
+        mock_write_warning.assert_called_with(
+            "ERROR: The app 'test_app' could not be found."
+        )
+
+    @override_settings(AUTHENTICATION_BACKENDS=["test_provider"])
+    @mock.patch("tethys_cli.install_commands.import_string")
+    @mock.patch("tethys_cli.install_commands.write_warning")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_missing_configured_backends(
+        self, mock_tethys_app, mock_write_warning, mock_import_string
+    ):
+        args = mock.MagicMock(
+            file=None,
+            develop=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=True,
+        )
+        fake_app = mock.MagicMock()
+        fake_app.required_oauth2_providers = ["missing_provider"]
+        mock_tethys_app.objects.get.return_value = fake_app
+        mock_backend_class = mock.MagicMock()
+        mock_backend_class.name = "test_provider"
+        mock_import_string.return_value = mock_backend_class
+        install_commands.install_command(args)
+        mock_write_warning.assert_called_with(
+            "The following OAuth2 providers are required by 'test_app' but are not configured "
+            "in your Tethys Portal as AUTHENTICATION_BACKENDS:\n"
+            "- missing_provider\n"
+            "Run: tethys settings --set AUTHENTICATION_BACKENDS "
+            "\"['tethys_services.backends.<provider>.<BackendClass>']\" "
+            "to add the missing backend configurations."
         )
 
     @mock.patch("tethys_cli.install_commands.setup_django")
