@@ -10,12 +10,14 @@ import sys
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.module_loading import import_string
 
 from tethys_cli.cli_colors import (
     write_msg,
     write_error,
     write_warning,
     write_success,
+    write_info,
 )
 from tethys_cli.settings_commands import settings_command
 from tethys_cli.services_commands import services_list_command
@@ -132,6 +134,29 @@ def open_file(file_path):
         exit(1)
 
 
+def get_tethys_package_from_dir(root_dir="."):
+    """Return the name of the app package in the given source tree.
+
+    Tethys apps live in a directory named after their package, e.g.
+    tethysapp/my_app/. That directory name is the value of the ``package``
+    attribute on the app class in app.py, and it's what the app is registered
+    under in the database.
+
+    Returns None if there isn't exactly one package, since we can't tell which
+    one was installed.
+    """
+    candidates = []
+
+    for path in Path(root_dir).glob("tethysapp/*"):
+        if path.is_dir() and (path / "__init__.py").exists():
+            candidates.append(path.name)
+
+    if len(candidates) != 1:
+        return None
+
+    return candidates[0]
+
+
 def validate_service_id(service_type, service_id):
     service = get_service_from_type(service_type, service_id)
     if service:
@@ -146,6 +171,7 @@ def get_setting_type_from_setting(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
     )
 
     if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(
@@ -173,6 +199,11 @@ def get_setting_type_from_setting(setting):
     ):
         return "wps"
 
+    elif setting.__class__ == SecureMapServiceSetting or isinstance(
+        setting, SecureMapServiceSetting
+    ):
+        return "secure_map"
+
     raise RuntimeError(f"Could not determine setting type for setting: {setting}")
 
 
@@ -183,6 +214,7 @@ def get_service_type_from_setting(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
     )
 
     if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(
@@ -209,6 +241,11 @@ def get_service_type_from_setting(setting):
         setting, WebProcessingServiceSetting
     ):
         return "wps"
+
+    elif setting.__class__ == SecureMapServiceSetting or isinstance(
+        setting, SecureMapServiceSetting
+    ):
+        return "secure_map"
 
     raise RuntimeError(f"Could not determine service type for setting: {setting}")
 
@@ -264,6 +301,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
         CustomSettingBase,
         CustomSetting,
         SecretCustomSetting,
@@ -276,6 +314,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
+        SecureMapServiceSetting: "secure_map",
         CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
         SecretCustomSetting: "secret_custom_setting",
@@ -451,7 +490,7 @@ def run_interactive_services(app_name):
             # List existing services
             args = Namespace()
 
-            for conf in ["spatial", "persistent", "wps", "dataset"]:
+            for conf in ["spatial", "persistent", "wps", "dataset", "secure_map"]:
                 setattr(args, conf, False)
 
             setattr(args, get_setting_type(setting), True)
@@ -486,7 +525,13 @@ def run_interactive_services(app_name):
                             break
 
                         # Validate the given service id
-                        valid_service = validate_service_id(service_type, service_id)
+                        try:
+                            valid_service = validate_service_id(
+                                service_type, service_id
+                            )
+                        except ValueError as e:
+                            write_error(str(e))
+                            break
 
                         if valid_service:
                             link_service_to_app_setting(
@@ -511,9 +556,14 @@ def run_interactive_services(app_name):
 
 
 def find_and_link(service_type, setting_name, service_id, app_name, setting):
-    valid_service = validate_service_id(service_type, service_id)
-    setting_type = get_setting_type_from_setting(setting)
+    try:
+        valid_service = validate_service_id(service_type, service_id)
+    except ValueError as e:
+        write_error(str(e))
+        return
+
     if valid_service:
+        setting_type = get_setting_type_from_setting(setting)
         link_service_to_app_setting(
             service_type, service_id, app_name, setting_type, setting_name
         )
@@ -731,6 +781,8 @@ def install_command(args):
     app_name = None
     skip_config = False
     file_path = Path("./install.yml" if args.file is None else args.file)
+    if file_path.is_dir():
+        file_path = file_path / "install.yml"
 
     # Check for install.yml file
     if not file_path.exists():
@@ -739,9 +791,13 @@ def install_command(args):
             valid_inputs = ("y", "n", "yes", "no")
             no_inputs = ("n", "no")
 
+            if args.file:
+                destination_string = "at " + str(file_path)
+            else:
+                destination_string = "in your current directory"
+
             generate_input = input(
-                "Would you like to generate a template install.yml file in your current directory "
-                "now? (y/n): "
+                f"Would you like to generate a template install.yml file {destination_string} now? (y/n): "
             )
 
             while generate_input not in valid_inputs:
@@ -751,9 +807,14 @@ def install_command(args):
                 skip_config = True
                 write_msg("Generation of Install File cancelled.")
             else:
-                call(["tethys", "gen", "install"])
-                write_msg(
-                    "Install file generated. Fill out necessary information and re-install."
+                return_code = call(
+                    ["tethys", "gen", "install", "-d", str(file_path.parent)]
+                )
+                if return_code != 0:
+                    write_error("ERROR: Failed to generate the install.yml file.")
+                    exit(1)
+                write_info(
+                    "Re-run the install command after filling out the install.yml file."
                 )
                 exit(0)
 
@@ -858,21 +919,30 @@ def install_command(args):
                         download_vendor_static_files(
                             None, cwd=str(public_resources_dir)
                         )
+    if app_name is None:
+        app_name = get_tethys_package_from_dir(file_path.parent)
+        if app_name is None:
+            write_warning(
+                "Could not determine the app package name. Certain configuration and checks may be skipped."
+            )
+
+    display_name = app_name or "the app"
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:
-        write_success(f"Successfully installed dependencies for {app_name}.")
+        write_success(f"Successfully installed dependencies for {display_name}.")
         return
 
     # Install Python Package
     write_msg("Running application install....")
 
     cmd = [sys.executable, "-m", "pip", "install"]
+    app_dir = str(file_path.parent)
 
     if args.develop:
-        cmd += ["-e", "."]
+        cmd += ["-e", app_dir]
     else:
-        cmd.append(".")
+        cmd.append(app_dir)
 
     # Check for deprecated setup.py file in the same directory as install.yml
     setup_py_path = file_path.parent / "setup.py"
@@ -899,19 +969,57 @@ def install_command(args):
 
         return
 
-    multiple_app_mode_check(app_name, quiet_mode=args.quiet)
+    if app_name is not None:
+        multiple_app_mode_check(app_name, quiet_mode=args.quiet)
+    else:
+        write_warning(
+            "Could not determine the app package name. MULTIPLE_APP_MODE "
+            "configuration will be skipped."
+        )
 
     if args.no_db_sync:
         write_success(
-            f"Successfully installed {app_name} into the active Tethys Portal."
+            f"Successfully installed {display_name} into the active Tethys Portal."
         )
         return
 
     call(["tethys", "db", "sync"])
 
+    # Check for missing authentication backends
+    setup_django()
+    from tethys_apps.models import TethysApp
+
+    app = None
+    if app_name is not None:
+        try:
+            app = TethysApp.objects.get(package=app_name)
+        except ObjectDoesNotExist:
+            app = None
+            write_warning(f"ERROR: The app '{app_name}' could not be found.")
+
+    if app and app.required_oauth2_providers:
+        authentication_backend_names = []
+        for backend in settings.AUTHENTICATION_BACKENDS:
+            backend_class = import_string(backend)
+            if hasattr(backend_class, "name"):
+                authentication_backend_names.append(backend_class.name)
+
+        missing_backends = [
+            provider
+            for provider in app.required_oauth2_providers
+            if provider not in authentication_backend_names
+        ]
+        if missing_backends:
+            backend_list = "\n- ".join(missing_backends)
+            write_warning(
+                f"The following OAuth2 providers are required by '{app_name}' but are not configured in your Tethys Portal as AUTHENTICATION_BACKENDS:\n"
+                f"{'- ' + backend_list}\n"
+                "Run: tethys settings --set AUTHENTICATION_BACKENDS \"['tethys_services.backends.<provider>.<BackendClass>']\" "
+                "to add the missing backend configurations."
+            )
     # Run Portal Level Config if present
     if not skip_config:
-        setup_django()
+
         if args.force_services:
             run_services(app_name, args)
         else:
@@ -956,7 +1064,9 @@ def install_command(args):
                         stdout, stderr
                     )
                 )
-    write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
+    write_success(
+        f"Successfully installed {display_name} into the active Tethys Portal."
+    )
 
 
 def validate_schema(check_str, check_list):

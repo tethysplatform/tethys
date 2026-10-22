@@ -13,7 +13,7 @@ channels:
   - conda-forge
 
 dependencies:
-  - python>=3.8
+  - python>=3.11
 
   # system dependencies
   - pyopenssl>=24.0.0
@@ -70,6 +70,7 @@ dependencies:
   - django-json-widget # enable json widget for app settings
   - djangorestframework # enable REST API framework
   - djangorestframework_simplejwt # JWT authentication for REST API
+  - django-fernet-encrypted-fields # enable encrypted fields for models
 
   # Map Layout
   - PyShp

@@ -209,7 +209,7 @@ def app_settings_list_command(args):
             if is_first_row:
                 with pretty_output(BOLD) as p:
                     p.write(
-                        "{0: <10}{1: <40}{2: <15}{3: <20}".format(
+                        "{0: <10}{1: <40}{2: <20}{3: <20}".format(
                             "ID", "Name", "Type", "Linked With"
                         )
                     )
@@ -223,12 +223,14 @@ def app_settings_list_command(args):
                 service_name = setting.dataset_service.name
             elif hasattr(setting, "web_processing_service"):
                 service_name = setting.web_processing_service.name
+            elif hasattr(setting, "secure_map_service"):
+                service_name = setting.secure_map_service.name
             elif hasattr(setting, "value"):
                 service_name = str(setting.value)
 
             with pretty_output() as p:
                 p.write(
-                    f"{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <15} {service_name: <20}"
+                    f"{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <19} {service_name: <20}"
                 )
 
 
@@ -302,6 +304,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
         CustomSetting,
         SecretCustomSetting,
         JSONCustomSetting,
@@ -313,6 +316,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "ds_spatial",
         DatasetServiceSetting: "ds_dataset",
         WebProcessingServiceSetting: "wps",
+        SecureMapServiceSetting: "secure_map_service",
         CustomSetting: "custom_setting",
         SecretCustomSetting: "secret_custom_setting",
         JSONCustomSetting: "json_custom_setting",

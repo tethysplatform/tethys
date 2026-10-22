@@ -65,3 +65,4 @@ Complete these tutorials to learn about other Tethys Platform features.
    tutorials/websockets
    tutorials/bokeh
    tutorials/quotas
+   tutorials/secure_map_services

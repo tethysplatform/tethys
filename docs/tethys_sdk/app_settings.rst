@@ -108,6 +108,30 @@ To retrieve a connection to a Web Processing Service, import your :term:`app cla
 
     See the :doc:`./tethys_services/web_processing_services` for more details on how to use Dataset Services in your apps.
 
+.. _app_settings_secure_map_service_settings:
+
+Secure Map Service Settings
+===========================
+
+Secure Map Service Settings are used to request map services that require credentials to access (e.g. a WMS service authenticated with an API key or an OAuth2 access token). Create Secure Map Service Settings by implementing the ``secure_map_service_settings()`` method in your :term:`app class`. This method should return a list of SecureMapServiceSetting_ objects:
+
+.. automethod:: tethys_apps.base.TethysAppBase.secure_map_service_settings
+   :noindex:
+
+To retrieve a Secure Map Service, import your :term:`app class` and call the ``get_secure_map_service()`` class method:
+
+.. automethod:: tethys_apps.base.TethysAppBase.get_secure_map_service
+   :noindex:
+
+To update the parameters of the service assigned to a setting, call the ``update_secure_map_service_params()`` class method:
+
+.. automethod:: tethys_apps.base.TethysAppBase.update_secure_map_service_params
+   :noindex:
+
+.. tip::
+
+    See the :doc:`./tethys_services/secure_map_services` for more details on how to use Secure Map Services in your apps.
+
 .. _app_settings_scheduler_settings:
 
 Scheduler Settings
@@ -163,6 +187,10 @@ Settings Objects
 
 .. autoclass:: tethys_sdk.app_settings.WebProcessingServiceSetting
 
+.. _SecureMapServiceSetting:
+
+.. autoclass:: tethys_sdk.app_settings.SecureMapServiceSetting
+
 .. _SchedulerSetting:
 
 .. autoclass:: tethys_sdk.app_settings.SchedulerSetting
@@ -179,6 +207,8 @@ Settings Declaration Methods
 .. automethod:: tethys_apps.base.TethysAppBase.spatial_dataset_service_settings
 
 .. automethod:: tethys_apps.base.TethysAppBase.web_processing_service_settings
+
+.. automethod:: tethys_apps.base.TethysAppBase.secure_map_service_settings
 
 .. automethod:: tethys_apps.base.TethysAppBase.scheduler_settings
 
@@ -197,5 +227,7 @@ Settings Getter Methods
 .. automethod:: tethys_apps.base.TethysAppBase.get_spatial_dataset_service
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_web_processing_service
+
+.. automethod:: tethys_apps.base.TethysAppBase.get_secure_map_service
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_scheduler

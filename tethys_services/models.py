@@ -8,10 +8,18 @@
 ********************************************************************************
 """
 
+import logging
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.urls import reverse, reverse_lazy
+from django.utils.functional import lazy
+from tethys_sdk.gizmos import MVLayer
+import requests
 from urllib.error import HTTPError, URLError
 import os
+from encrypted_fields.fields import EncryptedTextField
+from string import Template
+from urllib.parse import urlencode
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -38,6 +46,8 @@ PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
     ("postgresql", "PostgreSQL"),
     ("sqlite", "SQLite"),
 )
+
+log = logging.getLogger("tethys")
 
 
 def validate_url(value):
@@ -402,3 +412,252 @@ class SQLitePersistentStoreService(PersistentStoreServiceBase):
     def get_url(self):
         db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")
         return f"sqlite:///{db_file}"
+
+
+class SecureMapService(models.Model):
+    """
+    ORM for Secure Map Service settings.
+    """
+
+    name = models.CharField(max_length=30, unique=True)
+    legend_title = models.CharField(max_length=100, blank=True)
+    endpoint = models.CharField(max_length=1024, validators=[validate_url])
+    authentication_method = models.CharField(
+        max_length=100,
+        blank=True,
+        choices=[("api_key", "API Key"), ("oauth2", "OAuth2")],
+    )
+    api_key = EncryptedTextField(blank=True, null=True)
+    oauth2_provider = models.CharField(max_length=100, blank=True)
+    service_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("ImageWMS", "WMS"),
+            ("GML", "GML"),
+            ("GeoJSON", "GeoJSON"),
+            ("REST", "REST/JSON API"),
+        ],
+        default="ImageWMS",
+    )
+    params = models.JSONField(blank=True, null=True, default=dict)
+    use_proxy = models.BooleanField(default=False)  # Hide API key in requests
+    connection_timeout = models.IntegerField(default=10, null=True, blank=True)
+    read_timeout = models.IntegerField(default=30, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Secure Map Service"
+        verbose_name_plural = "Secure Map Services"
+
+    def __str__(self):
+        return self.name
+
+    def clean(self):
+        if self.params is not None and not isinstance(self.params, dict):
+            raise ValidationError(
+                {"params": 'Parameters must be a JSON object (e.g. {"key": "value"})'}
+            )
+
+    def _get_oauth_token(self, user, with_expiry=False):
+        """
+        Retrieve the OAuth2 token for the given user.
+        Args:
+            user (User): The user for whom to retrieve the OAuth2 token.
+            with_expiry (bool): Whether to return the token with its expiry time.
+
+        Returns:
+            str: The OAuth2 token for the user if with_expiry is False.
+            tuple: A tuple of (access_token, expires_in) if with_expiry is True.
+        """
+        from social_django.utils import load_strategy
+        from social_core.exceptions import AuthException
+
+        if user is None or not user.is_authenticated:
+            raise ValueError("User must be authenticated to retrieve an OAuth2 token.")
+
+        if self.authentication_method != "oauth2":
+            raise ValueError(
+                "Authentication method must be 'oauth2' to retrieve an OAuth2 token."
+            )
+        if not self.oauth2_provider:
+            raise ValueError(
+                "OAuth2 provider must be specified to retrieve an OAuth2 token."
+            )
+
+        try:
+            auth = user.social_auth.get(provider=self.oauth2_provider)
+        except ObjectDoesNotExist:
+            raise ValueError(
+                f"User not linked to {self.oauth2_provider} for OAuth2 authentication."
+            )
+
+        try:
+            access_token = auth.get_access_token(load_strategy())
+        except AuthException as e:
+            # detail exists in social-auth-core versions 4 and 5,
+            # use str(e) for version 6
+            reason = getattr(e, "detail", "") or str(e)
+            raise ValueError(
+                f"Failed to retrieve access Oauth2 token for {self.oauth2_provider}: {reason}"
+            ) from e
+        if not access_token:
+            raise ValueError("No access token found for user.")
+        if not with_expiry:
+            return access_token
+
+        remaining = auth.expiration_timedelta()
+        expires_in = (
+            max(int(remaining.total_seconds()), 0) if remaining is not None else None
+        )
+
+        return access_token, expires_in
+
+    def _get_resolved_params(self):
+        """
+        Resolve template variables in the service parameters using the model's attributes.
+
+        Returns:
+            dict: A dictionary of resolved parameters.
+        """
+        if not self.params:
+            return {}
+        if not isinstance(self.params, dict):
+            raise ValueError(
+                f"SecureMapService '{self.name}': params must be a JSON object, "
+                f"got {type(self.params).__name__}."
+            )
+
+        safe_attribute_names = {
+            f.name: str(getattr(self, f.name, "") or "") for f in self._meta.fields
+        }
+
+        resolved_params = {}
+        for key, value in self.params.items():
+            if isinstance(value, str):
+                value = Template(value).safe_substitute(safe_attribute_names)
+            resolved_params[key] = value
+
+        if (
+            self.authentication_method == "api_key"
+            and self.api_key
+            and self.api_key not in resolved_params.values()
+        ):
+            resolved_params["api_key"] = self.api_key
+
+        return resolved_params
+
+    def _update_params(self, new_params):
+        """
+        Merge the given parameters into the parameters of the service and save.
+
+        Note that a SecureMapService may be shared by multiple settings and apps,
+        so updating its parameters affects every app that uses it.
+
+        Args:
+            new_params (dict): The parameters to merge into the service parameters.
+        """
+        if not isinstance(new_params, dict):
+            raise ValueError("new_params must be a JSON object (dict).")
+        params = self.params or {}
+        params.update(new_params)
+        self.params = params
+        self.save()
+
+    def _generate_request(self, param_overrides=None):
+        """
+        Generate a URL for making requests to the secure map service.
+
+        For services using API key authentication, the API key is included in the returned URL as a query parameter.
+
+        For services using OAuth2 authentication, the return URL does not include the access token.
+        You must retrieve the access token separately and include the token as a Authorization: Bearer <token> header in your request.
+        You can retrieve the access token by calling ``App.get_secure_map_service('setting_name', as_token=True, request_user=request.user)``.
+        Another option is to use ``as_layer=True`` when calling ``App.get_secure_map_service`` to get a map layer object that handles the token automatically.
+
+        For services with a proxy endpoint enabled, the returned URL points to Tethys's secure map proxy endpoint, which handles authentication server-side.
+        """
+        if self.use_proxy:
+            # Use lazy URL resolution so the proxy endpoint is resolved at
+            # runtime. This allows the url to be referenced before apps are
+            # fully loaded and the urls are registered. This helps in cases
+            # like using a map service for a MapLayout basemap
+            def build_proxy_url():
+                url = reverse("secure_map_proxy", kwargs={"service_id": self.pk})
+                if param_overrides:
+                    return f"{url}?{urlencode(param_overrides)}"
+                return url
+
+            return lazy(build_proxy_url, str)()
+
+        endpoint = self.endpoint
+        params = self._get_resolved_params()
+        if param_overrides:
+            params.update(param_overrides)
+
+        query_string = urlencode(params)
+        separator = "&" if "?" in endpoint else "?"
+        url = f"{endpoint}{separator}{query_string}" if query_string else endpoint
+        return url
+
+    def _build_layer(
+        self,
+        param_overrides=None,
+        source_options=None,
+        layer_options=None,
+    ):
+        # Caller's source options first; url and token are set by the service and always win.
+        options = dict(source_options or {})
+        options["url"] = self._generate_request(param_overrides=param_overrides)
+
+        if not self.use_proxy and self.authentication_method == "oauth2":
+            options["token_url"] = reverse_lazy(
+                "secure_map_token", kwargs={"service_id": self.pk}
+            )
+
+        return MVLayer(
+            source=self.service_type,
+            layer_options={"visible": True, **(layer_options or {})},
+            options=options,
+            legend_title=self.legend_title,
+            data={"show_legend": True, "layer_id": self.pk},
+        )
+
+    def _fetch_response(self, param_overrides=None, request_user=None):
+        params = dict(self._get_resolved_params() or {})
+        if param_overrides:
+            params.update(param_overrides)
+
+        headers = {}
+        if self.authentication_method == "oauth2":
+            if not request_user:
+                raise ValueError(
+                    "Request user must be provided to fetch response for OAuth2 authenticated service."
+                )
+            headers["Authorization"] = f"Bearer {self._get_oauth_token(request_user)}"
+
+        connection_timeout = (
+            self.connection_timeout if self.connection_timeout is not None else 10
+        )
+        read_timeout = self.read_timeout if self.read_timeout is not None else 30
+        try:
+            resp = requests.get(
+                self.endpoint,
+                params=params,
+                headers=headers,
+                timeout=(connection_timeout, read_timeout),
+            )
+
+        except requests.Timeout:
+            log.error(
+                f"SecureMapService with name {self.name} request timed out. "
+                f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+            )
+            raise
+
+        if not resp.ok:
+            log.error(
+                f"SecureMapService with name {self.name} request failed: \n"
+                f"status_code: {resp.status_code}\n"
+                f"response text: {resp.text[:200]}"
+            )
+        resp.raise_for_status()
+        return resp

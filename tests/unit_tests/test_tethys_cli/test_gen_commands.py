@@ -5,6 +5,7 @@ import tempfile
 
 
 from tethys_cli.gen_commands import (
+    FILE_NAMES,
     get_environment_value,
     get_settings_value,
     derive_version_from_conda_environment,
@@ -802,6 +803,21 @@ def test_download_vendor_static_files_no_npm_no_conda(
 
 
 @mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+def test_get_destination_path_with_directory(mock_check_file):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        mock_args = mock.MagicMock(
+            type=GEN_INSTALL_OPTION,
+            directory=temp_dir,
+        )
+
+        result = get_destination_path(mock_args, check_existence=False)
+
+        expected = Path(temp_dir).absolute() / FILE_NAMES[GEN_INSTALL_OPTION]
+
+    assert result == str(expected)
+
+
+@mock.patch("tethys_cli.gen_commands.check_for_existing_file")
 @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
 def test_get_destination_path_vendor(mock_isdir, mock_check_file):
     mock_args = mock.MagicMock(
@@ -1231,3 +1247,27 @@ def test_gen_pyproject_no_setup(mock_exit, mock_write_error):
         assert expected in error_msg
 
         mock_exit.assert_called_once_with(1)
+
+
+@mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+def test_get_install_destination_path_with_directory(mock_check):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        mock_args = mock.MagicMock(
+            type=GEN_INSTALL_OPTION,
+            directory=temp_dir,
+        )
+        result = get_destination_path(args=mock_args)
+        expected = Path(temp_dir).absolute() / FILE_NAMES[GEN_INSTALL_OPTION]
+        assert result == str(expected)
+        mock_check.assert_called_once()
+
+
+@mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+def test_get_install_destination_path_without_directory(mock_check):
+    mock_args = mock.MagicMock(
+        type=GEN_INSTALL_OPTION,
+        directory=None,
+    )
+    result = get_destination_path(args=mock_args)
+    assert result == str(Path.cwd() / FILE_NAMES[GEN_INSTALL_OPTION])
+    mock_check.assert_called_once()
