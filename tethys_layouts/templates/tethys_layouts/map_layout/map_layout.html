@@ -4,7 +4,7 @@
 {% block import_gizmos %}
   {% import_gizmo_dependency select_input %}
   <!-- Bootstrap Select2 Theme -->
-  {{ tethys.select2_bootstrap_5_theme.link_tag|safe }}
+  {{ tethys.bootstrap_select2_5_theme.link_tag|safe }}
   <!-- Plotly -->
   {% if can_use_plot %}
     {% if staticfiles_use_npm %}
