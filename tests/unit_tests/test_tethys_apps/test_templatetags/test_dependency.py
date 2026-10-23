@@ -27,6 +27,19 @@ class TestLocalPath(unittest.TestCase):
             "my_app/node_modules/@fortawesome/fontawesome-free/css/all.min.css",
         )
 
+    def test_strips_query_string(self):
+        result = d._local_path(
+            "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js?v=1", "my_app"
+        )
+        self.assertEqual(result, "my_app/node_modules/leaflet/dist/leaflet.js")
+
+    def test_strips_fragment(self):
+        result = d._local_path(
+            "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js#section",
+            "my_app",
+        )
+        self.assertEqual(result, "my_app/node_modules/leaflet/dist/leaflet.js")
+
     def test_missing_version_raises(self):
         # No "@version" segment, so name/tail cannot be unpacked
         with self.assertRaises(ValueError):
@@ -46,6 +59,7 @@ class TestLocalPath(unittest.TestCase):
 )
 class TestResolve(unittest.TestCase):
     JSDELIVR = "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"
+    JSDELIVR_QUERY = "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js?v=1"
     MALFORMED = "https://cdn.jsdelivr.net/npm/papaparse/papaparse.min.js"
     CDNJS = "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"
     LOCAL = "my_app/js/papaparse.min.js"
@@ -56,6 +70,21 @@ class TestResolve(unittest.TestCase):
         result = d._resolve(self.CONTEXT, self.JSDELIVR)
         self.assertEqual(result, self.JSDELIVR)
         mock_static.assert_not_called()
+
+    @override_settings(STATICFILES_USE_NPM=False)
+    def test_online_keeps_query_string(self, mock_static):
+        # The query string must survive untouched on the online CDN URL
+        result = d._resolve(self.CONTEXT, self.JSDELIVR_QUERY)
+        self.assertEqual(result, self.JSDELIVR_QUERY)
+        mock_static.assert_not_called()
+
+    @override_settings(STATICFILES_USE_NPM=True)
+    def test_offline_derived_path_strips_query_string(self, mock_static):
+        # Offline derivation must drop the query string so static() resolves the real file
+        result = d._resolve(self.CONTEXT, self.JSDELIVR_QUERY)
+        self.assertEqual(
+            result, "/static/my_app/node_modules/papaparse/papaparse.min.js"
+        )
 
     @override_settings(STATICFILES_USE_NPM=True)
     def test_offline_npm_derived(self, mock_static):

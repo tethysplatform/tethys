@@ -47,6 +47,9 @@ def _local_path(cdn_url, app_package):
     # Keep the path; the version is unused (node_modules has whatever was installed)
     _version, path = tail.split("/", 1)
 
+    # Drop any query string or fragment so they don't become part of the local filename
+    path = path.split("?", 1)[0].split("#", 1)[0]
+
     # Build the local path within the app's node_modules directory
     return f"{app_package}/node_modules/{pkg}/{path}"
 
