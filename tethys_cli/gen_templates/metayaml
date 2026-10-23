@@ -22,10 +22,7 @@ build:
 
 requirements:
   build:
-    {% for requirement in build_requirements -%}
-    - {{ requirement }}
-    {% endfor %}
-    - {% if python_min %}{{ python_min }}{% else %}python{% endif %}
+    - python >=3.11
     - setuptools
     - setuptools_scm
   run:

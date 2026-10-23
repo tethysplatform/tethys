@@ -474,21 +474,17 @@ def gen_meta_yaml(args):
 
     dependencies = environment.get("dependencies", [])
     run_requirements = []
-    python_min = None
 
     for dependency in dependencies:
         if not any([operator in dependency for operator in ["=", "<", ">"]]):
             conda_env_version = derive_version_from_conda_environment(
                 dependency, level=args.pin_level
             )
-            if dependency == 'python':
-                python_min = conda_env_version
             run_requirements.append(conda_env_version)
         else:
             run_requirements.append(dependency)
 
     context = dict(
-        python_min=python_min,
         run_requirements=run_requirements,
         tethys_version=tethys_portal.__version__,
         package_name=package_name,
