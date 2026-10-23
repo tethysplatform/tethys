@@ -28,7 +28,7 @@ def _local_path(cdn_url, app_package):
     # Strip whichever npm-CDN prefix matched, leaving "<pkg>@<version>/<path>"
     for prefix in NPM_CDNS:
         if cdn_url.startswith(prefix):
-            rest = cdn_url[len(prefix):]
+            rest = cdn_url[len(prefix) :]
             break
 
     # Scoped packages (@scope/pkg) carry their own "@", so peel the scope off first
@@ -90,7 +90,7 @@ def dependency_script(context, cdn_url, local_path=None):
 
     For jsDelivr/unpkg URLs the local path is derived automatically; for other
     CDNs, pass local_path explicitly.
-    
+
     Example Usage:
         {% load tethys %}
         {% dependency_script "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js" %}
@@ -105,7 +105,9 @@ def dependency_script(context, cdn_url, local_path=None):
     Returns:
         str: A script tag with the appropriate src attribute.
     """
-    return format_html('<script src="{}"></script>', _resolve(context, cdn_url, local_path))
+    return format_html(
+        '<script src="{}"></script>', _resolve(context, cdn_url, local_path)
+    )
 
 
 @register.simple_tag(takes_context=True)
@@ -115,7 +117,7 @@ def dependency_link(context, cdn_url, local_path=None):
 
     For jsDelivr/unpkg URLs the local path is derived automatically; for other
     CDNs, pass local_path explicitly.
-    
+
     Example Usage:
         {% load tethys %}
         {% dependency_link "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" %}
@@ -130,4 +132,6 @@ def dependency_link(context, cdn_url, local_path=None):
     Returns:
         str: A link tag with the appropriate href attribute.
     """
-    return format_html('<link rel="stylesheet" href="{}">', _resolve(context, cdn_url, local_path))
+    return format_html(
+        '<link rel="stylesheet" href="{}">', _resolve(context, cdn_url, local_path)
+    )
