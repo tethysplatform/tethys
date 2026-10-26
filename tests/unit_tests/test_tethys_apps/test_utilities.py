@@ -1301,3 +1301,24 @@ class TestAsyncUtilities(unittest.IsolatedAsyncioTestCase):
         mock_gso.return_value = "secure_map_mocked_service"
         ret = utilities.get_service_from_type("secure_map", 123)
         self.assertEqual(ret, "secure_map_mocked_service")
+
+    def test_initialize_consumer_app_and_user_returns_result(self):
+        import asyncio
+
+        expected = {"ok": True}
+
+        async def call_func(self, scope, *args, **kwargs):
+            return expected
+
+        wrapper = utilities.initialize_consumer_app_and_user(call_func)
+
+        consumer = mock.MagicMock()
+        consumer._initialize_app_and_user = mock.AsyncMock()
+
+        result = asyncio.run(
+            wrapper(consumer, {"type": "websocket"}, "arg1", key="value")
+        )
+
+        consumer._initialize_app_and_user.assert_awaited_once()
+        self.assertEqual(consumer.scope, {"type": "websocket"})
+        self.assertIs(result, expected)
