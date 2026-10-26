@@ -65,9 +65,9 @@ class StaticDependency:
         elif not self.use_cdn:
             logger.warning(
                 f'The "STATICFILES_USE_NPM" setting is set to True, but the custom version "{self.npm_name}={version}" '
-                f"is not supported. A CDN will be used to attempt to provide the custom version ({self.version})."
+                f"is not available locally. Serving the installed version ({self.version}) instead."
             )
-            use_cdn = True
+            version = self.version
         return self._get_url(url_type, version, debug=debug, use_cdn=use_cdn)
 
     def get_js_urls(self, version=None):
@@ -172,6 +172,11 @@ vendor_static_dependencies = {
         version="1.11.3",
         css_path="font/bootstrap-icons.min.css",
     ),
+    "bootstrap_select2_5_theme": JsDelivrStaticDependency(
+        npm_name="select2-bootstrap-5-theme",
+        version="1.2.0",
+        css_path="dist/select2-bootstrap-5-theme.min.css",
+    ),
     "bootstrap-switch": JsDelivrStaticDependency(
         npm_name="bootstrap-switch",
         version="4.0.0-alpha.1",
@@ -222,6 +227,11 @@ vendor_static_dependencies = {
         version="1.1.0",
         js_path="cookies_min.js",
         debug_path_converter=lambda path: path.replace("_min", ""),
+    ),
+    "fontawesome": JsDelivrStaticDependency(
+        npm_name="@fortawesome/fontawesome-free",
+        version="5.6.1",
+        css_path="css/all.min.css",
     ),
     "graphlib": JsDelivrStaticDependency(
         npm_name="graphlib",

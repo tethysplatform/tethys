@@ -22,7 +22,7 @@ build:
 
 requirements:
   build:
-    - python
+    - python >=3.11
     - setuptools
     - setuptools_scm
   run:
