@@ -37,7 +37,7 @@ Then run it:
 
 The first run initializes an isolated environment for the app (a few seconds); then your default browser opens directly to the running app. Edits to :file:`app.py` are picked up automatically while the server is running.
 
-Note that the app class above only sets ``name`` — and even that is optional. In express mode, any required metadata that is not defined on the app class (``package``, ``name``, ``root_url``, ``index``) is derived automatically from the file name. The same file can later be dropped unchanged into the :file:`app.py` of a scaffolded component app project to install it in a full Tethys Portal (see :ref:`scaffold command <tethys_scaffold_cmd>` and the :ref:`Component App Basics tutorial <component_app_basics_tutorial>`).
+As your app grows, you can move its page code into the :file:`app.py` of a scaffolded component app project and add the normal app metadata required by a full Tethys Portal (see :ref:`scaffold command <tethys_scaffold_cmd>` and the :ref:`Component App Basics tutorial <component_app_basics_tutorial>`).
 
 How It Works
 ============
@@ -70,6 +70,7 @@ Examples
     # Run a specific file on a specific port without opening a browser
     tethys run my_dashboard.py -p 8080 --no-browser
 
+    # WARNING: Express mode enables DEBUG and an open portal; use this only on a trusted network.
     # Serve on all interfaces (e.g. to share on a local network)
     tethys run --host 0.0.0.0 -p 8080
 

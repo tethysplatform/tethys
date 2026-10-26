@@ -101,6 +101,12 @@ def run_command(args):
         exit(1)
 
     package = get_express_package_name(app_file)
+    if not package.isidentifier():
+        write_error(
+            f'Invalid express package name "{package}". '
+            "Set App.package to a valid Python identifier."
+        )
+        exit(1)
     app_file_hash = sha256(str(app_file).encode()).hexdigest()[:8]
     express_home = (
         Path(get_tethys_home_dir()) / "express" / f"{package}_{app_file_hash}"
