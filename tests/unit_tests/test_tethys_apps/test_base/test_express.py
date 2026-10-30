@@ -229,9 +229,7 @@ class TestHarvestExpressApp(unittest.TestCase):
             express.harvest_express_app()
             first_module = sys.modules["tethysapp.express_harvest.app"]
             express.harvest_express_app()
-            self.assertIs(
-                first_module, sys.modules["tethysapp.express_harvest.app"]
-            )
+            self.assertIs(first_module, sys.modules["tethysapp.express_harvest.app"])
 
     def test_no_app_class_exits(self):
         self.app_file = (
