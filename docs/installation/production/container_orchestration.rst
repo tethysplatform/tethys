@@ -50,6 +50,52 @@ It differs from the official image in a few ways that matter for scaling:
 
 Pin a versioned tag as shown so that changes to the base image cannot break your portal unexpectedly. See the `tethys-uvx README <https://github.com/Aquaveo/tethys-uvx#readme>`_ for the available tags, database options, and extension hooks.
 
+Serving Static Files with WhiteNoise
+------------------------------------
+
+``tethys-uvx`` does not include NGINX, and Django does not serve static files when ``DEBUG`` is off. One option is to upload them to S3 or another object store. A simpler option is `WhiteNoise <https://whitenoise.readthedocs.io/>`_, which serves them from the app server itself. You collect the static files while building the image, so every replica has the same copy and no bucket is needed.
+
+Add ``STATIC_ROOT`` and the WhiteNoise middleware to your :file:`portal_config.yml`:
+
+.. code-block:: yaml
+
+    settings:
+      # Static files are collected into the image and served by WhiteNoise
+      STATIC_ROOT: /opt/static
+      MIDDLEWARE:
+        - whitenoise.middleware.WhiteNoiseMiddleware
+
+Then install ``whitenoise`` and collect the static files in the builder stage. This example uses the Dam Inventory app from the tutorials:
+
+.. code-block:: dockerfile
+
+    FROM ghcr.io/aquaveo/tethys-uvx:builder-v0.1.0 AS builder
+
+    RUN uv pip install whitenoise plotly \
+        "tethysapp-dam_inventory @ git+https://github.com/tethysplatform/tethysapp-dam_inventory.git@advanced-solution"
+
+    # Collect static files into the image. Tethys needs a database even for
+    # collectstatic, so the build uses a throwaway SQLite file.
+    COPY portal_config.yml ${TETHYS_HOME}/portal_config.yml
+    RUN tethys settings --set DATABASES.default.ENGINE django.db.backends.sqlite3 \
+            --set DATABASES.default.NAME /tmp/build.sqlite3 \
+        && tethys db migrate \
+        && tethys manage collectstatic --noinput \
+        && rm /tmp/build.sqlite3
+
+    FROM ghcr.io/aquaveo/tethys-uvx:runtime-base-v0.1.0
+
+    COPY --chown=1000:1000 --from=builder /opt/python /opt/python
+    COPY --chown=1000:1000 --from=builder /opt/conda /opt/conda
+    COPY --chown=1000:1000 --from=builder /opt/static /opt/static
+    COPY --chown=1000:1000 portal_config.yml /config/portal_config.yml
+
+The build-time settings change only affects the builder stage. The runtime image uses your unmodified :file:`portal_config.yml`.
+
+When ``provision.sh`` runs ``collectstatic`` at deploy time, it finds the files already in place and copies nothing. If you deploy with the Helm chart below, which supplies its own :file:`portal_config.yml`, set ``STATIC_ROOT`` and ``MIDDLEWARE`` under ``portalConfig.settings`` and leave ``s3Static`` disabled.
+
+WhiteNoise handles static files only. Files that users upload (media) still need storage that every replica can reach, such as an object store or a shared volume.
+
 Kubernetes: tethysapp-helm-library
 ==================================
 
