@@ -162,11 +162,15 @@ class TestSynthesizeExpressMetadata(unittest.TestCase):
         self.assertEqual("/", self.DummyApp.exit_url)
         self.assertEqual("NavHeader", self.DummyApp.default_layout)
         self.assertEqual("auto", self.DummyApp.nav_links)
+        # The base template feeds color through the "lighten" filter, which raises on ""
+        self.assertEqual(express.DEFAULT_EXPRESS_COLOR, self.DummyApp.color)
+        self.assertRegex(self.DummyApp.color, r"^#[0-9a-fA-F]{6}$")
 
     def test_does_not_override_existing_metadata(self):
         self.DummyApp.name = "Existing Name"
         self.DummyApp.package = "existing_package"
         self.DummyApp.default_layout = None
+        self.DummyApp.color = "#123456"
         with mock.patch.dict(
             express.environ, {express.TETHYS_EXPRESS_APP_ENV: str(self.app_file)}
         ):
@@ -174,6 +178,7 @@ class TestSynthesizeExpressMetadata(unittest.TestCase):
         self.assertEqual("Existing Name", self.DummyApp.name)
         self.assertEqual("existing_package", self.DummyApp.package)
         self.assertIsNone(self.DummyApp.default_layout)
+        self.assertEqual("#123456", self.DummyApp.color)
 
     def test_ignores_classes_from_other_modules(self):
         other_file = Path(self.temp_dir.name) / "other.py"

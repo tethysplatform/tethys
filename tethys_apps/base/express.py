@@ -20,6 +20,11 @@ from pathlib import Path
 
 TETHYS_EXPRESS_APP_ENV = "TETHYS_EXPRESS_APP"
 
+# Theme color used when an express app does not set one ("Midnight Blue" from the
+# scaffold palette). The app base template passes the color through a filter that
+# rejects anything that is not a hex color, so it cannot be left empty.
+DEFAULT_EXPRESS_COLOR = "#2c3e50"
+
 tethys_log = logging.getLogger("tethys." + __name__)
 
 
@@ -137,6 +142,8 @@ def synthesize_express_metadata(app_class):
         )
     if not app_class.root_url:
         app_class.root_url = app_class.package.replace("_", "-")
+    if not getattr(app_class, "color", None):
+        app_class.color = DEFAULT_EXPRESS_COLOR
     if not getattr(app_class, "exit_url", None):
         app_class.exit_url = "/"
     if not hasattr(app_class, "default_layout"):
