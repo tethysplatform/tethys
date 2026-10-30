@@ -343,6 +343,14 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertTrue(self.condorworkflow.node_statuses_are_current)
 
+    def test_a_fresh_finished_workflow_does_not_read_its_nodes(self):
+        """Terminality is only needed once the copy is stale."""
+        self.condorworkflow._status = "COM"
+        self.condorworkflow.node_statuses_updated = tz.now()
+
+        with self.assertNumQueries(0):
+            self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
     def test_node_statuses_not_current_once_stale(self):
         self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
             seconds=3600

@@ -135,11 +135,13 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         """
         if self.node_statuses_updated is None:
             return False
+        # Age first: it needs no query, and a fresh copy is current whatever the
+        # nodes say, so only a stale one pays for reading every node.
+        if timezone.now() - self.node_statuses_updated < self.node_statuses_max_age:
+            return True
         # is_terminal rather than a check against TERMINAL_STATUSES, so a custom
         # status classified as terminal (stored as OTH) counts too.
-        if self.is_terminal and self.all_node_statuses_are_terminal:
-            return True
-        return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
+        return self.is_terminal and self.all_node_statuses_are_terminal
 
     @property
     def all_node_statuses_are_terminal(self):
