@@ -1,0 +1,2 @@
+class NotAnApp:
+    pass

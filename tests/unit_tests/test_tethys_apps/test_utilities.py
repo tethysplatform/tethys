@@ -1218,6 +1218,23 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
             mock_tethysapp.objects.first.assert_called_once()
 
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_db_not_ready_sqlite(self):
+        """SQLite raises OperationalError (not ProgrammingError) when tables do not exist yet."""
+        from tethys_apps.models import TethysApp
+        from django.db.utils import OperationalError
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            mock_tethysapp.DoesNotExist = TethysApp.DoesNotExist
+            mock_tethysapp.objects.first.side_effect = [OperationalError]
+            app = utilities.get_configured_standalone_app()
+
+            self.assertIsNone(app)
+
+            mock_tethysapp.objects.first.assert_called_once()
+
     def test_update_decorated_websocket_consumer_class(self):
         class TestConsumer(WebsocketConsumer):
             def authorized_connect(self):
