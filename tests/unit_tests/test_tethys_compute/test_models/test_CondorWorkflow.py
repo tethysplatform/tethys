@@ -3,6 +3,7 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
+from tethys_compute.models.tethys_job import TethysJob
 from django.contrib.auth.models import User
 from django.utils import timezone as tz
 from unittest import mock
@@ -342,6 +343,14 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertTrue(self.condorworkflow.node_statuses_are_current)
 
+    def test_a_fresh_finished_workflow_does_not_read_its_nodes(self):
+        """Terminality is only needed once the copy is stale."""
+        self.condorworkflow._status = "COM"
+        self.condorworkflow.node_statuses_updated = tz.now()
+
+        with self.assertNumQueries(0):
+            self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
     def test_node_statuses_not_current_once_stale(self):
         self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
             seconds=3600
@@ -370,6 +379,73 @@ class CondorWorkflowTest(TethysTestCase):
         )
 
         self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    def set_node_statuses(self, *statuses):
+        nodes = (self.condorworkflowjobnode, self.condorworkflowjobnode_child)
+        for node, status in zip(nodes, statuses):
+            node.cached_node_status = status
+            node.save()
+
+    def test_finished_workflow_stays_current_however_old(self):
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
+    def test_finished_workflow_with_a_node_left_running_still_expires(self):
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Running")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    def test_unfinished_workflow_expires_even_with_every_node_terminal(self):
+        self.condorworkflow._status = "VAR"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    def test_a_removed_node_counts_as_terminal(self):
+        self.set_node_statuses("Completed", "Removed")
+
+        self.assertTrue(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_nodes_are_not_terminal_until_every_one_is_heard_from(self):
+        self.set_node_statuses("Completed")
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_a_held_node_is_not_terminal(self):
+        """Held maps to ERR, but a held node can be released and run again."""
+        self.set_node_statuses("Completed", "Held")
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_a_custom_terminal_status_counts_as_finished(self):
+        TethysJob.add_custom_terminal_status("Archived")
+        self.condorworkflow._status = "OTH"
+        self.condorworkflow.extended_properties = {
+            TethysJob.OTHER_STATUS_KEY: "Archived"
+        }
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
+    def test_a_workflow_without_nodes_is_not_terminal(self):
+        self.condorworkflow.node_set.all().delete()
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
 
     def test_cached_node_statuses_makes_no_remote_call(self):
         with mock.patch(
@@ -462,6 +538,33 @@ class CondorWorkflowTest(TethysTestCase):
             tz.now() - self.condorworkflow.node_statuses_updated,
             datetime.timedelta(seconds=5),
         )
+
+    @mock.patch(
+        "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"
+    )
+    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
+    def test_execute_forgets_the_previous_runs_node_statuses(self, mock_co, mock_ln):
+        """A resubmit must not inherit statuses that would be trusted forever."""
+        mock_co.submit.return_value = 111
+        self.condorworkflow.scheduler = None
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now()
+        self.condorworkflow.save()
+
+        self.condorworkflow._execute()
+
+        self.assertIsNone(self.condorworkflow.node_statuses_updated)
+        self.assertEqual(
+            [None, None],
+            list(
+                self.condorworkflow.node_set.values_list(
+                    "cached_node_status", flat=True
+                )
+            ),
+        )
+        self.condorworkflow._status = "COM"
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
 
     @mock.patch(
         "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"

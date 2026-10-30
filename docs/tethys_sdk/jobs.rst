@@ -323,6 +323,8 @@ Reporting periodically
 ^^^^^^^^^^^^^^^^^^^^^^
 For a Condor workflow, reported node statuses let the jobs table and the workflow diagram render from the database instead of querying the scheduler once per node on every poll. They are only used while they are *fresh*: ``CondorWorkflow.node_statuses_are_current`` is ``True`` for ``node_statuses_max_age`` (60 seconds by default) after the last report that matched at least one node. Once they go stale the views fall back to reading live statuses, so a portal where nothing reports behaves exactly as it did before, with nothing to configure.
 
+The one exception is a finished workflow: once the workflow itself is terminal and every node's persisted status is ``Completed`` or ``Removed``, the statuses stay current however old they are, because nothing will report on that workflow again. A reporter should therefore include the nodes' final statuses in its final report; a node left at a non-terminal status keeps the workflow on the expiring path.
+
 .. important::
 
     A reporter must therefore send ``node_statuses`` **periodically, not only when something changes**. A workflow whose nodes are all steadily running produces no changes, so a report-on-change-only reporter lets the statuses expire and the views resume querying the scheduler per node — precisely under the long-running workloads where serving from the database helps most. Re-report on an interval comfortably shorter than ``node_statuses_max_age`` (for example every 30 seconds) even when nothing has changed. Repeating an unchanged status is cheap: it writes no node rows and only moves the freshness timestamp.

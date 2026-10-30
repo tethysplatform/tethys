@@ -42,6 +42,9 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     JOB_ID_AD = "TethysJobId"
     JOB_TOKEN_AD = "TethysJobToken"
 
+    # Node statuses condor will not move a node out of by itself.
+    NODE_TERMINAL_STATUSES = ("Completed", "Removed")
+
     node_statuses_updated = models.DateTimeField(blank=True, null=True)
 
     @property
@@ -58,6 +61,15 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
         options.extend(self.status_report_options)
         self.load_nodes()
+
+        # A resubmit reuses the node rows, so statuses persisted for the previous run
+        # would be read as this run's -- and, once it finishes, trusted for good by
+        # node_statuses_are_current. Forget them before submitting, so anything the
+        # reporter sends from here on belongs to this run.
+        self.node_set.update(cached_node_status=None)
+        self.node_statuses_updated = None
+        self.save(update_fields=["node_statuses_updated"])
+
         super()._execute(options=options)
 
     @property
@@ -113,10 +125,48 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         longer per pass than the interval for one job, so tying the two together
         would leave the statuses never current precisely when there is enough load
         for it to matter.
+
+        Age stops mattering once there is nothing left to learn. A workflow that has
+        left the queue with every node in a status it cannot leave will never report
+        again, so expiring its statuses only sends the views to the scheduler to be
+        told the same thing -- and a finished workflow is the one whose working
+        directory is most likely to have been cleaned up, which is what reading a
+        node's live status needs.
         """
         if self.node_statuses_updated is None:
             return False
-        return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
+        # Age first: it needs no query, and a fresh copy is current whatever the
+        # nodes say, so only a stale one pays for reading every node.
+        if timezone.now() - self.node_statuses_updated < self.node_statuses_max_age:
+            return True
+        # is_terminal rather than a check against TERMINAL_STATUSES, so a custom
+        # status classified as terminal (stored as OTH) counts too.
+        return self.is_terminal and self.all_node_statuses_are_terminal
+
+    @property
+    def all_node_statuses_are_terminal(self):
+        """Whether every node has reached a status it cannot leave.
+
+        Both halves are load-bearing. The workflow's own status is not enough,
+        because a node can be reported terminal and then requeued -- a held node
+        that DAGMan retries -- and the workflow is only terminal once DAGMan itself
+        has departed. The nodes are not enough either: a status recorded by a
+        reporter that never sent a final one leaves the last node non-terminal, and
+        that is exactly the copy that must not be trusted forever.
+
+        A node with no persisted status has not been heard about at all, so it
+        counts against the whole set rather than being skipped.
+
+        Terminal here is condor's sense, not the job status a node maps to: ``Held``
+        maps to ``ERR``, which is terminal for a job, but a held node can be released
+        and run again, so only ``Completed`` and ``Removed`` count.
+
+        Returns: bool
+        """
+        statuses = list(self.node_set.values_list("cached_node_status", flat=True))
+        if not statuses:
+            return False
+        return all(status in self.NODE_TERMINAL_STATUSES for status in statuses)
 
     @property
     def cached_node_statuses(self):
