@@ -192,19 +192,16 @@ class TestSynthesizeExpressMetadata(unittest.TestCase):
 
 class TestHarvestExpressApp(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
-        self.app_file = Path(self.temp_dir.name) / "test_express_harvest.py"
-        self.app_file.write_text(COMPONENT_APP_SOURCE)
+        self.app_file = Path(__file__).parent / "app_fixtures" / "express_harvest.py"
 
     def tearDown(self):
         for name in list(sys.modules):
-            if "test_express_harvest" in name:
+            if "express_harvest" in name:
                 del sys.modules[name]
 
         from tethys_apps.base.component_base import AppSingleton
 
-        AppSingleton._instances.pop("test_express_harvest", None)
-        self.temp_dir.cleanup()
+        AppSingleton._instances.pop("express_harvest", None)
 
     def test_not_express_mode(self):
         with mock.patch.dict(express.environ, {}, clear=True):
@@ -216,12 +213,12 @@ class TestHarvestExpressApp(unittest.TestCase):
         ):
             package = express.harvest_express_app()
 
-        self.assertEqual("test_express_harvest", package)
-        self.assertIn("tethysapp.test_express_harvest", sys.modules)
-        self.assertIn("tethysapp.test_express_harvest.app", sys.modules)
+        self.assertEqual("express_harvest", package)
+        self.assertIn("tethysapp.express_harvest", sys.modules)
+        self.assertIn("tethysapp.express_harvest.app", sys.modules)
 
-        module = sys.modules["tethysapp.test_express_harvest.app"]
-        self.assertEqual("test_express_harvest", module.App.package)
+        module = sys.modules["tethysapp.express_harvest.app"]
+        self.assertEqual("express_harvest", module.App.package)
         # Index defaults to the first page defined in the file
         self.assertEqual("home", module.App.index)
 
@@ -230,18 +227,20 @@ class TestHarvestExpressApp(unittest.TestCase):
             express.environ, {express.TETHYS_EXPRESS_APP_ENV: str(self.app_file)}
         ):
             express.harvest_express_app()
-            first_module = sys.modules["tethysapp.test_express_harvest.app"]
+            first_module = sys.modules["tethysapp.express_harvest.app"]
             express.harvest_express_app()
             self.assertIs(
-                first_module, sys.modules["tethysapp.test_express_harvest.app"]
+                first_module, sys.modules["tethysapp.express_harvest.app"]
             )
 
     def test_no_app_class_exits(self):
-        self.app_file.write_text(NOT_A_COMPONENT_APP_SOURCE)
+        self.app_file = (
+            Path(__file__).parent / "app_fixtures" / "express_harvest_invalid.py"
+        )
         with mock.patch.dict(
             express.environ, {express.TETHYS_EXPRESS_APP_ENV: str(self.app_file)}
         ):
             with self.assertRaises(SystemExit):
                 express.harvest_express_app()
-        self.assertNotIn("tethysapp.test_express_harvest", sys.modules)
-        self.assertNotIn("tethysapp.test_express_harvest.app", sys.modules)
+        self.assertNotIn("tethysapp.express_harvest_invalid", sys.modules)
+        self.assertNotIn("tethysapp.express_harvest_invalid.app", sys.modules)
