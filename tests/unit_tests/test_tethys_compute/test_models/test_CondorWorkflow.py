@@ -535,6 +535,33 @@ class CondorWorkflowTest(TethysTestCase):
         "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"
     )
     @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
+    def test_execute_forgets_the_previous_runs_node_statuses(self, mock_co, mock_ln):
+        """A resubmit must not inherit statuses that would be trusted forever."""
+        mock_co.submit.return_value = 111
+        self.condorworkflow.scheduler = None
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now()
+        self.condorworkflow.save()
+
+        self.condorworkflow._execute()
+
+        self.assertIsNone(self.condorworkflow.node_statuses_updated)
+        self.assertEqual(
+            [None, None],
+            list(
+                self.condorworkflow.node_set.values_list(
+                    "cached_node_status", flat=True
+                )
+            ),
+        )
+        self.condorworkflow._status = "COM"
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    @mock.patch(
+        "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"
+    )
+    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
     def test_execute_does_not_mutate_the_callers_options(self, mock_co, mock_ln):
         """The ads belong to this job, so a reused list must not collect them."""
         mock_co.submit.return_value = 111

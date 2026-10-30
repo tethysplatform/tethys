@@ -61,6 +61,15 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
         options.extend(self.status_report_options)
         self.load_nodes()
+
+        # A resubmit reuses the node rows, so statuses persisted for the previous run
+        # would be read as this run's -- and, once it finishes, trusted for good by
+        # node_statuses_are_current. Forget them before submitting, so anything the
+        # reporter sends from here on belongs to this run.
+        self.node_set.update(cached_node_status=None)
+        self.node_statuses_updated = None
+        self.save(update_fields=["node_statuses_updated"])
+
         super()._execute(options=options)
 
     @property
