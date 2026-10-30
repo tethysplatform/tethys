@@ -42,7 +42,7 @@ def find_component_app_class_node(app_file):
         ast.ClassDef or None: the class definition node, or None if no such class is found.
     """
     try:
-tree = ast.parse(Path(app_file).read_text(encoding="utf-8"))
+        tree = ast.parse(Path(app_file).read_text(encoding="utf-8"))
     except (OSError, SyntaxError):
         return None
 
