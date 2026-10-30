@@ -42,6 +42,9 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     JOB_ID_AD = "TethysJobId"
     JOB_TOKEN_AD = "TethysJobToken"
 
+    # Node statuses condor will not move a node out of by itself.
+    NODE_TERMINAL_STATUSES = ("Completed", "Removed")
+
     node_statuses_updated = models.DateTimeField(blank=True, null=True)
 
     @property
@@ -123,10 +126,9 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         """
         if self.node_statuses_updated is None:
             return False
-        if (
-            self.cached_status in self.TERMINAL_STATUSES
-            and self.all_node_statuses_are_terminal
-        ):
+        # is_terminal rather than a check against TERMINAL_STATUSES, so a custom
+        # status classified as terminal (stored as OTH) counts too.
+        if self.is_terminal and self.all_node_statuses_are_terminal:
             return True
         return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
 
@@ -144,15 +146,16 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         A node with no persisted status has not been heard about at all, so it
         counts against the whole set rather than being skipped.
 
+        Terminal here is condor's sense, not the job status a node maps to: ``Held``
+        maps to ``ERR``, which is terminal for a job, but a held node can be released
+        and run again, so only ``Completed`` and ``Removed`` count.
+
         Returns: bool
         """
         statuses = list(self.node_set.values_list("cached_node_status", flat=True))
         if not statuses:
             return False
-        return all(
-            self.STATUS_MAP.get(status) in self.TERMINAL_STATUS_CODES
-            for status in statuses
-        )
+        return all(status in self.NODE_TERMINAL_STATUSES for status in statuses)
 
     @property
     def cached_node_statuses(self):

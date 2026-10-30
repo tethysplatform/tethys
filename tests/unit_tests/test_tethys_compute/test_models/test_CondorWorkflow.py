@@ -3,6 +3,7 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
+from tethys_compute.models.tethys_job import TethysJob
 from django.contrib.auth.models import User
 from django.utils import timezone as tz
 from unittest import mock
@@ -413,6 +414,25 @@ class CondorWorkflowTest(TethysTestCase):
         self.set_node_statuses("Completed")
 
         self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_a_held_node_is_not_terminal(self):
+        """Held maps to ERR, but a held node can be released and run again."""
+        self.set_node_statuses("Completed", "Held")
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_a_custom_terminal_status_counts_as_finished(self):
+        TethysJob.add_custom_terminal_status("Archived")
+        self.condorworkflow._status = "OTH"
+        self.condorworkflow.extended_properties = {
+            TethysJob.OTHER_STATUS_KEY: "Archived"
+        }
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
 
     def test_a_workflow_without_nodes_is_not_terminal(self):
         self.condorworkflow.node_set.all().delete()
