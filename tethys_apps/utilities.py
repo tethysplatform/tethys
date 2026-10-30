@@ -228,6 +228,7 @@ def get_app_settings(app):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
         CustomSettingBase,
     )
 
@@ -244,6 +245,8 @@ def get_app_settings(app):
         for setting in DatasetServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
         for setting in WebProcessingServiceSetting.objects.filter(tethys_app=app):
+            app_settings.append(setting)
+        for setting in SecureMapServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
         for setting in CustomSettingBase.objects.filter(
             tethys_app=app
@@ -265,6 +268,10 @@ def get_app_settings(app):
                 or (
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
+                )
+                or (
+                    hasattr(setting, "secure_map_service")
+                    and setting.secure_map_service
                 )
                 or (
                     hasattr(setting, "value")
@@ -499,6 +506,7 @@ def link_service_to_app_setting(
         DatasetServiceSetting,
         SchedulerSetting,
         WebProcessingServiceSetting,
+        SecureMapServiceSetting,
     )
 
     setting_type_to_link_model_dict = {
@@ -526,9 +534,18 @@ def link_service_to_app_setting(
             "setting_model": WebProcessingServiceSetting,
             "service_field": "web_processing_service",
         },
+        "secure_map": {
+            "setting_model": SecureMapServiceSetting,
+            "service_field": "secure_map_service",
+        },
     }
 
-    service = get_service_from_type(service_type, service_uid)
+    try:
+        service = get_service_from_type(service_type, service_uid)
+    except ValueError as e:
+        with pretty_output(FG_RED) as p:
+            p.write(str(e))
+        return False
     if not service:
         with pretty_output(FG_RED) as p:
             p.write(
@@ -551,7 +568,7 @@ def link_service_to_app_setting(
         with pretty_output(FG_RED) as p:
             p.write(
                 f'The setting_type you specified ("{setting_type}") does not exist.'
-                '\nChoose from: "ps_database|ps_connection|ds_spatial"'
+                '\nChoose from: "ps_database|ps_connection|ds_spatial|ds_dataset|ss_scheduler|wps|secure_map"'
             )
         return False
 
@@ -587,6 +604,7 @@ def get_service_from_type(service_type, service_uid):
         PostgresPersistentStoreService,
         SQLitePersistentStoreService,
         WebProcessingService,
+        SecureMapService,
     )
     from tethys_compute.models import (
         CondorScheduler,
@@ -600,10 +618,15 @@ def get_service_from_type(service_type, service_uid):
         "persistent": [PostgresPersistentStoreService, SQLitePersistentStoreService],
         "spatial": SpatialDatasetService,
         "wps": WebProcessingService,
+        "secure_map": SecureMapService,
     }
-
-    service_model = service_type_to_model_dict[service_type]
-
+    try:
+        service_model = service_type_to_model_dict[service_type]
+    except KeyError:
+        raise ValueError(
+            f'Unknown service type: "{service_type}". '
+            f'Choose from: {"|".join(service_type_to_model_dict.keys())}'
+        )
     if isinstance(service_model, list):
         for model in service_model:
             service = get_service_object(model, service_uid)

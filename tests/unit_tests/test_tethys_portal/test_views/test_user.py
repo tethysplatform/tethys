@@ -3,6 +3,7 @@ import sys
 import unittest
 from unittest import mock
 from django.test import override_settings
+from django.core.exceptions import PermissionDenied
 
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch("django.views.decorators.cache.never_cache", lambda x: x).start()
@@ -17,8 +18,10 @@ from tethys_portal.views.user import (  # noqa: E402
     delete_account,
     manage_storage,
     clear_workspace,
+    refresh_social_token_endpoint,
 )
 from tethys_apps.models import TethysApp  # noqa: E402
+from social_django.models import UserSocialAuth  # noqa: E402
 
 
 class TethysPortalUserTests(unittest.TestCase):
@@ -556,3 +559,151 @@ class TethysPortalUserTests(unittest.TestCase):
             "Your workspace and media directory have been successfully cleared.",
         )
         mock_redirect.assert_called_once_with("user:manage_storage")
+
+    @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
+    @mock.patch("tethys_portal.views.user.redirect")
+    @mock.patch("tethys_portal.views.user.messages.error")
+    def test_refresh_social_token_endpoint_nonexistent_association(
+        self, mock_messages, mock_redirect, mock_get
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_get.side_effect = UserSocialAuth.DoesNotExist
+        refresh_social_token_endpoint(mock_request, association_id=99999)
+
+        mock_messages.assert_called_with(
+            mock_request, "Could not find social authentication association."
+        )
+        mock_redirect.assert_called_with("user:settings")
+
+    @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
+    def test_refresh_social_token_endpoint_not_owner_or_admin(self, mock_get):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.user.pk = 25
+        mock_request.user.is_staff = False
+
+        mock_auth = mock.MagicMock()
+        mock_auth.user_id = 16
+
+        mock_get.return_value = mock_auth
+
+        with self.assertRaises(PermissionDenied):
+            refresh_social_token_endpoint(mock_request, association_id=99999)
+
+    @mock.patch("tethys_portal.views.user.url_has_allowed_host_and_scheme")
+    @mock.patch("tethys_portal.views.user.messages.warning")
+    @mock.patch("tethys_portal.views.user.cache")
+    @mock.patch("tethys_portal.views.user.redirect")
+    @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
+    def test_refresh_social_token_endpoint_refreshed_recently(
+        self, mock_get, mock_redirect, mock_cache, mock_messages, mock_uhahas
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.user.pk = 25
+        mock_request.user.is_staff = False
+        mock_request.POST.get.return_value = "test_next_url"
+
+        mock_auth = mock.MagicMock()
+        mock_auth.user_id = 25
+        mock_auth.provider = "test_provider"
+
+        mock_get.return_value = mock_auth
+
+        mock_uhahas.return_value = True
+        mock_cache.add.return_value = False
+
+        refresh_social_token_endpoint(mock_request, association_id=1)
+
+        mock_messages.assert_called_with(
+            mock_request,
+            "This token was refreshed recently. Please wait before trying again.",
+        )
+        mock_redirect.assert_called_with("test_next_url")
+
+    @mock.patch("tethys_portal.views.user.refresh_social_token")
+    @mock.patch("tethys_portal.views.user.logger.exception")
+    @mock.patch("tethys_portal.views.user.url_has_allowed_host_and_scheme")
+    @mock.patch("tethys_portal.views.user.messages.error")
+    @mock.patch("tethys_portal.views.user.cache")
+    @mock.patch("tethys_portal.views.user.redirect")
+    @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
+    def test_refresh_social_token_endpoint_error_refreshing(
+        self,
+        mock_get,
+        mock_redirect,
+        mock_cache,
+        mock_messages,
+        mock_uhahas,
+        mock_logger_exception,
+        mock_refresh,
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.user.pk = 25
+        mock_request.user.is_staff = False
+        mock_request.POST.get.return_value = "test_next_url"
+
+        mock_auth = mock.MagicMock()
+        mock_auth.user_id = 25
+        mock_auth.provider = "test_provider"
+
+        mock_get.return_value = mock_auth
+        mock_cache.add.return_value = True
+        mock_uhahas.return_value = True
+
+        mock_refresh.side_effect = ValueError()
+
+        refresh_social_token_endpoint(mock_request, association_id=1)
+
+        mock_cache.delete.assert_called_with("refresh_social_token_1")
+        mock_logger_exception.assert_called_with(
+            "Token refresh failed for user 25, provider test_provider"
+        )
+        mock_messages.assert_called_with(
+            mock_request, "Failed to refresh test_provider token."
+        )
+        mock_redirect.assert_called_with("test_next_url")
+
+    @mock.patch("tethys_portal.views.user.reverse")
+    @mock.patch("tethys_portal.views.user.refresh_social_token")
+    @mock.patch("tethys_portal.views.user.logger.info")
+    @mock.patch("tethys_portal.views.user.url_has_allowed_host_and_scheme")
+    @mock.patch("tethys_portal.views.user.messages.success")
+    @mock.patch("tethys_portal.views.user.cache")
+    @mock.patch("tethys_portal.views.user.redirect")
+    @mock.patch("tethys_portal.views.user.UserSocialAuth.objects.get")
+    def test_refresh_social_token_endpoint_successful_refresh_invalid_next_url(
+        self,
+        mock_get,
+        mock_redirect,
+        mock_cache,
+        mock_messages,
+        mock_uhahas,
+        mock_logger_info,
+        mock_refresh,
+        mock_reverse,
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.user.pk = 25
+        mock_request.user.is_staff = False
+        mock_request.POST.get.return_value = "test_next_url"
+
+        mock_auth = mock.MagicMock()
+        mock_auth.user_id = 25
+        mock_auth.provider = "test_provider"
+
+        mock_get.return_value = mock_auth
+        mock_cache.add.return_value = True
+        mock_uhahas.return_value = False
+        refresh_social_token_endpoint(mock_request, association_id=1)
+
+        mock_refresh.assert_called_with(mock_auth)
+        mock_logger_info.assert_called_with(
+            f"User {mock_request.user.pk} refreshed OAuth2 token for user {mock_auth.user_id}, "
+            f"provider {mock_auth.provider}"
+        )
+        mock_messages.assert_called_with(mock_request, "Refreshed test_provider token.")
+        mock_redirect.assert_called_with(mock_reverse("user:settings"))

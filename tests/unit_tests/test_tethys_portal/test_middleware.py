@@ -5,8 +5,40 @@ from tethys_portal.middleware import (
     TethysSocialAuthExceptionMiddleware,
     TethysAppAccessMiddleware,
     TethysMfaRequiredMiddleware,
+    TethysOauth2RequiredMiddleware,
+    is_disconnect_disallowed,
+    is_identity_in_use,
 )
 from django.core.exceptions import PermissionDenied
+
+
+# Replaces social-auth-core version 5 NotAllowedToDisconnect
+class MockNotAllowedToDisconnect(Exception):
+    pass
+
+
+# Replaces social-auth-core version 6 AuthPolicyError
+class MockAuthPolicyError(Exception):
+    def __init__(self, code=None):
+        super().__init__()
+        self.code = code
+
+
+# Replaces social-auth-core version 5 AuthAlreadyAssociated
+class MockAuthAlreadyAssociated(Exception):
+    def __init__(self, backend_name="google"):
+        super().__init__()
+        self.backend = mock.MagicMock()
+        self.backend.name = backend_name
+
+
+# Replaces social-auth-core version 6 AuthAssociationError
+class MockAuthAssociationError(Exception):
+    def __init__(self, code="identity_in_use", backend_name="google"):
+        super().__init__()
+        self.code = code
+        self.backend = mock.MagicMock()
+        self.backend.name = backend_name
 
 
 class TethysPortalMiddlewareTests(unittest.TestCase):
@@ -70,6 +102,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "google"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -113,6 +146,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "linkedin"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -156,6 +190,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "hydroshare"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -199,6 +234,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "facebook"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -243,6 +279,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "identity_in_use"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
@@ -281,6 +318,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "disconnect_disallowed"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
@@ -312,6 +350,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         mock_exception = mock.MagicMock()
         mock_exception.backend.name = "social"
+        mock_exception.code = "disconnect_disallowed"
 
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
@@ -329,6 +368,124 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         )
 
         mock_redirect.assert_called_once_with("accounts:login")
+
+    @mock.patch(
+        "tethys_portal.middleware.NotAllowedToDisconnect", MockNotAllowedToDisconnect
+    )
+    def test_is_disconnect_disallowed_legacy(self):
+        # social-auth-core version 5
+        self.assertTrue(is_disconnect_disallowed(MockNotAllowedToDisconnect()))
+        self.assertFalse(is_disconnect_disallowed(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.AuthPolicyError", MockAuthPolicyError)
+    @mock.patch("tethys_portal.middleware.NotAllowedToDisconnect", None)
+    def test_is_disconnect_disallowed_policy_error(self):
+        # social-auth-core version 6
+        self.assertTrue(
+            is_disconnect_disallowed(MockAuthPolicyError("disconnect_disallowed"))
+        )
+        self.assertFalse(is_disconnect_disallowed(MockAuthPolicyError("other_policy")))
+        self.assertFalse(is_disconnect_disallowed(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.AuthAssociationError", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAlreadyAssociated", MockAuthAlreadyAssociated
+    )
+    def test_is_identity_in_use_legacy(self):
+        # social-auth-core version 5
+        self.assertTrue(is_identity_in_use(MockAuthAlreadyAssociated()))
+        self.assertFalse(is_identity_in_use(ValueError()))
+
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_is_identity_in_use_association_error(self):
+        # social-auth-core version 6
+        self.assertTrue(
+            is_identity_in_use(MockAuthAssociationError(code="identity_in_use"))
+        )
+        self.assertFalse(
+            is_identity_in_use(
+                MockAuthAssociationError(code="identifier_migration_conflict")
+            )
+        )
+        self.assertFalse(
+            is_identity_in_use(MockAuthAssociationError(code="email_in_use"))
+        )
+        self.assertFalse(is_identity_in_use(ValueError()))
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch("tethys_portal.middleware.AuthPolicyError", MockAuthPolicyError)
+    @mock.patch("tethys_portal.middleware.NotAllowedToDisconnect", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_process_exception_identifier_migration_conflict(
+        self, _, mock_redirect, mock_success, mock_pretty_output
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = True
+        exception = MockAuthAssociationError(code="identifier_migration_conflict")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        ret = obj.process_exception(mock_request, exception)
+
+        self.assertIsNone(ret)
+        mock_success.assert_not_called()
+        mock_redirect.assert_not_called()
+        mock_pretty_output.assert_not_called()
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAssociationError", MockAuthAssociationError
+    )
+    def test_process_exception_identity_in_use_v6(
+        self, _, mock_redirect, mock_success, __
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = True
+        exception = MockAuthAssociationError(code="identity_in_use")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        obj.process_exception(mock_request, exception)
+
+        self.assertEqual(
+            "The Google account you tried to connect to has already been associated with another "
+            "account.",
+            mock_success.call_args[0][1],
+        )
+        mock_redirect.assert_called_once_with("accounts:login")
+
+    @mock.patch("tethys_portal.middleware.pretty_output")
+    @mock.patch("tethys_portal.middleware.messages.success")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.hasattr", return_value=True)
+    @mock.patch("tethys_portal.middleware.AuthAssociationError", None)
+    @mock.patch(
+        "tethys_portal.middleware.AuthAlreadyAssociated", MockAuthAlreadyAssociated
+    )
+    def test_process_exception_already_associated_v5(
+        self, _, mock_redirect, mock_success, __
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = False
+        exception = MockAuthAlreadyAssociated(backend_name="linkedin")
+
+        obj = TethysSocialAuthExceptionMiddleware(mock.MagicMock())
+        obj.process_exception(mock_request, exception)
+
+        self.assertEqual(
+            "The LinkedIn account you tried to connect to has already been associated with "
+            "another account.",
+            mock_success.call_args[0][1],
+        )
+        mock_redirect.assert_called_once_with("user:settings")
 
     @mock.patch("tethys_portal.middleware.get_active_app")
     def test_app_access_app_none(self, mock_app):
@@ -843,3 +1000,184 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         # required for all users
         mock_redirect.assert_called_once_with("mfa_home")
+
+    def test_oauth_required_init(self):
+        mock_get_response = mock.MagicMock()
+        obj = TethysOauth2RequiredMiddleware(mock_get_response)
+        self.assertEqual(obj.get_response, mock_get_response)
+
+    def test_oauth_required_no_requirements(self):
+        mock_get_response = mock.MagicMock()
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    @mock.patch("tethys_portal.middleware.settings")
+    def test_oauth_required_no_active_app(self, mock_settings, mock_gap):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = None
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_no_requirements_for_app(self, mock_gap):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_request = mock.MagicMock()
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_has_provider(self, mock_gap, mock_gcop):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_value"]
+        )
+        mock_gcop.return_value = ["test_value"]
+        mock_request = mock.MagicMock()
+        mock_request.user.social_auth.filter.return_value.exists.return_value = True
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_get_response.assert_called_once_with(mock_request)
+        mock_request.user.social_auth.filter.assert_called_once_with(
+            provider="test_value"
+        )
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    @mock.patch("tethys_portal.middleware.messages.error")
+    @mock.patch("tethys_portal.middleware.logger")
+    def test_oauth_required_unconfigured_providers(
+        self, mock_logger, mock_messages, mock_gap, mock_gcop
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_provider"]
+        )
+        mock_gcop.return_value = ["configured_provider"]
+
+        mock_request = mock.MagicMock()
+
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 provider 'test_provider' is not configured on this portal. Please contact your portal administrator.",
+        )
+
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
+        )
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1 and test_provider2 are not configured on this portal. Please contact your portal administrator.",
+        )
+
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
+        )
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_logger.warning.assert_called_with(
+            "The following required OAuth2 providers are not configured: test_provider1, test_provider2, test_provider3"
+        )
+        mock_messages.assert_called_with(
+            mock_request,
+            "The required OAuth2 providers test_provider1, test_provider2, and test_provider3 are not configured on this portal. Please contact your portal administrator.",
+        )
+
+    @mock.patch("tethys_portal.middleware.get_configured_oauth2_providers")
+    @mock.patch("tethys_portal.middleware.urlencode")
+    @mock.patch("tethys_portal.middleware.reverse")
+    @mock.patch("tethys_portal.middleware.messages.info")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_no_provider(
+        self,
+        mock_gap,
+        mock_redirect,
+        mock_messages,
+        mock_reverse,
+        mock_urlencode,
+        mock_gcop,
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package", required_oauth2_providers=["test_provider"]
+        )
+        mock_request = mock.MagicMock()
+        mock_request.get_full_path.return_value = "/apps/test_package/test_path"
+        mock_request.user.social_auth.filter.return_value.exists.return_value = False
+        mock_reverse.return_value = "/user/settings/"
+        mock_urlencode.return_value = "next=/apps/test_package/test_path"
+        mock_gcop.return_value = ["test_provider"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_once_with(
+            mock_request,
+            "This application requires authenticating with test_provider. Please link your account.",
+        )
+        mock_reverse.assert_called_once_with("user:settings")
+        mock_redirect.assert_called_with(
+            f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
+        )
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=["test_provider1", "test_provider2"],
+        )
+        mock_gcop.return_value = ["test_provider1", "test_provider2"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_with(
+            mock_request,
+            "This application requires authenticating with test_provider1 and test_provider2. Please link your accounts.",
+        )
+        mock_gap.return_value = mock.MagicMock(
+            package="test_package",
+            required_oauth2_providers=[
+                "test_provider1",
+                "test_provider2",
+                "test_provider3",
+            ],
+        )
+        mock_gcop.return_value = ["test_provider1", "test_provider2", "test_provider3"]
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_messages.assert_called_with(
+            mock_request,
+            "This application requires authenticating with test_provider1, test_provider2, and test_provider3. Please link your accounts.",
+        )
+
+    @mock.patch("tethys_portal.middleware.urlencode")
+    @mock.patch("tethys_portal.middleware.reverse")
+    @mock.patch("tethys_portal.middleware.redirect")
+    @mock.patch("tethys_portal.middleware.get_active_app")
+    def test_oauth_required_user_not_authenticated(
+        self,
+        mock_gap,
+        mock_redirect,
+        mock_reverse,
+        mock_urlencode,
+    ):
+        mock_get_response = mock.MagicMock()
+        mock_gap.return_value = mock.MagicMock(package="test_package")
+        mock_request = mock.MagicMock()
+        mock_request.get_full_path.return_value = "/apps/test_package/test_path"
+        mock_request.user.is_authenticated = False
+        mock_reverse.return_value = "/accounts/login/"
+        mock_urlencode.return_value = "next=/apps/test_package/test_path"
+        TethysOauth2RequiredMiddleware(mock_get_response)(mock_request)
+        mock_reverse.assert_called_once_with("accounts:login")
+        mock_redirect.assert_called_once_with(
+            f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
+        )

@@ -19,12 +19,12 @@ classifiers = [
      "Operating System :: OS Independent",
      "Programming Language :: Python",
      "Programming Language :: Python :: 3",
-     "Programming Language :: Python :: 3.10",
+     "Programming Language :: Python :: 3.11",
      "Topic :: Internet :: WWW/HTTP",
      "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 dynamic = ["version"]
-requires-python = ">= 3.10"
+requires-python = ">= 3.11"
 dependencies = [
     "pyopenssl>=24.0.0",
   # core dependencies
@@ -43,10 +43,13 @@ dependencies = [
     "django-model-utils",
     "django-guardian",
     "djangorestframework_simplejwt",
+    "django-fernet-encrypted-fields",
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
+# pytest-django 4.13 dropped Django 4.2 support. 
+# Unpin once we drop support for Django 4.2 in Tethys.
+test = ["pytest", "pytest-django<4.13", "pytest-cov", "requests_mock"]
 lint = ["flake8", "black"]
 
 [project.urls]
@@ -86,4 +89,4 @@ show_missing = true
 skip_covered = true
 
 [tool.black]
-target-version = ["py310", "py311", "py312", "py313"]
+target-version = ["py311", "py312", "py313"]

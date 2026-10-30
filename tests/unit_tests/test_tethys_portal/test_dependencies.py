@@ -91,7 +91,7 @@ class TestStaticDependency(unittest.TestCase):
         dependency = dependencies.StaticDependency("name", "version", js_path="js_path")
         dependency.get_custom_version_url(url_type="js", version="different_version")
         mock_warning.assert_called_once()
-        mock_url.assert_called_with("js", "different_version", debug=None, use_cdn=True)
+        mock_url.assert_called_with("js", "version", debug=None, use_cdn=False)
 
     @override_settings(STATICFILES_USE_NPM=True)
     def test_get_js_urls(self):

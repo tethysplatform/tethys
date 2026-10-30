@@ -19,6 +19,7 @@ import tempfile
 import uuid
 from zipfile import ZipFile
 
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.functional import classproperty
@@ -54,12 +55,14 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_map_extent = The default BBOX extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
+        draw (MVDraw): An MVDraw object enabling the drawing toolbar on the map. Defaults to None (no drawing).
         enforce_permissions (bool): Enables permissions checks when True. Defaults to False.
         geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
         geocode_extent (4-list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
         geoserver_workspace (str): Name of the GeoServer workspace of layers if applicable. Defaults to None.
         feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
         feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
+        form_id (str): The id of a form on the page to which the hidden geometry text field will be linked.
         layer_tab_name (str) Name of the "Layers" tab. Defaults to "Layers".
         map_subtitle (str): The subtitle to display on the MapLayout view.
         map_title (str): The title to display on the MapLayout view.
@@ -95,12 +98,14 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     cesium_ion_token = None
     default_disable_basemap = False
     default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:4326
+    draw = None
     geocode_api_key = None
     enforce_permissions = False
     geocode_extent = None
     geoserver_workspace = ""
     feature_selection_multiselect = False
     feature_selection_sensitivity = 4
+    form_id = None
     layer_tab_name = "Layers"
     map_type = "tethys_map_view"
     max_zoom = 28
@@ -384,6 +389,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 "show_properties_popup": self.show_properties_popup,
                 "show_map_click_popup": self.show_map_click_popup,
                 "show_legends": self.show_legends,
+                "staticfiles_use_npm": settings.STATICFILES_USE_NPM,
                 "wide_nav": self.wide_nav,
                 "workspace": self.geoserver_workspace,
             }
@@ -476,6 +482,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             basemap=self.basemaps,
             legend=False,
             show_clicks=self.show_map_clicks,
+            draw=self.draw,
+            form_id=self.form_id,
         )
 
         # Configure initial basemap visibility
