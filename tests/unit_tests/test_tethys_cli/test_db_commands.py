@@ -186,6 +186,7 @@ class TestCommandTests(unittest.TestCase):
         self.mock_run_process.return_value = 0
         self.assertRaises(RuntimeError, process_args, mock_args)
 
+    @mock.patch("tethys_cli.db_commands.sys.platform", "linux")
     def test_db_command_init(self):
         mock_args = mock.MagicMock()
         mock_args.command = "init"
