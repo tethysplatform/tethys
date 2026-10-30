@@ -51,6 +51,16 @@ This method involves using Docker to package and automate the deployment of a Te
 
     production/docker
 
+Container Orchestration
+-----------------------
+
+For portals that need to scale out, roll out updates without downtime, or run on a managed container service such as Kubernetes or AWS ECS. These community projects provide a lightweight base image, a Helm chart, and an OpenTofu module that work together. The advantage is horizontal scaling and repeatable, automated deployments. The disadvantage is that they require familiarity with container orchestration and, for ECS, with AWS.
+
+.. toctree::
+    :maxdepth: 1
+
+    production/container_orchestration
+
 Advanced and Optional Capabilities
 ==================================
 
