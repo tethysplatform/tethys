@@ -7,7 +7,11 @@ from unittest import mock
 
 import yaml
 
-from tethys_cli.run_commands import run_command, write_portal_config
+from tethys_cli.run_commands import (
+    is_loopback_host,
+    run_command,
+    write_portal_config,
+)
 
 COMPONENT_APP_SOURCE = """
 from tethys_sdk.components import ComponentBase
@@ -185,6 +189,37 @@ class TestRunCommand(unittest.TestCase):
         run_command(args)
         second_key = yaml.safe_load(config_path.read_text())["settings"]["SECRET_KEY"]
         self.assertEqual(first_key, second_key)
+
+    @mock.patch("tethys_cli.run_commands.write_warning", create=True)
+    def test_warns_for_non_loopback_host(self, mock_write_warning):
+        args = make_args(app_file=str(self.app_file), host="0.0.0.0")
+        run_command(args)
+
+        mock_write_warning.assert_called_once()
+        self.assertIn("0.0.0.0", mock_write_warning.call_args.args[0])
+        # Warning only: the server still starts on the requested host
+        server_call = self.mock_subprocess_call.call_args
+        self.assertEqual("0.0.0.0:8000", server_call.args[0][-1])
+
+    @mock.patch("tethys_cli.run_commands.write_warning", create=True)
+    def test_no_warning_for_loopback_host(self, mock_write_warning):
+        for host in ("127.0.0.1", "localhost", "::1"):
+            with self.subTest(host=host):
+                mock_write_warning.reset_mock()
+                run_command(make_args(app_file=str(self.app_file), host=host))
+                mock_write_warning.assert_not_called()
+
+
+class TestIsLoopbackHost(unittest.TestCase):
+    def test_loopback_hosts(self):
+        for host in ("127.0.0.1", "127.0.0.2", "localhost", "::1"):
+            with self.subTest(host=host):
+                self.assertTrue(is_loopback_host(host))
+
+    def test_non_loopback_hosts(self):
+        for host in ("0.0.0.0", "192.168.1.10", "::", "myhost.example.com"):
+            with self.subTest(host=host):
+                self.assertFalse(is_loopback_host(host))
 
 
 class TestWritePortalConfig(unittest.TestCase):

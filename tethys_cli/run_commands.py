@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+import ipaddress
 import os
 import secrets
 import shutil
@@ -21,7 +22,12 @@ from pathlib import Path
 
 import yaml
 
-from tethys_cli.cli_colors import write_error, write_info, write_success
+from tethys_cli.cli_colors import (
+    write_error,
+    write_info,
+    write_success,
+    write_warning,
+)
 from tethys_cli.cli_helpers import get_manage_path
 
 
@@ -144,6 +150,14 @@ def run_command(args):
         )
         exit(1)
 
+    if not is_loopback_host(args.host):
+        write_warning(
+            f'Serving on non-loopback host "{args.host}". Express mode runs with DEBUG '
+            "enabled and an open portal (no login), so the app and its debug pages will "
+            "be reachable by anyone who can reach this machine. Only do this on a "
+            "trusted network."
+        )
+
     url = f"http://{args.host}:{args.port}/"
     write_success(f'Running "{app_file.name}" at {url} (CTRL+C to quit)')
 
@@ -159,6 +173,19 @@ def run_command(args):
         subprocess.call(command, env=env)
     except KeyboardInterrupt:
         pass
+
+
+def is_loopback_host(host):
+    """
+    Check whether a host string refers only to the local machine (``localhost`` or a
+    loopback IP address). Any other hostname or address is considered externally reachable.
+    """
+    if host == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 def write_portal_config(config_path, package):
