@@ -414,6 +414,11 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
 
+    def test_a_workflow_without_nodes_is_not_terminal(self):
+        self.condorworkflow.node_set.all().delete()
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
     def test_cached_node_statuses_makes_no_remote_call(self):
         with mock.patch(
             "tethys_compute.models.condor.condor_workflow.CondorBase.condor_object"
