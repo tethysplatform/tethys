@@ -299,6 +299,23 @@ def NavIcon(lib, src="", style=None):
     )
 
 
+DEFAULT_APP_ICON = "tethys_apps/images/default_app_icon.gif"
+
+
+def _app_icon_url(app):
+    """
+    Resolve the URL of an app's icon the same way the Django app templates do: absolute
+    URLs are used as-is, other values are static paths, and a missing icon falls back to
+    the default app icon.
+    """
+    icon = getattr(app, "icon", "") or ""
+    if not icon:
+        return f"{STATIC_URL}{DEFAULT_APP_ICON}"
+    if icon.startswith(("http://", "https://")):
+        return icon
+    return f"{STATIC_URL}{icon}"
+
+
 def HeaderWithNavBar(lib, app, user, nav_links=None):
     nav_links = nav_links or []
     # In single-app mode the app is served at the site root, not under /apps/<root_url>/
@@ -376,7 +393,7 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                     style=lib.Style(color="white"),
                 )(
                     lib.tethys.NavIcon(
-                        src=f"{STATIC_URL}{app.icon}",
+                        src=_app_icon_url(app),
                         style=lib.Style(background_color=app.color),
                     ),
                     f" {app.name}",

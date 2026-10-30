@@ -184,3 +184,34 @@ class TestHeaderWithNavBarUrls(TestCase):
         self.assertEqual("/", _attr(brand, "href"))
         self.assertEqual("/", _attr(nav, "defaultActiveKey"))
 
+
+class TestHeaderWithNavBarIcon(TestCase):
+    def setUp(self):
+        self.lib = ComponentLibrary("components-test-lib-icon")
+        self.lib.hooks = mock.MagicMock()
+        self.lib.hooks.use_query.return_value = mock.MagicMock(data=None)
+        self.lib.hooks.use_location.return_value = mock.MagicMock(pathname="/")
+        self.lib.hooks.use_state.return_value = (0, lambda x: x)
+        self.user = mock.MagicMock(is_staff=False)
+
+    def icon_src(self, app):
+        vdom = custom.HeaderWithNavBar(self.lib, app=app, user=self.user)
+        imgs = _find_nodes(vdom, lambda n: n.get("tagName") == "img")
+        self.assertEqual(1, len(imgs))
+        return _attr(imgs[0], "src")
+
+    def test_static_icon_path(self):
+        app = FakeApp()
+        app.icon = "test_app/images/icon.png"
+        self.assertEqual(f"{STATIC_URL}test_app/images/icon.png", self.icon_src(app))
+
+    def test_missing_icon_falls_back_to_default_app_icon(self):
+        self.assertEqual(
+            f"{STATIC_URL}tethys_apps/images/default_app_icon.gif",
+            self.icon_src(FakeApp()),
+        )
+
+    def test_absolute_url_icon_is_used_as_is(self):
+        app = FakeApp()
+        app.icon = "https://example.com/icon.png"
+        self.assertEqual("https://example.com/icon.png", self.icon_src(app))
