@@ -84,6 +84,11 @@ def get_express_package_name(app_file):
     """
     Get the package name of the express app. An explicit ``package`` attribute on the
     app class wins, otherwise it is derived from the file name.
+
+    Raises:
+        ValueError: if an explicit ``package`` is not a valid Python identifier. The name
+            is used as both a module name and a filesystem path component, so anything
+            else (e.g. ``my-app`` or ``../state``) must be rejected up front.
     """
     class_node = find_component_app_class_node(app_file)
     if class_node is not None:
@@ -97,7 +102,14 @@ def get_express_package_name(app_file):
                 and isinstance(statement.value, ast.Constant)
                 and isinstance(statement.value.value, str)
             ):
-                return statement.value.value
+                package = statement.value.value
+                if not package.isidentifier():
+                    raise ValueError(
+                        f'Invalid express package name "{package}" set on the app class. '
+                        "App.package must be a valid Python identifier (letters, digits, "
+                        "and underscores, not starting with a digit)."
+                    )
+                return package
     return derive_package_name(app_file)
 
 

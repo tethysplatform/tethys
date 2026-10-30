@@ -106,7 +106,11 @@ def run_command(args):
         )
         exit(1)
 
-    package = get_express_package_name(app_file)
+    try:
+        package = get_express_package_name(app_file)
+    except ValueError as e:
+        write_error(str(e))
+        exit(1)
     if not package.isidentifier():
         write_error(
             f'Invalid express package name "{package}". '

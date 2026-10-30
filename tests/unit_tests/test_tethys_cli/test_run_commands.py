@@ -99,6 +99,21 @@ class TestRunCommand(unittest.TestCase):
             run_command(args)
         mock_write_error.assert_called_once()
 
+    @mock.patch("tethys_cli.run_commands.write_error")
+    def test_invalid_explicit_package_name(self, mock_write_error):
+        self.app_file.write_text(
+            COMPONENT_APP_SOURCE.replace("pass", 'package = "/tmp/escape"')
+        )
+        args = make_args(app_file=str(self.app_file))
+        with self.assertRaises(SystemExit):
+            run_command(args)
+
+        mock_write_error.assert_called_once()
+        self.assertIn("/tmp/escape", mock_write_error.call_args.args[0])
+        # Nothing was created or run before the name was rejected
+        self.assertFalse((self.tethys_home / "express").exists())
+        self.mock_subprocess_run.assert_not_called()
+
     def test_happy_path(self):
         args = make_args(app_file=str(self.app_file))
         run_command(args)

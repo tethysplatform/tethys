@@ -111,6 +111,18 @@ class TestExpressHelpers(unittest.TestCase):
         app_file = self.write_app_file(COMPONENT_APP_WITH_METADATA_SOURCE)
         self.assertEqual("custom_package", express.get_express_package_name(app_file))
 
+    def test_get_express_package_name_explicit_invalid_raises(self):
+        for package in ("my-app", "/tmp/escape", "../state", "", "1st_app"):
+            with self.subTest(package=package):
+                app_file = self.write_app_file(
+                    COMPONENT_APP_WITH_METADATA_SOURCE.replace(
+                        'package = "custom_package"', f'package = "{package}"'
+                    )
+                )
+                with self.assertRaises(ValueError) as cm:
+                    express.get_express_package_name(app_file)
+                self.assertIn(package, str(cm.exception))
+
 
 class TestSynthesizeExpressMetadata(unittest.TestCase):
     def setUp(self):
