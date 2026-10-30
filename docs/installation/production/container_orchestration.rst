@@ -66,7 +66,14 @@ Install it from the GitHub Container Registry:
 
     helm install my-app oci://ghcr.io/aquaveo/charts/tethys-app --version 0.1.5 -f my-values.yaml
 
-See the `chart README <https://github.com/Aquaveo/tethysapp-helm-library/tree/master/charts/tethys-app#readme>`_ for the values and a complete example.
+For a complete walkthrough that builds an image for an app, configures its settings and persistent store, and installs the chart, see the Dam Inventory example:
+
+.. toctree::
+    :maxdepth: 1
+
+    container_orchestration/helm_dam_inventory
+
+See the `chart README <https://github.com/Aquaveo/tethysapp-helm-library/tree/master/charts/tethys-app#readme>`_ for all the chart values.
 
 AWS ECS: tethys-ecs-iac
 =======================
