@@ -16,6 +16,10 @@ The ``app.py`` file is the heart of your Tethys Component App. It typically incl
 - An ``App`` class inheriting from ``ComponentBase`` (required)
 - The code for your app's Component-based Pages (optional, see note below)
 
+.. tip::
+
+    A single ``app.py`` file is a complete, runnable app: the ``tethys run`` command serves it directly with zero portal configuration — ideal for prototyping, demos, and getting started. See :ref:`tethys_run_cmd`.
+
 .. note::
 
     As your app grows, you may want to organize your code into multiple files for better maintainability. For example, you can create a ``pages.py`` file to define your page functions and simply import your ``App`` class into them to access the page decorator. Or, you could even have a ``pages`` directory with multiple files, each containing a set of related page functions. Just make sure to import the ``App`` class from your ``app.py`` file in each of these files to use the page decorator.
