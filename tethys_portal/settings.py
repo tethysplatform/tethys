@@ -26,7 +26,7 @@ import yaml
 import logging
 import datetime as dt
 import mimetypes
-from os import environ, getenv
+from os import getenv
 from pathlib import Path
 from importlib import import_module
 from importlib.machinery import SourceFileLoader
@@ -35,7 +35,7 @@ from django.contrib.messages import constants as message_constants
 
 from tethys_apps.utilities import relative_to_tethys_home
 from tethys_utils import deprecation_warning
-from tethys_cli.gen_commands import generate_secret_key, generate_salt_key
+from tethys_cli.gen_commands import generate_secret_key
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
