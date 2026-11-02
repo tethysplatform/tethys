@@ -460,7 +460,7 @@ class SecureMapService(models.Model):
         if self.api_key and getattr(settings, "SALT_KEY_IS_TEMPORARY", False):
             log.warning(
                 f"Prevented saving the API Key for SecureMapService '{self.name}' due to lack of a configured SALT_KEY.\n"
-                f"This would make the API key undreadable after a restart.\n"
+                f"This would make the API key unreadable after a restart.\n"
                 f"Run 'tethys gen portal_config' (or 'tethys settings --generate-salt-key' if portal_config.yml already exists) and restart the portal."
             )
             raise ValidationError(

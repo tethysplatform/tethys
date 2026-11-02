@@ -655,3 +655,17 @@ class SecureMapServiceTests(TethysTestCase):
         mock_log.error.assert_called_with(
             "SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)"
         )
+
+    @mock.patch("tethys_services.models.log")
+    def test_clean_without_salt_key_configured_api_key(self, mock_log):
+        service = self.map_service_with_api_key_no_proxy
+        with self.assertRaises(ValidationError) as context:
+            service.clean()
+
+        self.assertEqual(
+            "API keys cannot be saved because the portal is missing a SALT_KEY. See server logs for details.",
+            str(context.exception.message_dict["api_key"][0]),
+        )
+        mock_log.warning.assert_called_with(
+            f"Prevented saving the API Key for SecureMapService '{service.name}' due to lack of a configured SALT_KEY.\nThis would make the API key unreadable after a restart.\nRun 'tethys gen portal_config' (or 'tethys settings --generate-salt-key' if portal_config.yml already exists) and restart the portal."
+        )
