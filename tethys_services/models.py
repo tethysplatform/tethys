@@ -457,7 +457,7 @@ class SecureMapService(models.Model):
             raise ValidationError(
                 {"params": 'Parameters must be a JSON object (e.g. {"key": "value"})'}
             )
-        if self.api_key and getattr(settings, "SALT_KEY_IS_TEMPORARY", False):
+        if self.api_key and settings.SALT_KEY is None:
             log.warning(
                 f"Prevented saving the API Key for SecureMapService '{self.name}' due to lack of a configured SALT_KEY.\n"
                 f"This would make the API key unreadable after a restart.\n"

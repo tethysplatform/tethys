@@ -73,16 +73,13 @@ SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
 SALT_KEY_IS_TEMPORARY = not SALT_KEY
 
-if not SALT_KEY:
+if not SALT_KEY and portal_config_found:
     # Only warn when a portal_config.yml exists but lacks a SALT_KEY. Encrypted db writes will be prevented.
-    if portal_config_found and not environ.get("TETHYS_SALT_KEY_WARNING_SHOWN"):
-        log.warning(
-            "SALT_KEY not found in portal_config.yml. "
-            "Any data stored in encrypted fields will be inaccessible after a restart. "
-            "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
-        )
-        environ["TETHYS_SALT_KEY_WARNING_SHOWN"] = "done"
-    SALT_KEY = generate_salt_key()
+    log.warning(
+        "SALT_KEY not found in portal_config.yml. "
+        "Any data stored in encrypted fields will be inaccessible after a restart. "
+        "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = portal_config_settings.pop("DEBUG", True)
