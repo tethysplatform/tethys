@@ -50,8 +50,10 @@ mimetypes.add_type("text/javascript", ".js", True)
 BASE_DIR = Path(__file__).parent
 
 portal_config_settings = {}
+portal_config_found = False
 try:
     with relative_to_tethys_home("portal_config.yml").open() as portal_yaml:
+        portal_config_found = True
         portal_config_settings = yaml.safe_load(portal_yaml).get("settings", {}) or {}
 except FileNotFoundError:
     log.info(
@@ -70,11 +72,13 @@ SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
 SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
 if not SALT_KEY:
-    log.warning(
-        "SALT_KEY not found in portal_config.yml"
-        "Any data stored in encrypted fields will be inaccessible after a restart."
-        "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
-    )
+    # Only warn when a portal_config.yml exists but lacks a SALT_KEY.
+    if portal_config_found:
+        log.warning(
+            "SALT_KEY not found in portal_config.yml. "
+            "Any data stored in encrypted fields will be inaccessible after a restart. "
+            "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
+        )
     SALT_KEY = generate_salt_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
