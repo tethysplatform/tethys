@@ -26,7 +26,7 @@ import yaml
 import logging
 import datetime as dt
 import mimetypes
-from os import getenv
+from os import environ, getenv
 from pathlib import Path
 from importlib import import_module
 from importlib.machinery import SourceFileLoader
@@ -71,14 +71,17 @@ SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
 # SECURITY WARNING: keep the salt key used in production secret!
 SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
+SALT_KEY_IS_TEMPORARY = not SALT_KEY
+
 if not SALT_KEY:
-    # Only warn when a portal_config.yml exists but lacks a SALT_KEY.
-    if portal_config_found:
+    # Only warn when a portal_config.yml exists but lacks a SALT_KEY. Encrypted db writes will be prevented.
+    if portal_config_found and not environ.get("TETHYS_SALT_KEY_WARNING_SHOWN"):
         log.warning(
             "SALT_KEY not found in portal_config.yml. "
             "Any data stored in encrypted fields will be inaccessible after a restart. "
             "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
         )
+        environ["TETHYS_SALT_KEY_WARNING_SHOWN"] = "done"
     SALT_KEY = generate_salt_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!

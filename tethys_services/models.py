@@ -9,6 +9,7 @@
 """
 
 import logging
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.urls import reverse, reverse_lazy
@@ -455,6 +456,18 @@ class SecureMapService(models.Model):
         if self.params is not None and not isinstance(self.params, dict):
             raise ValidationError(
                 {"params": 'Parameters must be a JSON object (e.g. {"key": "value"})'}
+            )
+        if self.api_key and getattr(settings, "SALT_KEY_IS_TEMPORARY", False):
+            log.warning(
+                f"Prevented saving the API Key for SecureMapService '{self.name}' due to lack of a configured SALT_KEY.\n"
+                f"This would make the API key undreadable after a restart.\n"
+                f"Run 'tethys gen portal_config' (or 'tethys settings --generate-salt-key' if portal_config.yml already exists) and restart the portal."
+            )
+            raise ValidationError(
+                {
+                    "api_key": "API keys cannot be saved because the portal is missing a SALT_KEY. "
+                    "See server logs for details."
+                }
             )
 
     def _get_oauth_token(self, user, with_expiry=False):
