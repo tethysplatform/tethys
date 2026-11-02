@@ -94,3 +94,49 @@ def sanitize_next_url(next_url):
     ):
         return next_url
     return None
+
+
+def is_password_reset_enabled():
+    """
+    Check if password reset is enabled based on settings.
+
+    Password reset is disabled by default. It is enabled only when both of the
+    following are true in the portal config:
+
+    * Email is configured (see :func:`is_email_configured`), since the reset
+      link must be emailed to the user.
+    * ``ENABLE_PASSWORD_RESET`` is explicitly set to a truthy value.
+
+    Returns:
+        bool: True if password reset is enabled, False otherwise.
+    """
+    # Password reset relies on sending an email, so it requires email to be configured
+    if not is_email_configured():
+        return False
+
+    # Check the portal config for the ENABLE_PASSWORD_RESET setting
+    return bool(getattr(settings, "ENABLE_PASSWORD_RESET", False))
+
+
+def is_email_configured():
+    """
+    Check whether email sending appears to be configured in the portal config.
+
+    Supports both ``EMAIL_CONFIG`` block and top-level ``EMAIL_*`` settings.
+
+    Returns:
+        bool: True if email appears to be configured, False otherwise.
+    """
+    # Email settings nested under EMAIL_CONFIG
+    if bool(getattr(settings, "EMAIL_CONFIG", {})):
+        return True
+
+    # Email settings set at the top level. These carry Django
+    # defaults (EMAIL_HOST="localhost", EMAIL_HOST_USER=""), so only treat email
+    # as configured when a meaningful value has been provided. A local relay with
+    # no authentication is indistinguishable from the defaults and should use
+    # EMAIL_CONFIG instead
+    if getattr(settings, "EMAIL_HOST_USER", ""):
+        return True
+
+    return getattr(settings, "EMAIL_HOST", "") not in ("", "localhost")
