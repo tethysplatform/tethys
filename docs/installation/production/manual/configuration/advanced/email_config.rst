@@ -54,7 +54,7 @@ Configure the Tethys Portal to use SendGrid as the email relay as follows:
 
 .. code-block::
 
-    tethys settings --set EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_HOST "smtp.sendgrid.net" --set EMAIL_PORT 25 --set EMAIL_HOST_USER "apikey" --set EMAIL_HOST_PASSWORD "<SENDGRID_API_KEY>" --set EMAIL_USE_TLS True --set DEFAULT_FROM_EMAIL "<VERIFIED_SENDER_EMAIL_ADDRESS>"
+    tethys settings --set EMAIL_CONFIG.EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_CONFIG.EMAIL_HOST "smtp.sendgrid.net" --set EMAIL_CONFIG.EMAIL_PORT 25 --set EMAIL_CONFIG.EMAIL_HOST_USER "apikey" --set EMAIL_CONFIG.EMAIL_HOST_PASSWORD "<SENDGRID_API_KEY>" --set EMAIL_CONFIG.EMAIL_USE_TLS True --set EMAIL_CONFIG.DEFAULT_FROM_EMAIL "<VERIFIED_SENDER_EMAIL_ADDRESS>"
 
 .. note::
 
