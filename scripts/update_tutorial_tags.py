@@ -70,9 +70,7 @@ tutorial_repos = {
         "add-spatial-data-solution": "add-spatial-data-solution",
         "configure-data-plotting-solution": "configure-data-plotting-solution",
     },
-    "tethysplatform/tethysapp-secure_map_tutorial": {
-        "main": "solution"
-    },
+    "tethysplatform/tethysapp-secure_map_tutorial": {"main": "solution"},
 }
 
 if __name__ == "__main__":
