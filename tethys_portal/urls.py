@@ -52,7 +52,7 @@ from tethys_portal.optional_dependencies import optional_import
 
 # optional imports
 TrustedDevice = optional_import("mfa.TrustedDevice")
-psa_views = optional_import("views", from_module="social_django")
+psa_views = optional_import("social_django.views")
 psa_urls = optional_import("social_django.urls")
 REACTPY_WEBSOCKET_ROUTE = optional_import(
     "REACTPY_WEBSOCKET_ROUTE", from_module="reactpy_django"
