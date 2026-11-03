@@ -3,10 +3,12 @@ from tethys_services.models import SecureMapService
 import requests
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.test import override_settings
 from django.utils.functional import Promise
 from django.utils.encoding import force_str
 
 
+@override_settings(SALT_KEY="test-salt-key")
 class SecureMapServiceTests(TethysTestCase):
     def set_up(self):
         self.test_user = self.create_test_user(
@@ -656,6 +658,7 @@ class SecureMapServiceTests(TethysTestCase):
             "SecureMapService with name api_key_no_proxy request timed out. (connection_timeout: 14s, read_timeout: 29s)"
         )
 
+    @override_settings(SALT_KEY=None)
     @mock.patch("tethys_services.models.log")
     def test_clean_without_salt_key_configured_api_key(self, mock_log):
         service = self.map_service_with_api_key_no_proxy
