@@ -1,3 +1,4 @@
+from django.test import override_settings
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, SecureMapServiceSetting
 from tethys_sdk.gizmos import MVLayer
@@ -7,6 +8,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from unittest import mock
 
 
+@override_settings(SALT_KEY="test-salt-key")
 class SecureMapServiceSettingTests(TethysTestCase):
     def set_up(self):
         self.test_app = TethysApp.objects.get(package="test_app")

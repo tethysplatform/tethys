@@ -22,17 +22,49 @@ class TestSettings(TestCase):
             mock_local_settings.return_value["settings"],
         )
 
-    @mock.patch(
-        "tethys_portal.settings.yaml.safe_load", side_effect=FileNotFoundError()
-    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
     @mock.patch("tethys_portal.settings.logging.getLogger")
-    def test_portal_config_file_not_found_error(self, mock_log, _):
+    def test_portal_config_file_not_found_error(self, mock_log, mock_home):
+        mock_home.return_value.open.side_effect = FileNotFoundError()
+        mock_home.return_value.exists.return_value = False
         reload(settings)
+        self.assertFalse(settings.portal_config_found)
         mock_log.return_value.info.assert_called()
+        mock_log.return_value.warning.assert_not_called()
+        self.assertIsNone(settings.SALT_KEY)
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {}},
+    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    @mock.patch("tethys_portal.settings.logging.getLogger")
+    def test_portal_config_file_found_no_salt_key(self, mock_log, _, __):
+        reload(settings)
+        self.assertTrue(settings.portal_config_found)
+        self.assertIsNone(settings.SALT_KEY)
+        mock_log.return_value.warning.assert_called_once_with(
+            "SALT_KEY not found in portal_config.yml. "
+            "Any data stored in encrypted fields will be inaccessible after a restart. "
+            "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
+        )
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {"SALT_KEY": "test_salt_key"}},
+    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    @mock.patch("tethys_portal.settings.logging.getLogger")
+    def test_portal_config_file_found_with_salt_key(self, mock_log, _, __):
+        reload(settings)
+        self.assertTrue(settings.portal_config_found)
+        self.assertEqual(settings.SALT_KEY, "test_salt_key")
+        mock_log.return_value.warning.assert_not_called()
 
     @mock.patch("tethys_portal.settings.yaml.safe_load", side_effect=RuntimeError())
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
     @mock.patch("tethys_portal.settings.logging.getLogger")
-    def test_portal_config_exception(self, mock_log, _):
+    def test_portal_config_exception(self, mock_log, _, __):
         reload(settings)
         mock_log.return_value.exception.assert_called()
 
