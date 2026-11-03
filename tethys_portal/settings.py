@@ -71,8 +71,6 @@ SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
 # SECURITY WARNING: keep the salt key used in production secret!
 SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
-SALT_KEY_IS_TEMPORARY = not SALT_KEY
-
 if not SALT_KEY and portal_config_found:
     # Only warn when a portal_config.yml exists but lacks a SALT_KEY. Encrypted db writes will be prevented.
     log.warning(
