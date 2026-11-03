@@ -22,11 +22,11 @@ class TestSettings(TestCase):
             mock_local_settings.return_value["settings"],
         )
 
-    @mock.patch(
-        "tethys_portal.settings.yaml.safe_load", side_effect=FileNotFoundError()
-    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
     @mock.patch("tethys_portal.settings.logging.getLogger")
-    def test_portal_config_file_not_found_error(self, mock_log, _):
+    def test_portal_config_file_not_found_error(self, mock_log, mock_home):
+        mock_home.return_value.open.side_effect = FileNotFoundError()
+        mock_home.return_value.exists.return_value = False
         reload(settings)
         self.assertFalse(settings.portal_config_found)
         mock_log.return_value.info.assert_called()
@@ -60,7 +60,6 @@ class TestSettings(TestCase):
         self.assertTrue(settings.portal_config_found)
         self.assertEqual(settings.SALT_KEY, "test_salt_key")
         mock_log.return_value.warning.assert_not_called()
-
 
     @mock.patch("tethys_portal.settings.yaml.safe_load", side_effect=RuntimeError())
     @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
