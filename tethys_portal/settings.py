@@ -245,6 +245,7 @@ default_installed_apps = [
     "django.contrib.staticfiles",
     "django_bootstrap5",
     "tethys_apps",
+    "tethys_basemaps",
     "tethys_compute",
     "tethys_config",
     "tethys_gizmos",
