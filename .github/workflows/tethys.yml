@@ -192,6 +192,14 @@ jobs:
         # pytest-django 4.13 dropped Django 4.2 support.
         # Remove this pin when we drop support for Django 4.2 in Tethys.
         pip install coveralls reactpy_django pytest "pytest-django<4.13" pytest-cov
+    # Checks for any changes on models with missing migrations
+    - name: Check for Missing Migrations
+      # Only run this check once
+      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.13' && matrix.django-version == '5.2' }}
+      run: |
+        . ~/miniconda/etc/profile.d/conda.sh
+        conda activate tethys
+        python tethys_portal/manage.py makemigrations --check --dry-run
     # Test Tethys
     - name: Test Tethys
       run: |
