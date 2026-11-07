@@ -6,18 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_services', '0003_securemapservice'),
+        ("tethys_services", "0003_securemapservice"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='postgrespersistentstoreservice',
-            name='engine',
-            field=models.CharField(choices=[('postgresql', 'PostgreSQL')], default='postgresql', max_length=50),
+            model_name="postgrespersistentstoreservice",
+            name="engine",
+            field=models.CharField(
+                choices=[("postgresql", "PostgreSQL")],
+                default="postgresql",
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='sqlitepersistentstoreservice',
-            name='engine',
-            field=models.CharField(choices=[('sqlite', 'SQLite')], default='sqlite', max_length=50),
+            model_name="sqlitepersistentstoreservice",
+            name="engine",
+            field=models.CharField(
+                choices=[("sqlite", "SQLite")], default="sqlite", max_length=50
+            ),
         ),
     ]
