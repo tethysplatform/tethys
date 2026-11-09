@@ -6,7 +6,7 @@ from github.GithubException import BadCredentialsException
 # Github token with Contents read/write permissions on all of the tethysplatform tutorial repositories
 
 # Tethys Version to Tag For
-tethys_version = "4.5"
+tethys_version = "4.6"
 
 # Tutorial repos ({<repo_name>: {<branch>: <tag_prefix>}}
 tutorial_repos = {
@@ -70,6 +70,7 @@ tutorial_repos = {
         "add-spatial-data-solution": "add-spatial-data-solution",
         "configure-data-plotting-solution": "configure-data-plotting-solution",
     },
+    "tethysplatform/tethysapp-secure_map_tutorial": {"main": "solution"},
 }
 
 if __name__ == "__main__":
