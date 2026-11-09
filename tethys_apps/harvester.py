@@ -71,12 +71,19 @@ class SingletonHarvester:
             if not is_testing_environment():
                 print(self.BLUE + "Loading Tethys Apps..." + self.ENDC)
 
+            from tethys_apps.base.express import harvest_express_app
+
+            express_app_package = harvest_express_app()
+
             import tethysapp
 
             tethys_apps = dict()
             for _, modname, ispkg in pkgutil.iter_modules(tethysapp.__path__):
                 if ispkg:
                     tethys_apps[modname] = "tethysapp.{}".format(modname)
+
+            if express_app_package:
+                tethys_apps[express_app_package] = f"tethysapp.{express_app_package}"
 
             # Harvest App Instances
             self._harvest_app_instances(tethys_apps)
