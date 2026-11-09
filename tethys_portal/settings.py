@@ -71,14 +71,6 @@ SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
 # SECURITY WARNING: keep the salt key used in production secret!
 SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
-if not SALT_KEY and portal_config_found:
-    # Only warn when a portal_config.yml exists but lacks a SALT_KEY. Encrypted db writes will be prevented.
-    log.warning(
-        "SALT_KEY not found in portal_config.yml. "
-        "Any data stored in encrypted fields will be inaccessible after a restart. "
-        "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
-    )
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = portal_config_settings.pop("DEBUG", True)
 
