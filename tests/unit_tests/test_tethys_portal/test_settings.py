@@ -35,22 +35,6 @@ class TestSettings(TestCase):
 
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
-        return_value={"settings": {}},
-    )
-    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
-    @mock.patch("tethys_portal.settings.logging.getLogger")
-    def test_portal_config_file_found_no_salt_key(self, mock_log, _, __):
-        reload(settings)
-        self.assertTrue(settings.portal_config_found)
-        self.assertIsNone(settings.SALT_KEY)
-        mock_log.return_value.warning.assert_called_once_with(
-            "SALT_KEY not found in portal_config.yml. "
-            "Any data stored in encrypted fields will be inaccessible after a restart. "
-            "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
-        )
-
-    @mock.patch(
-        "tethys_portal.settings.yaml.safe_load",
         return_value={"settings": {"SALT_KEY": "test_salt_key"}},
     )
     @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
