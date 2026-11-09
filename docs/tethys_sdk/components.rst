@@ -18,7 +18,7 @@ The ``app.py`` file is the heart of your Tethys Component App. It typically incl
 
 .. tip::
 
-    A single ``app.py`` file is a complete, runnable app: the ``tethys run`` command serves it directly with zero portal configuration — ideal for prototyping, demos, and getting started. See :ref:`tethys_run_cmd`.
+    A single ``app.py`` file is a complete, runnable app: the ``tethys run`` command can be used to serve it directly with zero portal configuration. This is ideal for prototyping, demos, and getting started quickly. See :ref:`tethys_run_cmd`.
 
 .. note::
 
