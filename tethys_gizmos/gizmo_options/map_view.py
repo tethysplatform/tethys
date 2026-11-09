@@ -8,7 +8,10 @@
 ********************************************************************************
 """
 
+from copy import copy
 import logging
+from tethys_apps.utilities import get_active_app
+from tethys_basemaps.utilities import get_app_basemaps
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
@@ -402,6 +405,18 @@ class MapView(TethysGizmoOptions):
         self.feature_selection = feature_selection
         self.show_clicks = show_clicks
         self.form_id = form_id
+
+    def get_render_options(self, request):
+        app = get_active_app(request)
+        # Get the portal-wide basemaps that have been selected for the current app
+        app_basemaps = get_app_basemaps(app)
+        if not app_basemaps:
+            return self
+        
+        options = copy(self)
+        options.__dict__ = options
+        options["basemap"] = list(self.basemap or []) + app_basemaps
+        return options
 
     @classmethod
     def get_vendor_js(cls):
