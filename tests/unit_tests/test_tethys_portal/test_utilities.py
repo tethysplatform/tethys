@@ -214,28 +214,22 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
         test_next_url = utilities.sanitize_next_url("relative-path/")
         self.assertEqual("relative-path/", test_next_url)
 
-    def test_is_password_reset_enabled_no_email_config(self):
-        # EMAIL_CONFIG attribute missing entirely -> disabled
+    def test_is_password_reset_enabled_email_not_configured(self):
+        # Default SMTP backend with no deliberate config -> email not configured
         fake_settings = SimpleNamespace(ENABLE_PASSWORD_RESET=True)
-        with mock.patch("tethys_portal.utilities.settings", fake_settings):
-            self.assertFalse(utilities.is_password_reset_enabled())
-
-    def test_is_password_reset_enabled_empty_email_config(self):
-        # EMAIL_CONFIG present but empty -> disabled even if reset is enabled
-        fake_settings = SimpleNamespace(EMAIL_CONFIG={}, ENABLE_PASSWORD_RESET=True)
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
             self.assertFalse(utilities.is_password_reset_enabled())
 
     def test_is_password_reset_enabled_setting_unset_defaults_false(self):
         # Email configured but ENABLE_PASSWORD_RESET not set -> disabled by default
-        fake_settings = SimpleNamespace(EMAIL_CONFIG={"EMAIL_HOST": "smtp.example.com"})
+        fake_settings = SimpleNamespace(DEFAULT_FROM_EMAIL="noreply@example.com")
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
             self.assertFalse(utilities.is_password_reset_enabled())
 
     def test_is_password_reset_enabled_setting_false(self):
         # Email configured but reset explicitly disabled -> disabled
         fake_settings = SimpleNamespace(
-            EMAIL_CONFIG={"EMAIL_HOST": "smtp.example.com"},
+            DEFAULT_FROM_EMAIL="noreply@example.com",
             ENABLE_PASSWORD_RESET=False,
         )
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
@@ -244,7 +238,7 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
     def test_is_password_reset_enabled_setting_true(self):
         # Email configured and reset explicitly enabled -> enabled
         fake_settings = SimpleNamespace(
-            EMAIL_CONFIG={"EMAIL_HOST": "smtp.example.com"},
+            DEFAULT_FROM_EMAIL="noreply@example.com",
             ENABLE_PASSWORD_RESET=True,
         )
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
@@ -253,49 +247,68 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
     def test_is_password_reset_enabled_returns_bool(self):
         # A truthy non-bool setting value is coerced to a real bool
         fake_settings = SimpleNamespace(
-            EMAIL_CONFIG={"EMAIL_HOST": "smtp.example.com"},
+            DEFAULT_FROM_EMAIL="noreply@example.com",
             ENABLE_PASSWORD_RESET="yes",
         )
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
             result = utilities.is_password_reset_enabled()
         self.assertIs(result, True)
 
-    def test_is_password_reset_enabled_legacy_email_host_user(self):
-        # Backwards compatibility: email configured via top-level EMAIL_HOST_USER
-        fake_settings = SimpleNamespace(
-            EMAIL_HOST_USER="apikey",
-            EMAIL_HOST="smtp.sendgrid.net",
-            ENABLE_PASSWORD_RESET=True,
-        )
-        with mock.patch("tethys_portal.utilities.settings", fake_settings):
-            self.assertTrue(utilities.is_password_reset_enabled())
+    def test_is_email_configured_non_delivering_backend(self):
+        # Backends that do not deliver mail are treated as not configured
+        for backend in (
+            "django.core.mail.backends.console.EmailBackend",
+            "django.core.mail.backends.filebased.EmailBackend",
+            "django.core.mail.backends.locmem.EmailBackend",
+            "django.core.mail.backends.dummy.EmailBackend",
+        ):
+            fake_settings = SimpleNamespace(
+                EMAIL_BACKEND=backend,
+                DEFAULT_FROM_EMAIL="noreply@example.com",
+            )
+            with mock.patch("tethys_portal.utilities.settings", fake_settings):
+                self.assertFalse(
+                    utilities.is_email_configured(), msg=f"backend={backend}"
+                )
 
-    def test_is_password_reset_enabled_legacy_email_host(self):
-        # Backwards compatibility: email configured via a top-level, non-local EMAIL_HOST
-        fake_settings = SimpleNamespace(
-            EMAIL_HOST="smtp.sendgrid.net",
-            ENABLE_PASSWORD_RESET=True,
-        )
+    def test_is_email_configured_empty_backend(self):
+        fake_settings = SimpleNamespace(EMAIL_BACKEND="")
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
-            self.assertTrue(utilities.is_password_reset_enabled())
+            self.assertFalse(utilities.is_email_configured())
 
-    def test_is_password_reset_enabled_legacy_localhost_not_configured(self):
-        # A top-level localhost relay with no auth is indistinguishable from the
-        # Django defaults, so it is treated as not configured
+    def test_is_email_configured_custom_backend(self):
+        # A custom/third-party backend is assumed to be deliberately configured
         fake_settings = SimpleNamespace(
-            EMAIL_HOST="localhost",
-            EMAIL_HOST_USER="",
-            ENABLE_PASSWORD_RESET=True,
+            EMAIL_BACKEND="anymail.backends.amazon_ses.EmailBackend"
         )
-        with mock.patch("tethys_portal.utilities.settings", fake_settings):
-            self.assertFalse(utilities.is_password_reset_enabled())
-
-    def test_is_email_configured_via_email_config(self):
-        fake_settings = SimpleNamespace(EMAIL_CONFIG={"EMAIL_HOST": "smtp.example.com"})
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
             self.assertTrue(utilities.is_email_configured())
 
-    def test_is_email_configured_not_configured(self):
-        fake_settings = SimpleNamespace(EMAIL_CONFIG={}, EMAIL_HOST="localhost")
+    def test_is_email_configured_smtp_defaults_not_configured(self):
+        # Default SMTP backend with Django defaults -> not configured
+        fake_settings = SimpleNamespace(
+            EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend",
+            DEFAULT_FROM_EMAIL="webmaster@localhost",
+            EMAIL_HOST="localhost",
+            EMAIL_HOST_USER="",
+        )
+        with mock.patch("tethys_portal.utilities.settings", fake_settings):
+            self.assertFalse(utilities.is_email_configured())
+
+    def test_is_email_configured_smtp_with_from_email(self):
+        # Default SMTP backend with a deliberate sender address -> configured
+        fake_settings = SimpleNamespace(DEFAULT_FROM_EMAIL="noreply@example.com")
+        with mock.patch("tethys_portal.utilities.settings", fake_settings):
+            self.assertTrue(utilities.is_email_configured())
+
+    def test_is_email_configured_smtp_with_host_user(self):
+        # Default SMTP backend with a deliberate host user -> configured
+        fake_settings = SimpleNamespace(EMAIL_HOST_USER="apikey")
+        with mock.patch("tethys_portal.utilities.settings", fake_settings):
+            self.assertTrue(utilities.is_email_configured())
+
+    def test_is_email_configured_smtp_host_only_not_configured(self):
+        # A host alone (no sender address or user) is not treated as configured
+        fake_settings = SimpleNamespace(EMAIL_HOST="smtp.sendgrid.net")
         with mock.patch("tethys_portal.utilities.settings", fake_settings):
             self.assertFalse(utilities.is_email_configured())

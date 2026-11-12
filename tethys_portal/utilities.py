@@ -122,21 +122,42 @@ def is_email_configured():
     """
     Check whether email sending appears to be configured in the portal config.
 
-    Supports both ``EMAIL_CONFIG`` block and top-level ``EMAIL_*`` settings.
+    The email backend is the most reliable signal that mail can actually be
+    delivered. Backends that do not deliver mail (console, file, in-memory, and
+    dummy) are treated as not configured. Custom/third-party backends (e.g.
+    anymail, SES) are assumed to be deliberately configured. For the default
+    SMTP backend, email settings fall back to Django's defaults, so email is
+    only considered configured when a meaningful sender address or host user has
+    been deliberately provided.
 
     Returns:
         bool: True if email appears to be configured, False otherwise.
     """
-    # Email settings nested under EMAIL_CONFIG
-    if bool(getattr(settings, "EMAIL_CONFIG", {})):
+    # Backends that do not actually deliver email
+    non_delivering_backends = (
+        "django.core.mail.backends.console.EmailBackend",
+        "django.core.mail.backends.filebased.EmailBackend",
+        "django.core.mail.backends.locmem.EmailBackend",
+        "django.core.mail.backends.dummy.EmailBackend",
+    )
+
+    # Default SMTP backend to fall back on if EMAIL_BACKEND is not specified
+    smtp_backend = "django.core.mail.backends.smtp.EmailBackend"
+
+    # Get the email backend from settings, defaulting to the SMTP backend if not specified
+    backend = getattr(settings, "EMAIL_BACKEND", smtp_backend)
+
+    # A backend that does not deliver mail cannot send a password reset email
+    if not backend or backend in non_delivering_backends:
+        return False
+
+    # Custom/third-party backends manage their own settings
+    if backend != smtp_backend:
         return True
 
-    # Email settings set at the top level. These carry Django
-    # defaults (EMAIL_HOST="localhost", EMAIL_HOST_USER=""), so only treat email
-    # as configured when a meaningful value has been provided. A local relay with
-    # no authentication is indistinguishable from the defaults and should use
-    # EMAIL_CONFIG instead
-    if getattr(settings, "EMAIL_HOST_USER", ""):
-        return True
-
-    return getattr(settings, "EMAIL_HOST", "") not in ("", "localhost")
+    # Default SMTP backend: require a deliberately provided sender address or
+    # host user, since the other SMTP settings fall back to Django's defaults
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "")
+    return (bool(from_email) and from_email != "webmaster@localhost") or bool(
+        getattr(settings, "EMAIL_HOST_USER", "")
+    )
