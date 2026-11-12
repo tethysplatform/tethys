@@ -10,7 +10,7 @@ Tethys Portal provides a mechanism for resetting forgotten passwords that requir
 
 .. note::
 
-    Password reset is disabled by default. In addition to configuring email (``EMAIL_CONFIG``), you must explicitly enable it by setting ``ENABLE_PASSWORD_RESET`` to ``True`` (see the examples below). If either is missing, the "Forgot your password?" link is hidden and the password reset pages redirect to the login page.
+    Password reset is disabled by default. You must explicitly enable it by setting ``ENABLE_PASSWORD_RESET`` to ``True`` and configuring email settings in ``EMAIL_CONFIG``. Configuration examples are provided below. If either is missing, the "Forgot your password?" link is hidden and the password reset pages redirect to the login page.
 
 Third-Party Email Services
 ==========================
