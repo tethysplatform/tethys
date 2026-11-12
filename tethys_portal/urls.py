@@ -19,7 +19,6 @@ from django.views.decorators.cache import never_cache
 from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetDoneView,
-    PasswordResetConfirmView,
     PasswordResetCompleteView,
 )
 from rest_framework_simplejwt.views import (
@@ -148,7 +147,7 @@ account_urls = [
     re_path(
         r"^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
         never_cache(
-            PasswordResetConfirmView.as_view(
+            tethys_portal_email.TethysPasswordResetConfirmView.as_view(
                 success_url=reverse_lazy("accounts:password_done")
             )
         ),
