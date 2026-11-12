@@ -4,7 +4,7 @@
 Forgotten Password Recovery (Optional)
 **************************************
 
-**Last Updated:** May 2020
+**Last Updated:** November 2026
 
 Tethys Portal provides a mechanism for resetting forgotten passwords that requires email capabilities. This guide discusses two options for enabling email capabilities to support this feature.
 
