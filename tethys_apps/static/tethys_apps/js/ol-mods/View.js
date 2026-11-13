@@ -1,4 +1,4 @@
-import _View from "@planet/maps/View.js?external=react,react-dom,ol"
+import _View from "@planet/maps/View.js"
 import Projection from 'ol/proj/Projection';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4';

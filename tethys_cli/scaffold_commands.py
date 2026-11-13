@@ -382,6 +382,10 @@ def scaffold_command(args):
         "project_url": project_name.replace("_", "-"),
     }
 
+    if template_name == "component":
+        from tethys_components.library import REACTJS_VERSION
+        context["reactjs_version"] = REACTJS_VERSION
+
     for item in metadata_input:
         validator_func = item["validator"] if callable(item["validator"]) else None
         default = item["default"]() if callable(item["default"]) else item["default"]

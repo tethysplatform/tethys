@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from tethys_components.library import ComponentLibrary, ComponentLibraryManager
+from tethys_components.library import ComponentLibraryManager
 from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
 from uuid import uuid4
@@ -11,18 +11,24 @@ def global_page_controller(
     layout,
     component_func,
     title=None,
+    reactjs_version=None,
     custom_css=None,
     custom_js=None,
     **kwargs,
 ):
     layout_func = _get_layout_component(app, layout)
+    lib = ComponentLibraryManager.get_library(
+        f"{app.package}-{component_func.__name__}",
+        **{"reactjs_version": reactjs_version} if reactjs_version else {},
+        extras=kwargs,
+    )
 
     context = {
         "app": app,
         "layout_func": lambda: layout_func,
         "component_func": lambda: component_func,
-        "reactjs_version": ComponentLibrary.REACTJS_VERSION,
-        "reactjs_version_int": ComponentLibrary.REACTJS_VERSION_INT,
+        "reactjs_version": lib.reactjs_version,
+        "reactjs_version_int": lib.reactjs_version_int,
         "title": title,
         "custom_css": custom_css or [],
         "custom_js": custom_js or [],
@@ -50,7 +56,7 @@ if has_module("reactpy"):
             component(func): The page component to render
         """
         lib = ComponentLibraryManager.get_library(
-            f"{app.package}-{page_func.__name__}", extras
+            f"{app.package}-{page_func.__name__}", extras=extras
         )
         page_obj = page_func(lib, **extras) if extras else page_func(lib)
         hide_loading, set_hide_loading = lib.hooks.use_state(False)
