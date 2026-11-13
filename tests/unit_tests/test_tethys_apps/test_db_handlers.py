@@ -222,7 +222,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         self.assertEqual(
             "SELECT d.datname as name FROM pg_catalog.pg_database d "
             "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid "
-            "WHERE d.datname = db_name;",
+            "WHERE d.datname = :db_name;",
             " ".join(str(rts_call_args[0][0][0]).split()),
         )
         self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[0][0][1])
@@ -304,7 +304,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
             mock.MagicMock(
-                **{"scalar.return_value": "2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
+                **{"scalar.return_value": "3.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
             ),  # Check PostGIS Version
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]

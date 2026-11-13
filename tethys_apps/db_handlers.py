@@ -59,18 +59,20 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
         drop_db_statement = sqlalchemy.text(
             f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"'
         )
-        disconnect_sessions_statement = sqlalchemy.text("""
+        disconnect_sessions_statement = sqlalchemy.text(
+            """
             SELECT pg_terminate_backend(pg_stat_activity.pid)
             FROM pg_stat_activity
             WHERE pg_stat_activity.datname = :db_name
             AND pg_stat_activity.pid <> pg_backend_pid();
-            """)
+            """
+        )
 
         with _autocommit_connection(engine) as connection:
             try:
                 connection.execute(drop_db_statement)
             except Exception as e:
-                if "being accessed by other users" in str(e):
+                if "being accessed by other users" not in str(e):
                     raise
 
                 connection.execute(
