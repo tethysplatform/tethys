@@ -161,7 +161,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "ubuntu-latest" ]
-        python-version: [ "3.11", "3.12", "3.13" ]
+        python-version: [ "3.11", "3.12", "3.13", "3.14" ]
         django-version: [ "4.2", "5.2" ]
         include:
           - platform: "macos-latest"
@@ -170,6 +170,9 @@ jobs:
           - platform: "macos-latest"
             python-version: "3.13"
             django-version: "5.2"
+        exclude:
+          - python-version: "3.14"
+            django-version: "4.2"
     steps:
     # Checkout the source
     - name: Checkout Source

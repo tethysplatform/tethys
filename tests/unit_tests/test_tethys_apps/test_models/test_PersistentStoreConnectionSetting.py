@@ -110,7 +110,10 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
 
         # Check if ret is an instance of sqlalchemy Engine
         self.assertIsInstance(ret, Engine)
-        self.assertEqual("postgresql://foo:password@localhost:5432", str(ret.url))
+        self.assertEqual(
+            "postgresql://foo:password@localhost:5432",
+            ret.url.render_as_string(hide_password=False),
+        )
 
     def test_get_value_as_sessionmaker(self):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
@@ -127,7 +130,8 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         # Check if ret is an instance of sqlalchemy sessionmaker
         self.assertIsInstance(ret, sessionmaker)
         self.assertEqual(
-            "postgresql://foo:password@localhost:5432", str(ret.kw["bind"].url)
+            "postgresql://foo:password@localhost:5432",
+            ret.kw["bind"].url.render_as_string(hide_password=False),
         )
 
     def test_get_value_as_url(self):
@@ -143,4 +147,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         )
 
         # Check Url
-        self.assertEqual("postgresql://foo:password@localhost:5432", str(ret))
+        self.assertEqual(
+            "postgresql://foo:password@localhost:5432",
+            ret.render_as_string(hide_password=False),
+        )

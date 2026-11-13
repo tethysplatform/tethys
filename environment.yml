@@ -84,9 +84,10 @@ dependencies:
 
   # database dependencies
   - postgresql
+  - psycopg # psycopg3: Needed for SQLAlchemy 2.x
   - psycopg2 # required by tethys_dataset_services
-  - sqlalchemy=1.* # TODO: what will it take to support sqlalchemy 2.0?
-  - geoalchemy2 # requires sqlalchemy
+  - sqlalchemy>=2.0,<3 # TODO: what will it take to support sqlalchemy 2.0?
+  - geoalchemy2>=0.14 # requires sqlalchemy
 
   # plotting Gizmo dependencies
   - plotly
