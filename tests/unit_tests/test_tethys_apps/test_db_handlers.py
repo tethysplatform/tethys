@@ -141,12 +141,11 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         )
 
         # Check that the disconnect sessions statement was executed
-        disconnect_sessions_statement = f"""
-                                                SELECT pg_terminate_backend(pg_stat_activity.pid)
-                                                FROM pg_stat_activity
-                                                WHERE pg_stat_activity.datname = :db_name "
-                                                AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """
+        disconnect_sessions_statement = (
+            "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
+            "WHERE pg_stat_activity.datname = :db_name AND pg_stat_activity.pid <> pg_backend_pid();"
+        )
+                                                
         self.assertEqual(
             disconnect_sessions_statement, " ".join(str(rts_call_args[1][0][0]).split())
         )
@@ -221,14 +220,12 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         self.assertTrue(exists)
         rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f"""
-            SELECT d.datname as name
-            FROM pg_catalog.pg_database d
-            LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-            WHERE d.datname = '{namespaced_ps_name}';
-        """,
+            "SELECT d.datname as name FROM pg_catalog.pg_database d "
+            "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid "
+            "WHERE d.datname = db_name;",
             " ".join(str(rts_call_args[0][0][0]).split()),
         )
+        self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[0][0][1])
         mock_conn_cm.__exit__.assert_called_once()
 
     def test_database_not_exists(self):
@@ -250,14 +247,12 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         self.assertFalse(exists)
         rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f"""
-            SELECT d.datname as name
-            FROM pg_catalog.pg_database d
-            LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-            WHERE d.datname = '{namespaced_ps_name}';
-        """,
+            "SELECT d.datname as name FROM pg_catalog.pg_database d "
+            "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid "
+            "WHERE d.datname = :db_name;",
             " ".join(str(rts_call_args[0][0][0]).split()),
         )
+        self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[0][0][1])
         mock_conn_cm.__exit__.assert_called_once()
 
     @mock.patch("tethys_apps.db_handlers.logging")
@@ -270,9 +265,9 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1")
-            ],  # Check PostGIS Version
+            mock.MagicMock(
+                **{"scalar.return_value": "2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
+            ),  # Check PostGIS Version
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
@@ -287,8 +282,8 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             "SELECT PostGIS_Version();", " ".join(str(rts_call_args[1][0][0]).split())
         )
 
-        mock_db_connection.__exit__.assert_called_once()
-
+        mock_new_engine.begin().__exit__.assert_called_once()
+        
         mock_db_handler_log_info_calls = (
             mock_db_handler_log.getLogger().info.call_args_list
         )
@@ -308,15 +303,15 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="3.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1")
-            ],  # Check PostGIS Version
+            mock.MagicMock(
+                **{"scalar.return_value": "2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
+            ),  # Check PostGIS Version
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
         handler.enable_spatial_extension(mock_model)
 
-        mock_db_connection.__exit__.assert_called_once()
+        mock_new_engine.begin().__exit__.assert_called_once()
         mock_execute_calls = mock_db_connection.execute.call_args_list
         self.assertEqual(3, len(mock_execute_calls))
         execute1 = "CREATE EXTENSION IF NOT EXISTS postgis;"
@@ -349,10 +344,10 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="BAD VERSION STRING")
-            ],  # Check PostGIS Version
-            mock.MagicMock(),  # Enable PostGIS Raster Statement
+            mock.MagicMock(
+                **{"scalar.return_value": "BAD VERSION STRING"}
+            )  # Check PostGIS Version
+            
         ]
 
         handler.enable_spatial_extension(mock_model)
@@ -395,8 +390,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             str(context.exception),
         )
 
-        mock_db_connection.close.assert_called_once()
-
+        mock_new_engine.begin().__exit__.assert_called_once()
 
 class SQLiteDatabaseHandlerTests(TethysTestCase):
 
