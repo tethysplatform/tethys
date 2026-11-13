@@ -131,7 +131,9 @@ class ComponentLibraryManager:
     @classmethod
     def get_library(cls, library_name, reactjs_version=REACTJS_VERSION, extras=None):
         if library_name not in cls.LIBRARIES:
-            cls.LIBRARIES[library_name] = ComponentLibrary(library_name, reactjs_version=reactjs_version)
+            cls.LIBRARIES[library_name] = ComponentLibrary(
+                library_name, reactjs_version=reactjs_version
+            )
 
         if extras:
             base_library: ComponentLibrary = cls.LIBRARIES[library_name]
@@ -140,7 +142,9 @@ class ComponentLibraryManager:
                 library_name += f"_{extras[key]}"
 
             if library_name not in cls.LIBRARIES:
-                copy_library = ComponentLibrary(library_name, reactjs_version=reactjs_version)
+                copy_library = ComponentLibrary(
+                    library_name, reactjs_version=reactjs_version
+                )
                 for package in base_library.get_packages():
                     new_package: Package = deepcopy(package)
                     setattr(
@@ -401,7 +405,8 @@ class ComponentLibrary:
                 ),
                 "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
                 "lo": Package(
-                    name="react-loading-overlay-ts@2.0.2", default_export="LoadingOverlay"
+                    name="react-loading-overlay-ts@2.0.2",
+                    default_export="LoadingOverlay",
                 ),
                 "mapgl": Package(
                     name="react-map-gl/maplibre",
@@ -413,7 +418,8 @@ class ComponentLibrary:
                 "chakra": Package(name="@chakra-ui/react@2.8.2"),
                 "icons": Package(name="react-bootstrap-icons@1.11.4"),
                 "m": Package(
-                    name="@mantine/core", styles=["https://esm.sh/@mantine/core/styles.css"]
+                    name="@mantine/core",
+                    styles=["https://esm.sh/@mantine/core/styles.css"],
                 ),
                 "ollp": Package(
                     name="layer-panel.js",

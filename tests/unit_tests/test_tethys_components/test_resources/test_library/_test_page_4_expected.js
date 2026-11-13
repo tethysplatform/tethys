@@ -83,7 +83,7 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
     } catch (e) {
         "pass";
     }
-    if (!maxDepth) {
+    if (maxDepth === null || maxDepth === undefined) {
         maxDepth = 4;
     }
     if (!depth) {
@@ -125,6 +125,9 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
             newObj = {...obj.nativeEvent, ...newObj};
             delete newObj.nativeEvent;
         }
+    }
+    if (new TextEncoder().encode(JSON.stringify(newObj)).length > 100000) {
+        return "OBJECT TOO LARGE"
     }
     return newObj;
 }

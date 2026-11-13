@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from tethys_components.library import ComponentLibrary, ComponentLibraryManager
+from tethys_components.library import ComponentLibraryManager
 from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
 from uuid import uuid4
@@ -56,8 +56,7 @@ if has_module("reactpy"):
             component(func): The page component to render
         """
         lib = ComponentLibraryManager.get_library(
-            f"{app.package}-{page_func.__name__}",
-            extras=extras
+            f"{app.package}-{page_func.__name__}", extras=extras
         )
         page_obj = page_func(lib, **extras) if extras else page_func(lib)
         hide_loading, set_hide_loading = lib.hooks.use_state(False)
