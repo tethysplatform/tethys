@@ -24,7 +24,7 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 LOG = logging.getLogger(__name__)
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 ESM_HOST = "https://esm.sh"
-REACTJS_VERSION = "19.2.4"
+REACTJS_VERSION = "19.3.1"
 
 
 class _CallableVdom(dict):
@@ -129,9 +129,9 @@ class ComponentLibraryManager:
         raise RuntimeError("The ComponentLibraryManager should only be used as a class")
 
     @classmethod
-    def get_library(cls, library_name, extras=None):
+    def get_library(cls, library_name, reactjs_version=REACTJS_VERSION, extras=None):
         if library_name not in cls.LIBRARIES:
-            cls.LIBRARIES[library_name] = ComponentLibrary(library_name)
+            cls.LIBRARIES[library_name] = ComponentLibrary(library_name, reactjs_version=reactjs_version)
 
         if extras:
             base_library: ComponentLibrary = cls.LIBRARIES[library_name]
@@ -140,7 +140,7 @@ class ComponentLibraryManager:
                 library_name += f"_{extras[key]}"
 
             if library_name not in cls.LIBRARIES:
-                copy_library = ComponentLibrary(library_name)
+                copy_library = ComponentLibrary(library_name, reactjs_version=reactjs_version)
                 for package in base_library.get_packages():
                     new_package: Package = deepcopy(package)
                     setattr(
@@ -226,10 +226,10 @@ class Package:
             dependencies |= d.get_all_dependencies()
         return dependencies
 
-    def get_importmap(self):
+    def get_importmap(self, reactjs_version):
         importmap = {}
         if self.host == ESM_HOST:
-            uri = self.get_uri()
+            uri = self.get_uri(reactjs_version)
             importmap[self.name] = uri
             if self.version:
                 importmap[f"{self.name}/"] = uri.replace("?", "&") + "/"
@@ -237,11 +237,11 @@ class Package:
                 importmap[f"{self.name}/"] = uri.replace("?", "@&") + "/"
 
         for d in self.get_all_dependencies():
-            importmap |= d.get_importmap()
+            importmap |= d.get_importmap(reactjs_version)
 
         return importmap
 
-    def get_uri(self):
+    def get_uri(self, reactjs_version):
         uri = f"{self.host}/{self.get_fullname()}?external=react,react-dom"
         if self.dependencies:
             uri += ","
@@ -251,7 +251,7 @@ class Package:
                 uri += "&deps="
                 uri += ",".join(versioned_deps)
         uri += "," if "&deps=" in uri else "&deps="
-        uri += f"react@{REACTJS_VERSION},react-dom@{REACTJS_VERSION}"
+        uri += f"react@{reactjs_version},react-dom@{reactjs_version}"
         return uri
 
     def add_component(self, module_path, component):
@@ -267,16 +267,6 @@ class Package:
 
     def get_components_by_path(self):
         return self._components_by_path
-
-    def copy(self):
-        kwargs = {}
-        for k in dir(self):
-            if k.startswith("_"):
-                continue
-            value = getattr(self, k)
-            if not callable(value):
-                kwargs[k] = value
-        return Package(**kwargs)
 
     def compose_javascript_statements(self):
         import_statements = []
@@ -365,8 +355,6 @@ class ComponentLibrary:
         / "reactjs_module_wrapper_template.js"
     )
     TEMPLATE = Template(TEMPLATE_FPATH.read_text())
-    REACTJS_VERSION = REACTJS_VERSION
-    REACTJS_VERSION_INT = int(REACTJS_VERSION.split(".")[0])
     INTERNALLY_MANAGED = [
         "html",
         "tethys",
@@ -375,69 +363,6 @@ class ComponentLibrary:
         "Props",
         "Style",
     ]
-    CURATED_PACKAGES = PackageManager(
-        {
-            "bs": Package(
-                name="react-bootstrap@2.10.10",
-                styles=[
-                    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-                ],
-            ),
-            "pm": Package(name="pigeon-maps@0.21.6"),
-            "rc": Package(name="recharts@2.12.7"),
-            "ag": Package(
-                name="react-grid-wrapper.js",
-                host="/static/tethys_apps/js",
-                dependencies=["ag-grid-react[ag-grid-community]"],
-            ),
-            "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
-            "lo": Package(
-                name="react-loading-overlay-ts@2.0.2", default_export="LoadingOverlay"
-            ),
-            "mapgl": Package(
-                name="react-map-gl/maplibre",
-                version="7.1.7",
-                default_export="Map",
-                styles=["https://unpkg.com/maplibre-gl@4.7.0/dist/maplibre-gl.css"],
-            ),
-            "mui": Package(name="@mui/material@5.16.7"),
-            "chakra": Package(name="@chakra-ui/react@2.8.2"),
-            "icons": Package(name="react-bootstrap-icons@1.11.4"),
-            "m": Package(
-                name="@mantine/core", styles=["https://esm.sh/@mantine/core/styles.css"]
-            ),
-            "ollp": Package(
-                name="layer-panel.js",
-                host="/static/tethys_apps/js",
-                dependencies=[
-                    "ol-layerswitcher[ol@10.7.0]",
-                    "ol-side-panel[ol@10.7.0]",
-                ],
-                styles=[
-                    "https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css",
-                    "https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css",
-                ],
-            ),
-            "pl": Package(
-                name="plotly-chart.js",
-                host="/static/tethys_apps/js",
-                dependencies=["react-plotly.js"],
-            ),
-            "olmod": Package(
-                name="ol-mods",
-                host="/static/tethys_apps/js",
-                default_export="*",
-                treat_as_path=True,
-            ),
-            "ol": Package(
-                name="@planet/maps@11.2.0",
-                default_export="*",
-                treat_as_path=True,
-                dependencies=["ol@10.7.0[proj4]"],
-                styles=["https://esm.sh/ol@10.7.0/ol.css"],
-            ),
-        }
-    )
 
     OVERRIDES = {
         "ol.source.Vector": "olmod.source.Vector",
@@ -454,9 +379,74 @@ class ComponentLibrary:
         "ol.Geolocation": "olmod.Geolocation",
     }
 
-    def __init__(self, name):
+    def __init__(self, name, reactjs_version=REACTJS_VERSION):
         self.name = name
         self.importmap = {}
+        self.reactjs_version = reactjs_version
+        self.reactjs_version_int = int(reactjs_version.split(".")[0])
+        self.curated_packages = PackageManager(
+            {
+                "bs": Package(
+                    name="react-bootstrap@2.10.10",
+                    styles=[
+                        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+                    ],
+                ),
+                "pm": Package(name="pigeon-maps@0.21.6"),
+                "rc": Package(name="recharts@2.12.7"),
+                "ag": Package(
+                    name="react-grid-wrapper.js",
+                    host="/static/tethys_apps/js",
+                    dependencies=["ag-grid-react[ag-grid-community]"],
+                ),
+                "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
+                "lo": Package(
+                    name="react-loading-overlay-ts@2.0.2", default_export="LoadingOverlay"
+                ),
+                "mapgl": Package(
+                    name="react-map-gl/maplibre",
+                    version="7.1.7",
+                    default_export="Map",
+                    styles=["https://unpkg.com/maplibre-gl@4.7.0/dist/maplibre-gl.css"],
+                ),
+                "mui": Package(name="@mui/material@5.16.7"),
+                "chakra": Package(name="@chakra-ui/react@2.8.2"),
+                "icons": Package(name="react-bootstrap-icons@1.11.4"),
+                "m": Package(
+                    name="@mantine/core", styles=["https://esm.sh/@mantine/core/styles.css"]
+                ),
+                "ollp": Package(
+                    name="layer-panel.js",
+                    host="/static/tethys_apps/js",
+                    dependencies=[
+                        "ol-layerswitcher[ol@10.7.0]",
+                        "ol-side-panel[ol@10.7.0]",
+                    ],
+                    styles=[
+                        "https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css",
+                        "https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css",
+                    ],
+                ),
+                "pl": Package(
+                    name="plotly-chart.js",
+                    host="/static/tethys_apps/js",
+                    dependencies=["react-plotly.js"],
+                ),
+                "olmod": Package(
+                    name="ol-mods",
+                    host="/static/tethys_apps/js",
+                    default_export="*",
+                    treat_as_path=True,
+                ),
+                "ol": Package(
+                    name="@planet/maps@11.2.0",
+                    default_export="*",
+                    treat_as_path=True,
+                    dependencies=["ol@10.7.0[proj4]"],
+                    styles=["https://esm.sh/ol@10.7.0/ol.css"],
+                ),
+            }
+        )
 
     def __getattr__(self, package_accessor):
         """
@@ -480,10 +470,10 @@ class ComponentLibrary:
                 package = utils.Props
             elif package_accessor == "Style":
                 package = utils.Style
-        elif hasattr(self.CURATED_PACKAGES, package_accessor):
+        elif hasattr(self.curated_packages, package_accessor):
             package = DynamicPackageManager(
                 library=self,
-                package=getattr(self.CURATED_PACKAGES, package_accessor).copy(),
+                package=getattr(self.curated_packages, package_accessor),
             )
         else:
             try:
@@ -518,7 +508,7 @@ class ComponentLibrary:
         packages = self.get_packages()
         context = {
             "packages": packages,
-            "reactjs_version_int": self.REACTJS_VERSION_INT,
+            "reactjs_version_int": self.reactjs_version_int,
         }
         content = self.TEMPLATE.render(context)
 
@@ -593,7 +583,7 @@ class ComponentLibrary:
             host=host,
             dependencies=dependencies,
         )
-        self.CURATED_PACKAGES.check_package(accessor, new_package)
+        self.curated_packages.check_package(accessor, new_package)
         if hasattr(self, accessor):
             existing: DynamicPackageManager = getattr(self, accessor)
             if (
@@ -628,7 +618,7 @@ class ComponentLibrary:
 
         importmap = {}
         for package in packages:
-            importmap |= package.get_importmap()
+            importmap |= package.get_importmap(self.reactjs_version)
 
         return json.dumps({"imports": importmap}, indent=2, sort_keys=True)
 
