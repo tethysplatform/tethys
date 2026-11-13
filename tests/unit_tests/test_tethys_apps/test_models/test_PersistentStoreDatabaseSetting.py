@@ -212,7 +212,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         self.assertIsInstance(ret, Engine)
-        self.assertEqual(self.expected_url, str(ret.url))
+        self.assertEqual(
+            self.expected_url, ret.url.render_as_string(hide_password=False)
+        )
 
     def test_get_value_as_sessionmaker(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
@@ -229,7 +231,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         self.assertIsInstance(ret, sessionmaker)
-        self.assertEqual(self.expected_url, str(ret.kw["bind"].url))
+        self.assertEqual(
+            self.expected_url, ret.kw["bind"].url.render_as_string(hide_password=False)
+        )
 
     def test_get_value_as_url(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
@@ -246,7 +250,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         # check URL
-        self.assertEqual(self.expected_url, str(ret))
+        self.assertEqual(self.expected_url, ret.render_as_string(hide_password=False))
 
     @mock.patch("tethys_apps.models.PostgresDatabaseHandler")
     @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
