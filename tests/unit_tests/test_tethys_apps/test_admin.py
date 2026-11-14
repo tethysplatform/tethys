@@ -1,13 +1,18 @@
 from datetime import timedelta
+import importlib.util
 import json
+import sys
 import pytest
 from pathlib import Path
 import unittest
 from unittest import mock
+from django.contrib.admin.sites import AdminSite
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.db.utils import ProgrammingError
 from django.utils.html import format_html, escape
 from django.shortcuts import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
+import tethys_apps.admin as tethys_apps_admin
 from tethys_apps.admin import (
     TethysAppSettingInline,
     CustomSettingInline,
@@ -25,12 +30,14 @@ from tethys_apps.admin import (
     TethysAppAdmin,
     TethysExtensionAdmin,
     CustomUser,
+    UserSocialAuth,
     UserSocialAuthInline,
     TethysUserSocialAuthAdmin,
     make_gop_app_access_form,
     register_custom_group,
     register_user_keys_admin,
 )
+from tethys_portal.optional_dependencies import has_module
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -655,6 +662,66 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         registry = admin.site._registry
         self.assertIn(ProxyApp, registry)
+
+    @pytest.mark.django_db
+    def test_admin_site_register_user_social_auth(self):
+        from django.contrib import admin
+
+        registry = admin.site._registry
+        self.assertIn(UserSocialAuth, registry)
+        self.assertIsInstance(registry[UserSocialAuth], TethysUserSocialAuthAdmin)
+
+    @mock.patch("tethys_apps.admin.has_module", return_value=False)
+    @mock.patch("django.contrib.auth.admin.UserAdmin.change_view")
+    @pytest.mark.django_db
+    def test_custom_user_change_view_without_social_django(
+        self, mock_ua_change_view, mock_has_module
+    ):
+        ret = CustomUser(mock.MagicMock(), mock.MagicMock())
+        ret.inlines = tuple(ret.inlines)
+        seen_inlines = []
+        mock_ua_change_view.side_effect = lambda *a, **kw: seen_inlines.extend(
+            ret.inlines
+        )
+
+        ret.change_view(mock.MagicMock())
+
+        mock_has_module.assert_called_once_with(UserSocialAuth)
+        mock_ua_change_view.assert_called_once()
+        self.assertIn(UserQuotasSettingInline, seen_inlines)
+        self.assertNotIn(UserSocialAuthInline, seen_inlines)
+        self.assertNotIn(UserQuotasSettingInline, ret.inlines)
+        self.assertNotIn(UserSocialAuthInline, ret.inlines)
+
+    @pytest.mark.django_db
+    def test_admin_module_without_social_django(self):
+        fresh_site = AdminSite()
+        fresh_site.register(Group, GroupAdmin)
+        fresh_site.register(User, UserAdmin)
+
+        with (
+            mock.patch("django.contrib.admin.site", fresh_site),
+            mock.patch.dict(
+                sys.modules,
+                {
+                    "social_django": None,
+                    "social_django.admin": None,
+                    "social_django.models": None,
+                },
+            ),
+        ):
+            spec = importlib.util.spec_from_file_location(
+                "tethys_apps._admin_no_social", tethys_apps_admin.__file__
+            )
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+
+        self.assertFalse(has_module(mod.UserSocialAuth))
+        self.assertFalse(has_module(mod.UserSocialAuthOption))
+        self.assertFalse(hasattr(mod, "TethysUserSocialAuthAdmin"))
+        self.assertIn(User, fresh_site._registry)
+        self.assertIn(TethysApp, fresh_site._registry)
+        self.assertNotIn(UserSocialAuth, fresh_site._registry)
 
     @mock.patch("tethys_apps.admin.GroupObjectPermission.objects")
     @mock.patch("tethys_apps.admin.TethysApp.objects.all")

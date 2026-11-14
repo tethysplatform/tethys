@@ -1,3 +1,4 @@
+import importlib.util
 import pytest
 import sys
 import unittest
@@ -10,6 +11,7 @@ mock.patch("django.views.decorators.cache.never_cache", lambda x: x).start()
 if "tethys_portal.views.user" in sys.modules:
     del sys.modules["tethys_portal.views.user"]
 
+import tethys_portal.views.user as tethys_user_views  # noqa: E402
 from tethys_portal.views.user import (  # noqa: E402
     profile,
     settings,
@@ -19,6 +21,10 @@ from tethys_portal.views.user import (  # noqa: E402
     manage_storage,
     clear_workspace,
     refresh_social_token_endpoint,
+)
+from tethys_portal.optional_dependencies import (  # noqa: E402
+    MissingOptionalDependency,
+    has_module,
 )
 from tethys_apps.models import TethysApp  # noqa: E402
 from social_django.models import UserSocialAuth  # noqa: E402
@@ -707,3 +713,24 @@ class TethysPortalUserTests(unittest.TestCase):
         )
         mock_messages.assert_called_with(mock_request, "Refreshed test_provider token.")
         mock_redirect.assert_called_with(mock_reverse("user:settings"))
+
+    def test_user_views_without_social_django(self):
+        with mock.patch.dict(
+            sys.modules,
+            {
+                "social_django": None,
+                "social_django.models": None,
+            },
+        ):
+            spec = importlib.util.spec_from_file_location(
+                "tethys_portal.views._user_no_social", tethys_user_views.__file__
+            )
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+
+        self.assertFalse(has_module(mod.UserSocialAuth))
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.user.is_authenticated = True
+        with self.assertRaises(MissingOptionalDependency):
+            mod.refresh_social_token_endpoint(mock_request, association_id=1)

@@ -18,7 +18,6 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
-from social_django.models import UserSocialAuth
 import logging
 
 from tethys_apps.harvester import SingletonHarvester
@@ -32,11 +31,16 @@ from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_config.models import get_custom_template
 from tethys_services.utilities import refresh_social_token
 
-from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_portal.optional_dependencies import (
+    optional_import,
+    has_module,
+    verify_import,
+)
 
 # optional imports
 has_mfa = optional_import("has_mfa", from_module="mfa.helpers")
 Token = optional_import("Token", from_module="rest_framework.authtoken.models")
+UserSocialAuth = optional_import("UserSocialAuth", from_module="social_django.models")
 
 logger = logging.getLogger("tethys." + __name__)
 
@@ -274,6 +278,7 @@ def _check_quota_helper(quota):
 @require_POST
 @login_required()
 def refresh_social_token_endpoint(request, association_id):
+    verify_import(UserSocialAuth)
     try:
         auth = UserSocialAuth.objects.get(id=association_id)
     except UserSocialAuth.DoesNotExist:
