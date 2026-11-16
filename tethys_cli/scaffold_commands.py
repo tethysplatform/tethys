@@ -384,6 +384,7 @@ def scaffold_command(args):
 
     if template_name == "component":
         from tethys_components.library import REACTJS_VERSION
+
         context["reactjs_version"] = REACTJS_VERSION
 
     for item in metadata_input:
