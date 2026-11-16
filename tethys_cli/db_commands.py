@@ -156,6 +156,8 @@ def init_db_server(db_dir=None, **kwargs):
     msg = f'Initializing Postgresql database server in "{db_dir}/data"...'
     err_msg = "Could not initialize the Postgresql database."
     args = ["initdb", "-U", "postgres", "-D", f"{db_dir}/data"]
+    if sys.platform == "win32":
+        args.extend(["--encoding", "UTF8", "--locale", "C"])
     return _run_process(args, msg, err_msg, **kwargs)
 
 
@@ -316,6 +318,8 @@ def create_db_user(
         "postgres",
         "-E",
         "utf-8",
+        "--template",
+        "template0",
         "-p",
         f"{port}",
         "-O",

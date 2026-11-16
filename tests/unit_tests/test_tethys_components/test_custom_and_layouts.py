@@ -4,6 +4,8 @@ from pathlib import Path
 from tethys_components import custom, layouts
 from tethys_components.library import ComponentLibrary
 from unittest import TestCase, mock
+from django.test import override_settings
+from tethys_portal.settings import STATIC_URL
 from asgiref.sync import async_to_sync
 
 THIS_DIR = Path(__file__).parent
@@ -118,3 +120,98 @@ class TestCustomComponents(TestCase):
     def test_map_invalid_projection_dict(self):
         with self.assertRaises(ValueError):
             custom.Map(self.lib, projection={})
+
+
+class FakeApp:
+    """Minimal stand-in for a ComponentBase app with only the attributes the header reads."""
+
+    name = "Test App"
+    root_url = "test-app"
+    color = "#2c3e50"
+    exit_url = "/"
+    icon = ""
+    navigation_links = [{"href": "/", "title": "Home"}]
+
+
+def _find_nodes(vdom, predicate):
+    """Depth-first search of a VDOM tree for element dicts matching predicate."""
+    found = []
+    if isinstance(vdom, dict):
+        if predicate(vdom):
+            found.append(vdom)
+        for value in vdom.values():
+            found.extend(_find_nodes(value, predicate))
+    elif isinstance(vdom, (list, tuple)):
+        for item in vdom:
+            found.extend(_find_nodes(item, predicate))
+    return found
+
+
+def _attr(node, name):
+    return node.get("attributes", {}).get(name)
+
+
+class TestHeaderWithNavBarUrls(TestCase):
+    """The header must work both under /apps/<root_url>/ and at the site root (single-app mode)."""
+
+    def setUp(self):
+        self.lib = ComponentLibrary("components-test-lib-header")
+        self.lib.hooks = mock.MagicMock()
+        self.lib.hooks.use_query.return_value = mock.MagicMock(data=None)
+        self.lib.hooks.use_location.return_value = mock.MagicMock(pathname="/")
+        self.lib.hooks.use_state.return_value = (0, lambda x: x)
+        self.user = mock.MagicMock(is_staff=False)
+
+    def render(self, app):
+        return custom.HeaderWithNavBar(self.lib, app=app, user=self.user)
+
+    def brand_and_nav(self, vdom):
+        brand = _find_nodes(vdom, lambda n: n.get("tagName") == "bs_NavbarBrand")
+        nav = _find_nodes(vdom, lambda n: n.get("tagName") == "bs_Nav")
+        self.assertEqual(1, len(brand))
+        self.assertEqual(1, len(nav))
+        return brand[0], nav[0]
+
+    @override_settings(MULTIPLE_APP_MODE=True)
+    def test_brand_links_to_app_url_in_multiple_app_mode(self):
+        brand, nav = self.brand_and_nav(self.render(FakeApp()))
+        self.assertEqual("/apps/test-app/", _attr(brand, "href"))
+        self.assertEqual("/apps/test-app", _attr(nav, "defaultActiveKey"))
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_brand_links_to_root_in_single_app_mode(self):
+        brand, nav = self.brand_and_nav(self.render(FakeApp()))
+        self.assertEqual("/", _attr(brand, "href"))
+        self.assertEqual("/", _attr(nav, "defaultActiveKey"))
+
+
+class TestHeaderWithNavBarIcon(TestCase):
+    def setUp(self):
+        self.lib = ComponentLibrary("components-test-lib-icon")
+        self.lib.hooks = mock.MagicMock()
+        self.lib.hooks.use_query.return_value = mock.MagicMock(data=None)
+        self.lib.hooks.use_location.return_value = mock.MagicMock(pathname="/")
+        self.lib.hooks.use_state.return_value = (0, lambda x: x)
+        self.user = mock.MagicMock(is_staff=False)
+
+    def icon_src(self, app):
+        vdom = custom.HeaderWithNavBar(self.lib, app=app, user=self.user)
+        imgs = _find_nodes(vdom, lambda n: n.get("tagName") == "img")
+        self.assertEqual(1, len(imgs))
+        return _attr(imgs[0], "src")
+
+    def test_static_icon_path(self):
+        app = FakeApp()
+        app.icon = "test_app/images/icon.png"
+        self.assertEqual(f"{STATIC_URL}test_app/images/icon.png", self.icon_src(app))
+
+    def test_missing_icon_falls_back_to_default_app_icon(self):
+        self.assertEqual(
+            f"{STATIC_URL}tethys_apps/images/default_app_icon.gif",
+            self.icon_src(FakeApp()),
+        )
+
+    def test_absolute_url_icon_is_used_as_is(self):
+        app = FakeApp()
+        app.icon = "https://example.com/icon.png"
+        self.assertEqual("https://example.com/icon.png", self.icon_src(app))

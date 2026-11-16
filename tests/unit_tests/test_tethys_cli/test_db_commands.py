@@ -186,6 +186,7 @@ class TestCommandTests(unittest.TestCase):
         self.mock_run_process.return_value = 0
         self.assertRaises(RuntimeError, process_args, mock_args)
 
+    @mock.patch("tethys_cli.db_commands.sys.platform", "linux")
     def test_db_command_init(self):
         mock_args = mock.MagicMock()
         mock_args.command = "init"
@@ -193,6 +194,29 @@ class TestCommandTests(unittest.TestCase):
         kwargs = self._get_kwargs(remove=["db_dir"])
         self.mock_run_process.assert_called_with(
             ["initdb", "-U", "postgres", "-D", "foo/data"],
+            'Initializing Postgresql database server in "foo/data"...',
+            "Could not initialize the Postgresql database.",
+            **kwargs,
+        )
+
+    @mock.patch("tethys_cli.db_commands.sys.platform", "win32")
+    def test_db_command_init_windows(self):
+        mock_args = mock.MagicMock()
+        mock_args.command = "init"
+        db_command(mock_args)
+        kwargs = self._get_kwargs(remove=["db_dir"])
+        self.mock_run_process.assert_called_with(
+            [
+                "initdb",
+                "-U",
+                "postgres",
+                "-D",
+                "foo/data",
+                "--encoding",
+                "UTF8",
+                "--locale",
+                "C",
+            ],
             'Initializing Postgresql database server in "foo/data"...',
             "Could not initialize the Postgresql database.",
             **kwargs,
@@ -296,6 +320,8 @@ class TestCommandTests(unittest.TestCase):
             "postgres",
             "-E",
             "utf-8",
+            "--template",
+            "template0",
             "-p",
             self.options["port"],
             "-O",

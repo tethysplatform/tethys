@@ -1104,13 +1104,20 @@ class TestInstallCommands(TestCase):
             po_call_args[1][0][0],
         )
 
+    @mock.patch("tethys_cli.install_commands.conda_available", return_value=True)
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install(
-        self, mock_pretty_output, mock_conda_run, mock_call, _, __
+        self,
+        mock_pretty_output,
+        mock_conda_run,
+        mock_call,
+        _,
+        __,
+        mock_conda_available,
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1442,13 +1449,20 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
+    @mock.patch("tethys_cli.install_commands.conda_available", return_value=True)
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_only_dependencies(
-        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+        self,
+        mock_pretty_output,
+        mock_conda_run,
+        mock_call,
+        _,
+        mock_mamc,
+        mock_conda_available,
     ):
         chdir("..")
         file_path = self.root_app_path / "install-dep.yml"
@@ -1500,13 +1514,20 @@ class TestInstallCommands(TestCase):
         )
         mock_mamc.assert_not_called()
 
+    @mock.patch("tethys_cli.install_commands.conda_available", return_value=True)
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_update_installed(
-        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+        self,
+        mock_pretty_output,
+        mock_conda_run,
+        mock_call,
+        _,
+        mock_mamc,
+        mock_conda_available,
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1560,13 +1581,20 @@ class TestInstallCommands(TestCase):
         )
         mock_mamc.assert_called_once()
 
+    @mock.patch("tethys_cli.install_commands.conda_available", return_value=True)
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_nodefaults(
-        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+        self,
+        mock_pretty_output,
+        mock_conda_run,
+        mock_call,
+        _,
+        mock_mamc,
+        mock_conda_available,
     ):
         chdir("..")
         file_path = self.root_app_path / "install-nodefaults.yml"
@@ -1621,13 +1649,20 @@ class TestInstallCommands(TestCase):
         self.assertEqual(0, len(mock_call.mock_calls))
         mock_mamc.assert_not_called()
 
+    @mock.patch("tethys_cli.install_commands.conda_available", return_value=True)
     @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_nodefaults_only(
-        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+        self,
+        mock_pretty_output,
+        mock_conda_run,
+        mock_call,
+        _,
+        mock_mamc,
+        mock_conda_available,
     ):
         chdir("..")
         file_path = self.root_app_path / "install-nodefaults-only.yml"
@@ -2579,9 +2614,10 @@ class TestInstallCommands(TestCase):
         )
         mock_exit.assert_called_once_with(1)
 
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_nonexistent_app(self, mock_tethys_app, mock_write_warning):
+    def test_nonexistent_app(self, mock_tethys_app, mock_write_warning, mock_call):
         args = mock.MagicMock(
             file=None,
             develop=False,
@@ -2599,11 +2635,12 @@ class TestInstallCommands(TestCase):
         )
 
     @override_settings(AUTHENTICATION_BACKENDS=["test_provider"])
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
     @mock.patch("tethys_cli.install_commands.import_string")
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_missing_configured_backends(
-        self, mock_tethys_app, mock_write_warning, mock_import_string
+        self, mock_tethys_app, mock_write_warning, mock_import_string, mock_call
     ):
         args = mock.MagicMock(
             file=None,
