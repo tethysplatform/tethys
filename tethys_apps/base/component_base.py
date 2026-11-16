@@ -42,6 +42,8 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
 
     """
 
+    reactjs_version = ""
+
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         # Fill in metadata for single-file apps run via "tethys run" (express mode)
@@ -84,6 +86,6 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
     @classmethod
     def page(cls, *args, **kwargs):
         kwargs["app"] = cls
-        if "reactjs_version" not in kwargs and hasattr(cls, "reactjs_version"):
+        if "reactjs_version" not in kwargs and cls.reactjs_version:
             kwargs["reactjs_version"] = cls.reactjs_version
         return page_controller(*args, **kwargs)

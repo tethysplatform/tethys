@@ -103,6 +103,33 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertEqual(app.page(test_page), mock_pc.return_value)
         mock_pc.assert_called_once_with(test_page, app=component_app_base.ComponentBase)
 
+    @mock.patch("tethys_apps.base.component_base.page_controller")
+    def test_page_decorator_with_reactjs_version_kwarg(self, mock_pc):
+        app = component_app_base.ComponentBase()
+
+        def test_page(lib):
+            return lib.html.div("Test 123")
+
+        self.assertEqual(
+            app.page(test_page, reactjs_version="18.2.0"), mock_pc.return_value
+        )
+        mock_pc.assert_called_once_with(
+            test_page, app=component_app_base.ComponentBase, reactjs_version="18.2.0"
+        )
+
+    @mock.patch("tethys_apps.base.component_base.page_controller")
+    def test_page_decorator_with_reactjs_version_attr(self, mock_pc):
+        class TestApp(component_app_base.ComponentBase):
+            reactjs_version = "18.2.0"
+
+        def test_page(lib):
+            return lib.html.div("Test 123")
+
+        self.assertEqual(TestApp.page(test_page), mock_pc.return_value)
+        mock_pc.assert_called_once_with(
+            test_page, app=TestApp, reactjs_version="18.2.0"
+        )
+
     def test_base_get_static_url_no_args(self):
         url = component_app_base.ComponentBase.get_static_url()
         self.assertEqual(url, "/static/")
