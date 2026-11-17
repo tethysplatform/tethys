@@ -1,0 +1,21 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block field_sets %}
+  {% if image_missing_georeference %}
+    <p class="help" style="font-weight: bold;">
+      This image has no coordinate system. Place it on the map and save again.
+    </p>
+  {% endif %}
+  {{ block.super }}
+  <div id="basemap-image-map"
+       style="width: 100%; height: 500px; border: 1px solid var(--border-color); margin: 1em 0;"></div>
+  <p class="help">
+    Pick a PNG or JPEG to place it on the map: drag it to move, drag a corner to resize.
+    GeoTIFFs with a coordinate system are placed automatically.
+  </p>
+  {{ image_overlay|json_script:"basemap-image-overlay" }}
+
+  <script src="{% static 'tethys_basemaps/js/basemap_upload_image.js' %}"></script>
+
+{% endblock %}
