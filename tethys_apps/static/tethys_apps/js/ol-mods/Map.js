@@ -62,6 +62,9 @@ const getLayerById = function (map, id) {
 function findVectorLayerEvents(obj, eventProps) {
     let events = {};
     let children = obj.children;
+    if (!children) {
+        return events;
+    }
     if (!Array.isArray(children)) {
         children = [children];
     }

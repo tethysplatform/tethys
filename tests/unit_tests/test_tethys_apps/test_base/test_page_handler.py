@@ -8,9 +8,11 @@ import tethys_apps.base.controller as tethys_controller
 
 class TestPageHandler(TestCase):
     @mock.patch("tethys_apps.base.page_handler.render")
-    @mock.patch("tethys_apps.base.page_handler.ComponentLibrary")
+    @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager.get_library")
     @mock.patch("tethys_apps.base.page_handler._get_layout_component")
-    def test_global_page_controller(self, mock_get_layout, mock_lib, mock_render):
+    def test_global_page_controller(
+        self, mock_get_layout, mock_get_library, mock_render
+    ):
         # FUNCTION ARGS
         request = mock.MagicMock()
         mock_app = mock.MagicMock()
@@ -24,6 +26,8 @@ class TestPageHandler(TestCase):
         # MOCK INTERNALS
         component_func.__name__ = "my_mock_component_func"
         expected_return_value = "Expected return value"
+        mock_lib = mock.MagicMock(reactjs_version="19.3.1", reactjs_version_int=19)
+        mock_get_library.return_value = mock_lib
         mock_render.return_value = expected_return_value
         mock_get_layout.return_value = "my_layout_func"
 
@@ -62,9 +66,9 @@ class TestPageHandler(TestCase):
         self.assertEqual(render_context["app"], mock_app)
         self.assertEqual(render_context["layout_func"](), "my_layout_func")
         self.assertEqual(render_context["component_func"](), component_func)
-        self.assertEqual(render_context["reactjs_version"], mock_lib.REACTJS_VERSION)
+        self.assertEqual(render_context["reactjs_version"], mock_lib.reactjs_version)
         self.assertEqual(
-            render_context["reactjs_version_int"], mock_lib.REACTJS_VERSION_INT
+            render_context["reactjs_version_int"], mock_lib.reactjs_version_int
         )
         self.assertEqual(render_context["title"], title)
         self.assertEqual(render_context["custom_css"], custom_css)
@@ -111,7 +115,7 @@ class TestPageComponentWrapper(TestCase):
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
         self.assertEqual(return_value, expected_return_value)
-        mock_clm.get_library.assert_called_once_with("test_app-component", None)
+        mock_clm.get_library.assert_called_once_with("test_app-component", extras=None)
         proof_mock.assert_called_once_with(mock_lib)
         mock_lib.m.MantineProvider.assert_called_once_with("rendered_component")
 
@@ -136,7 +140,9 @@ class TestPageComponentWrapper(TestCase):
         )
 
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
-        mock_clm.get_library.assert_called_once_with("test_app-component", extras)
+        mock_clm.get_library.assert_called_once_with(
+            "test_app-component", extras=extras
+        )
 
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
     def test_page_component_wrapper__layout_not_none(self, mock_clm):
@@ -169,7 +175,7 @@ class TestPageComponentWrapper(TestCase):
             content="rendered_component",
         )
         proof_mock.assert_called_once_with(mock_lib)
-        mock_clm.get_library.assert_called_once_with("test_app-component", None)
+        mock_clm.get_library.assert_called_once_with("test_app-component", extras=None)
 
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
     def test_page_component_wrapper__layout_not_none_with_extras(self, mock_clm):
@@ -204,7 +210,9 @@ class TestPageComponentWrapper(TestCase):
             content=component_return_val,
         )
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
-        mock_clm.get_library.assert_called_once_with("test_app-component", extras)
+        mock_clm.get_library.assert_called_once_with(
+            "test_app-component", extras=extras
+        )
 
 
 class TestPage(TestCase):

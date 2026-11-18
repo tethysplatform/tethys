@@ -19,6 +19,7 @@ class App(ComponentBase):
     exit_url = "/apps/"
     default_layout = "NavHeader"
     nav_links = "auto"
+    reactjs_version = "{{reactjs_version}}"
 
 
 @App.page
