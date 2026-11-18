@@ -233,7 +233,11 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
             "administrator for more details.",
         )
 
-        context = {"form": mock_login_form(), "signup_enabled": False}
+        context = {
+            "form": mock_login_form(),
+            "signup_enabled": False,
+            "password_reset_enabled": False,
+        }
 
         mock_render.assert_called_once_with(mock_request, "mock_template", context)
 
@@ -307,7 +311,11 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
             "password and try again.",
         )
 
-        context = {"form": mock_login_form(), "signup_enabled": False}
+        context = {
+            "form": mock_login_form(),
+            "signup_enabled": False,
+            "password_reset_enabled": False,
+        }
 
         mock_render.assert_called_once_with(mock_request, "mock_template", context)
 
@@ -341,7 +349,11 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         # mock redirect after logged in using next parameter or default to user profile
         mock_redirect.assert_not_called()
 
-        context = {"form": mock_login_form(), "signup_enabled": False}
+        context = {
+            "form": mock_login_form(),
+            "signup_enabled": False,
+            "password_reset_enabled": False,
+        }
 
         mock_render.assert_called_once_with(mock_request, "mock_template", context)
 

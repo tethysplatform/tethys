@@ -14,7 +14,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from tethys_portal.forms import LoginForm, RegisterForm
-from tethys_portal.utilities import log_user_in, sanitize_next_url
+from tethys_portal.utilities import (
+    log_user_in,
+    sanitize_next_url,
+    is_password_reset_enabled,
+)
 from tethys_config.models import get_custom_template
 
 from tethys_portal.optional_dependencies import optional_import, has_module
@@ -83,7 +87,14 @@ def login_view(request):
         else False
     )
 
-    context = {"form": form, "signup_enabled": signup_enabled}
+    # Determine if password reset is disabled or not
+    password_reset_enabled = is_password_reset_enabled()
+
+    context = {
+        "form": form,
+        "signup_enabled": signup_enabled,
+        "password_reset_enabled": password_reset_enabled,
+    }
 
     template = get_custom_template(
         "Login Page Template", "tethys_portal/accounts/login.html"
