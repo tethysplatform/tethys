@@ -11,6 +11,7 @@
 import json
 import time
 import inspect
+import logging
 from datetime import datetime
 from pathlib import Path
 from django.conf import settings
@@ -35,6 +36,8 @@ get_plotlyjs = optional_import("get_plotlyjs", from_module="plotly.offline.offli
 GIZMO_NAME_PROPERTY = "gizmo_name"
 GIZMO_NAME_MAP = {}
 EXTENSION_PATH_MAP = {}
+
+log = logging.getLogger(f"tethys.{__name__}")
 
 # Add gizmos to GIZMO_NAME_MAP
 for _, cls in tethys_sdk.gizmos.__dict__.items():
@@ -164,7 +167,13 @@ def jsonify(data):
     """
     Convert python data structures into a JSON string
     """
-    return json.dumps(data, default=_json_data_handler)
+    try:
+        return json.dumps(data, default=_json_data_handler)
+    except Exception:
+        log.exception(
+            "Failed to serialize Gizmo data. type %s, Data %r", (type(data), data)
+        )
+        raise
 
 
 @register.filter
@@ -275,7 +284,16 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
 
             # Retrieve the gizmo template and render
             t = get_template(template_name)
-            return t.render(resolved_options)
+            render_options = resolved_options
+            get_render_options = getattr(resolved_options, "get_render_options", None)
+            if callable(get_render_options):
+                try:
+                    render_options = get_render_options(context.get("request"))
+                except Exception:
+                    log.exception(
+                        "Error occurred while getting render options for gizmo."
+                    )
+            return t.render(render_options)
 
         except Exception:
             if hasattr(settings, "TEMPLATES"):
