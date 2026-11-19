@@ -17,19 +17,20 @@ from .jobs import refresh_from_result_file
 import os
 from pathlib import Path
 
-
 # Files a generated image run uses
 IMAGE_RUN_SUFFIXES = (".partial", ".result.json", ".cancel")
+
 
 def original_basemap_upload_path(instance, filename):
     return f"basemaps/images/original/{instance.name}/{filename}"
 
+
 def generated_basemap_upload_path(instance, filename):
     return f"basemaps/images/generated/{instance.name}/{filename}"
 
+
 def basemap_capture_upload_path(instance, filename):
     return f"basemaps/captures/{filename}"
-
 
 
 def image_generation_run_output_name(image):
@@ -41,14 +42,20 @@ def image_generation_run_output_name(image):
     """
     from django.core.files.storage import default_storage
 
-    stem = generated_basemap_upload_path(image, Path(image.source_file.name).stem + "_cog")
+    stem = generated_basemap_upload_path(
+        image, Path(image.source_file.name).stem + "_cog"
+    )
 
     run = 1
     while True:
         output_name = f"{stem}_run_{run}.tif"
-        if not any(default_storage.exists(output_name + suffix) for suffix in IMAGE_RUN_SUFFIXES):
+        if not any(
+            default_storage.exists(output_name + suffix)
+            for suffix in IMAGE_RUN_SUFFIXES
+        ):
             return output_name
         run += 1
+
 
 class PortalBasemap(models.Model):
     class Type(models.TextChoices):
@@ -79,9 +86,7 @@ class PortalBasemap(models.Model):
         related_name="+",
     )
     apps = models.ManyToManyField(
-        "tethys_apps.TethysApp",
-        blank=True,
-        related_name="portal_basemaps"
+        "tethys_apps.TethysApp", blank=True, related_name="portal_basemaps"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -89,6 +94,7 @@ class PortalBasemap(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class PortalBasemapSource(PortalBasemap):
     class BasemapSourceType(models.TextChoices):
@@ -98,6 +104,7 @@ class PortalBasemapSource(PortalBasemap):
         CartoDB = "CartoDB", "CartoDB"
         ESRI = "ESRI", "ESRI"
         AZURE = "Azure", "Azure"
+
     TYPE = PortalBasemap.Type.SOURCE
     basemap_type = models.CharField(max_length=16, choices=BasemapSourceType.choices)
     options = models.JSONField(blank=True, null=True, default=dict)
@@ -111,24 +118,29 @@ class PortalBasemapSource(PortalBasemap):
         return self.format_options()
 
     def format_options(self):
-        options = {**(self.options or {}), "control_label": self.name}    
-        return {self.basemap_type:  options}
+        options = {**(self.options or {}), "control_label": self.name}
+        return {self.basemap_type: options}
+
 
 class BasemapImage(PortalBasemap):
     class StatusChoices(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        PROCESSING = 'processing', 'Processing'
-        FAILED = 'failed', 'Failed'
-        READY = 'ready', 'Ready'
-        CANCELLED = 'cancelled', 'Cancelled'
+        PENDING = "pending", "Pending"
+        PROCESSING = "processing", "Processing"
+        FAILED = "failed", "Failed"
+        READY = "ready", "Ready"
+        CANCELLED = "cancelled", "Cancelled"
 
     MIN_ZOOM = 0
     MAX_ZOOM = 22
 
-    TYPE = PortalBasemap.Type.IMAGE 
+    TYPE = PortalBasemap.Type.IMAGE
     source_file = models.FileField(upload_to=original_basemap_upload_path, blank=True)
-    generated_file = models.FileField(upload_to=generated_basemap_upload_path, blank=True, null=True)
-    status = models.CharField(max_length=30, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+    generated_file = models.FileField(
+        upload_to=generated_basemap_upload_path, blank=True, null=True
+    )
+    status = models.CharField(
+        max_length=30, choices=StatusChoices.choices, default=StatusChoices.PENDING
+    )
     srs = models.CharField(max_length=64, blank=True, null=True)
     wkt = models.TextField(blank=True, null=True)
     georeference_bounds = models.JSONField(blank=True, null=True)
@@ -137,6 +149,7 @@ class BasemapImage(PortalBasemap):
     def as_basemap(self):
         from django.urls import reverse
         from django.utils.functional import lazy
+
         def _tile_url(image_pk):
             url = reverse(
                 "basemaps:image_tile",
@@ -153,7 +166,7 @@ class BasemapImage(PortalBasemap):
         options = {
             "url": lazy(_tile_url, str)(self.pk),
             "control_label": self.name,
-            "minZoom": self.MIN_ZOOM, # TODO add min/max zoom for basemap images?
+            "minZoom": self.MIN_ZOOM,  # TODO add min/max zoom for basemap images?
             "maxZoom": self.MAX_ZOOM,
         }
         if self.attribution:
@@ -185,7 +198,9 @@ class BasemapImage(PortalBasemap):
             self.status = self.StatusChoices.PROCESSING
             self.error_message = ""
             self.job = None
-            self.save(update_fields=["generated_file", "status", "error_message", "job"])
+            self.save(
+                update_fields=["generated_file", "status", "error_message", "job"]
+            )
 
         try:
             job = run_basemap_task(
@@ -218,25 +233,37 @@ class BasemapImage(PortalBasemap):
         cancelled (or superseded) in the meantime keeps the status it was given.
         """
         if not result.get("ok"):
-            fields = {"status": self.StatusChoices.FAILED, "error_message": result.get("error", "Unknown error")}
+            fields = {
+                "status": self.StatusChoices.FAILED,
+                "error_message": result.get("error", "Unknown error"),
+            }
         else:
             min_x, min_y, max_x, max_y = result["bounds"]
             fields = {
-                "min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y,
+                "min_x": min_x,
+                "min_y": min_y,
+                "max_x": max_x,
+                "max_y": max_y,
                 "srs": result["srs"],
                 "wkt": result["wkt"],
-                "generated_file": os.path.relpath(result["output_path"], settings.MEDIA_ROOT),
+                "generated_file": os.path.relpath(
+                    result["output_path"], settings.MEDIA_ROOT
+                ),
                 "status": self.StatusChoices.READY,
                 "error_message": "",
             }
             if result.get("source_epsg") and not self.georeference_epsg:
                 fields["georeference_epsg"] = result["source_epsg"]
-        BasemapImage.objects.filter(pk=self.pk, status=self.StatusChoices.PROCESSING).update(**fields)
+        BasemapImage.objects.filter(
+            pk=self.pk, status=self.StatusChoices.PROCESSING
+        ).update(**fields)
         self.refresh_from_db()
 
     @property
     def result_path(self):
-        return f"{self.generated_file.path}.result.json" if self.generated_file else None
+        return (
+            f"{self.generated_file.path}.result.json" if self.generated_file else None
+        )
 
     @property
     def cancel_path(self):
@@ -245,6 +272,7 @@ class BasemapImage(PortalBasemap):
         COG name (see unique_image_output_name), so a new run never sees an old run's flag.
         """
         return f"{self.generated_file.path}.cancel" if self.generated_file else None
+
 
 class BasemapCapture(PortalBasemap):
     """

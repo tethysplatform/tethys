@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2026
 ********************************************************************************
 """
+
 import contextlib
 import json
 import logging
@@ -17,7 +18,17 @@ log = logging.getLogger(f"tethys.{__name__}")
 
 JOB_LABEL = "tethys_basemaps"
 
-def run_basemap_task(func, *args, name, user, result_path, non_dask_result_handler, dask_scheduler=None, **kwargs):
+
+def run_basemap_task(
+    func,
+    *args,
+    name,
+    user,
+    result_path,
+    non_dask_result_handler,
+    dask_scheduler=None,
+    **kwargs,
+):
     """
     Run a basemaps generation task using either dask or on the server inline.
 
@@ -35,10 +46,14 @@ def run_basemap_task(func, *args, name, user, result_path, non_dask_result_handl
     # Send task code to dask runner
     cloudpickle.register_pickle_by_value(tasks)
 
-    job = DaskJob(name=name, user=user, label=JOB_LABEL, scheduler=dask_scheduler, forget=True)
+    job = DaskJob(
+        name=name, user=user, label=JOB_LABEL, scheduler=dask_scheduler, forget=True
+    )
     job.save()
 
-    future = job.client.submit(func, *args, result_path=result_path, pure=False, **kwargs)
+    future = job.client.submit(
+        func, *args, result_path=result_path, pure=False, **kwargs
+    )
     job.execute(future)
     if job._status == "ERR":
         raise RuntimeError(f'Could not submit "{name}" to the Dask scheduler.')
@@ -72,10 +87,11 @@ def _dask_task_state(job):
     finally:
         client.close()
 
+
 def refresh_from_result_file(record, apply_result, job_type):
     """
     Applies the task's result file if it has appeared. Otherwise get the state of the dask
-    
+
     job_type names the job in error messages, e.g. "generation" or "capture".
     """
     progress_path = getattr(record, "progress_path", None)
@@ -96,7 +112,7 @@ def refresh_from_result_file(record, apply_result, job_type):
 
     if apply_if_ready():
         return
-    
+
     # If the result file isn't ready, check the status of the task
     job = record.job if record.job_id else None
     if job is None:
@@ -104,7 +120,9 @@ def refresh_from_result_file(record, apply_result, job_type):
 
     state, error = _dask_task_state(job)
     if state == "erred":
-        message = f"The {job_type} job failed on the Dask worker." + (f"\n{error}" if error else "")
+        message = f"The {job_type} job failed on the Dask worker." + (
+            f"\n{error}" if error else ""
+        )
     elif state is None:
         # If the state is None, the task may have finished, so check for the results file
         if apply_if_ready():
@@ -123,6 +141,7 @@ def refresh_from_result_file(record, apply_result, job_type):
     )
     delete_safely(progress_path)
     record.refresh_from_db()
+
 
 def cancel_dask_task(job):
     """

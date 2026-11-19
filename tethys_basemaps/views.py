@@ -23,16 +23,20 @@ from tethys_basemaps.models import BasemapImage, PortalBasemap
 
 @lru_cache(maxsize=32)
 def _open_tile_source(path, mtime):
-    from large_original_image_rasterio import open as rio_open
+    from large_image_source_rasterio import open as rio_open
 
     style = _tile_style(path)
     if style:
-        return rio_open(path, projection="EPSG:3857", encoding="PNG", style=json.dumps(style))
+        return rio_open(
+            path, projection="EPSG:3857", encoding="PNG", style=json.dumps(style)
+        )
     return rio_open(path, projection="EPSG:3857", encoding="PNG")
+
 
 def _get_tile_source(path):
     # mtime in the cache key: a regenerated COG at the same path gets a fresh source
     return _open_tile_source(path, os.path.getmtime(path))
+
 
 def _tile_style(path):
     """
@@ -41,7 +45,11 @@ def _tile_style(path):
     import rasterio
     from rasterio.enums import ColorInterp
 
-    palettes = {ColorInterp.red: "#f00", ColorInterp.green: "#0f0", ColorInterp.blue: "#00f"}
+    palettes = {
+        ColorInterp.red: "#f00",
+        ColorInterp.green: "#0f0",
+        ColorInterp.blue: "#00f",
+    }
 
     with rasterio.open(path) as ds:
         interp = ds.colorinterp
@@ -51,21 +59,26 @@ def _tile_style(path):
         if ci in palettes:
             bands.append({"band": index, "palette": palettes[ci], "min": 0, "max": 255})
         elif ci == ColorInterp.alpha:
-            bands.append({
-                "band": index,
-                "palette": ["#ffffff00", "#ffffffff"],
-                "min": 0,
-                "max": 255,
-                "composite": "multiply",
-            })
+            bands.append(
+                {
+                    "band": index,
+                    "palette": ["#ffffff00", "#ffffffff"],
+                    "min": 0,
+                    "max": 255,
+                    "composite": "multiply",
+                }
+            )
 
     return {"bands": bands} if bands else None
+
 
 @login_required
 def image_tile(request, image_id, z, x, y):
     """Serve one XYZ tile rendered from an image's COG."""
     try:
-        image = BasemapImage.objects.get(pk=image_id, status=BasemapImage.StatusChoices.READY)
+        image = BasemapImage.objects.get(
+            pk=image_id, status=BasemapImage.StatusChoices.READY
+        )
     except BasemapImage.DoesNotExist:
         return HttpResponse("Image not found or not ready.", status=404)
 
@@ -76,6 +89,7 @@ def image_tile(request, image_id, z, x, y):
         return HttpResponse(status=204)
 
     return HttpResponse(tile, content_type="image/png")
+
 
 @login_required
 def original_image(request, image_id):
@@ -93,17 +107,20 @@ def original_image(request, image_id):
         content_type=content_type or "application/octet-stream",
     )
 
+
 @staff_member_required
 def basemap_status(request, basemap_id):
     """Status of a capture or image while it's processing."""
     try:
-        basemap = PortalBasemap.objects.select_related("basemapcapture", "basemapimage").get(
-            pk=basemap_id
-        )
+        basemap = PortalBasemap.objects.select_related(
+            "basemapcapture", "basemapimage"
+        ).get(pk=basemap_id)
     except PortalBasemap.DoesNotExist:
         return HttpResponse(status=404)
 
-    record = getattr(basemap, "basemapcapture", None) or getattr(basemap, "basemapimage", None)
+    record = getattr(basemap, "basemapcapture", None) or getattr(
+        basemap, "basemapimage", None
+    )
     if record is None:
         return HttpResponse("Sources don't have a processing status.", status=404)
 
@@ -118,6 +135,7 @@ def basemap_status(request, basemap_id):
                 data.update(json.load(fh))
 
     return JsonResponse(data)
+
 
 @staff_member_required
 @require_POST

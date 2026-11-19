@@ -11,5 +11,5 @@ from django.apps import AppConfig
 
 
 class TethysBasemapsConfig(AppConfig):
-    name = 'tethys_basemaps'
+    name = "tethys_basemaps"
     verbose_name = "Tethys Basemaps"

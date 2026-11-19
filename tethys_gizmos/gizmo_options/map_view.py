@@ -412,7 +412,7 @@ class MapView(TethysGizmoOptions):
         app_basemaps = get_app_basemaps(app)
         if not app_basemaps:
             return self
-        
+
         options = copy(self)
         options.__dict__ = options
         options["basemap"] = list(self.basemap or []) + app_basemaps

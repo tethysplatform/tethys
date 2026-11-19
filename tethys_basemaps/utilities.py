@@ -7,6 +7,7 @@
 ********************************************************************************
 """
 
+
 def get_app_basemaps(app):
     """
     MapView basemap definitions for the portal basemaps chosen for an app
@@ -37,7 +38,9 @@ def get_app_basemaps(app):
         image = getattr(basemap, "basemapimage", None)
         if source is not None:
             basemaps.append(source.format_options())
-        elif capture is not None and capture.status == BasemapCapture.StatusChoices.READY:
+        elif (
+            capture is not None and capture.status == BasemapCapture.StatusChoices.READY
+        ):
             basemaps.append(capture.as_basemap())
         elif image is not None and image.status == BasemapImage.StatusChoices.READY:
             basemaps.append(image.as_basemap())

@@ -170,8 +170,11 @@ def jsonify(data):
     try:
         return json.dumps(data, default=_json_data_handler)
     except Exception:
-        log.exception("Failed to serialize Gizmo data. type %s, Data %r", (type(data), data))
-        raise 
+        log.exception(
+            "Failed to serialize Gizmo data. type %s, Data %r", (type(data), data)
+        )
+        raise
+
 
 @register.filter
 def codify(data):
@@ -287,7 +290,9 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
                 try:
                     render_options = get_render_options(context.get("request"))
                 except Exception:
-                    log.exception("Error occurred while getting render options for gizmo.")
+                    log.exception(
+                        "Error occurred while getting render options for gizmo."
+                    )
             return t.render(render_options)
 
         except Exception:
