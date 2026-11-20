@@ -27,7 +27,10 @@ class PostgresPersistentStoreServiceTests(TethysTestCase):
         # Execute
         ret = pss.get_url()
 
-        self.assertEqual("postgresql://foo:pass@localhost:5435", str(ret))
+        self.assertEqual(
+            "postgresql://foo:pass@localhost:5435",
+            ret.render_as_string(hide_password=False),
+        )
 
     @mock.patch("tethys_services.models.PostgresPersistentStoreService.get_url")
     @mock.patch("sqlalchemy.create_engine")
