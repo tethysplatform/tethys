@@ -55,18 +55,15 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
 
         handler.create_database(mock_model)
 
-        rts_call_args = mock_engine.connect().execute.call_args_list
-        self.assertEqual("commit", rts_call_args[0][0][0])
+        mock_conn_cm = mock_engine.connect().execution_options()
+        rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f"""
-            CREATE DATABASE "{namespaced_ps_name}"
-            WITH OWNER {mock_url.username}
-            ENCODING 'UTF8'
-        """,
-            rts_call_args[1][0][0],
+            f'CREATE DATABASE "{namespaced_ps_name}" '
+            f"WITH OWNER {mock_url.username} ENCODING 'UTF8'",
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
 
-        mock_engine.connect().close.assert_called_once()
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_create_database_permission_error(self):
         mock_engine = mock.MagicMock()
@@ -79,8 +76,9 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         )
         handler = PostgresDatabaseHandler()
 
+        mock_conn_cm = mock_engine.connect().execution_options()
         # Configure the mock to raise a ProgrammingError when execute is called
-        mock_engine.connect().execute.side_effect = [
+        mock_conn_cm.__enter__().execute.side_effect = [
             sqlalchemy.exc.ProgrammingError(statement=None, params=None, orig=None)
         ]
 
@@ -93,7 +91,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             str(context.exception),
         )
 
-        mock_engine.connect().close.assert_called_once()
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_drop_database(self):
         mock_engine = mock.MagicMock()
@@ -107,13 +105,14 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
 
         handler.drop_database(mock_model)
 
-        rts_call_args = mock_engine.connect().execute.call_args_list
-        self.assertEqual("commit", rts_call_args[0][0][0])
+        mock_conn_cm = mock_engine.connect().execution_options()
+        rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"', rts_call_args[1][0][0]
+            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"',
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
 
-        mock_engine.connect().close.assert_called_once()
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_drop_database_in_use_on_execute(self):
         mock_engine = mock.MagicMock()
@@ -126,38 +125,39 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise an Exception indicating the database is being accessed by other users
-        mock_engine.connect().execute.side_effect = [
-            None,
+        mock_conn_cm = mock_engine.connect().execution_options()
+        mock_conn_cm.__enter__().execute.side_effect = [
             Exception("being accessed by other users"),
-            None,
             None,
             None,
         ]
 
         handler.drop_database(mock_model)
 
-        rts_call_args = mock_engine.connect().execute.call_args_list
-        self.assertEqual("commit", rts_call_args[0][0][0])
+        rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"', rts_call_args[1][0][0]
+            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"',
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
 
         # Check that the disconnect sessions statement was executed
-        disconnect_sessions_statement = f"""
-                                                SELECT pg_terminate_backend(pg_stat_activity.pid)
-                                                FROM pg_stat_activity
-                                                WHERE pg_stat_activity.datname = '{namespaced_ps_name}'
-                                                AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """
-        self.assertEqual(disconnect_sessions_statement, rts_call_args[2][0][0])
-        self.assertEqual("commit", rts_call_args[3][0][0])
+        disconnect_sessions_statement = (
+            "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
+            "WHERE pg_stat_activity.datname = :db_name AND pg_stat_activity.pid <> pg_backend_pid();"
+        )
+                                                
+        self.assertEqual(
+            disconnect_sessions_statement, " ".join(str(rts_call_args[1][0][0]).split())
+        )
+        self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[1][0][1])
 
         # Check that the drop database statement was attempted again after disconnecting sessions
         self.assertEqual(
-            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"', rts_call_args[4][0][0]
+            f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"',
+            " ".join(str(rts_call_args[2][0][0]).split()),
         )
 
-        mock_engine.connect().close.assert_called_once()
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_drop_database_in_use_on_connect(self):
         mock_engine = mock.MagicMock()
@@ -172,7 +172,8 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         # Configure the mock to raise an Exception indicating the database is being accessed by other users
         mock_engine.connect.side_effect = Exception("being accessed by other users")
 
-        handler.drop_database(mock_model)
+        with self.assertRaises(Exception):
+            handler.drop_database(mock_model)
 
         mock_engine.connect.assert_called_once()
 
@@ -187,14 +188,16 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise a generic Exception
-        mock_engine.connect().execute.side_effect = Exception("some other error")
+        mock_conn_cm = mock_engine.connect().execution_options()
+        mock_conn_cm.__enter__().execute.side_effect = Exception("some other error")
 
         with self.assertRaises(Exception) as context:
             handler.drop_database(mock_model)
 
         self.assertIn("some other error", str(context.exception))
 
-        mock_engine.connect().close.assert_called_once()
+        mock_conn_cm.__enter__().execute.assert_called_once()
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_database_exists(self):
         mock_engine = mock.MagicMock()
@@ -207,24 +210,23 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to return a result indicating the database exists
-        mock_result = mock.MagicMock()
-        mock_result.name = namespaced_ps_name
-        mock_engine.connect().execute.return_value = [mock_result]
+        mock_conn_cm = mock_engine.connect()
+        mock_conn_cm.__enter__().execute.return_value.first.return_value = (
+            mock.MagicMock()
+        )
 
         exists = handler.database_exists(mock_model)
 
         self.assertTrue(exists)
-        rts_call_args = mock_engine.connect().execute.call_args_list
+        rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f"""
-            SELECT d.datname as name
-            FROM pg_catalog.pg_database d
-            LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-            WHERE d.datname = '{namespaced_ps_name}';
-        """,
-            rts_call_args[0][0][0],
+            "SELECT d.datname as name FROM pg_catalog.pg_database d "
+            "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid "
+            "WHERE d.datname = :db_name;",
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
-        mock_engine.connect().close.assert_called_once()
+        self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[0][0][1])
+        mock_conn_cm.__exit__.assert_called_once()
 
     def test_database_not_exists(self):
         mock_engine = mock.MagicMock()
@@ -237,24 +239,21 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to return a result indicating the database does not exist
-        mock_result = mock.MagicMock()
-        mock_result.name = "some other name"
-        mock_engine.connect().execute.return_value = [mock_result]
+        mock_conn_cm = mock_engine.connect()
+        mock_conn_cm.__enter__().execute.return_value.first.return_value = None
 
         exists = handler.database_exists(mock_model)
 
         self.assertFalse(exists)
-        rts_call_args = mock_engine.connect().execute.call_args_list
+        rts_call_args = mock_conn_cm.__enter__().execute.call_args_list
         self.assertEqual(
-            f"""
-            SELECT d.datname as name
-            FROM pg_catalog.pg_database d
-            LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-            WHERE d.datname = '{namespaced_ps_name}';
-        """,
-            rts_call_args[0][0][0],
+            "SELECT d.datname as name FROM pg_catalog.pg_database d "
+            "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid "
+            "WHERE d.datname = :db_name;",
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
-        mock_engine.connect().close.assert_called_once()
+        self.assertEqual({"db_name": namespaced_ps_name}, rts_call_args[0][0][1])
+        mock_conn_cm.__exit__.assert_called_once()
 
     @mock.patch("tethys_apps.db_handlers.logging")
     def test_enable_postgis_extension_version_2_5_detected(self, mock_db_handler_log):
@@ -263,25 +262,28 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.get_value.return_value = mock_new_engine
         handler = PostgresDatabaseHandler()
 
-        mock_db_connection = mock_new_engine.connect()
+        mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1")
-            ],  # Check PostGIS Version
+            mock.MagicMock(
+                **{"scalar.return_value": "2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
+            ),  # Check PostGIS Version
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
         handler.enable_spatial_extension(mock_model)
 
-        rts_call_args = mock_new_engine.connect().execute.call_args_list
+        rts_call_args = mock_db_connection.execute.call_args_list
         self.assertEqual(
-            "CREATE EXTENSION IF NOT EXISTS postgis;", rts_call_args[0][0][0]
+            "CREATE EXTENSION IF NOT EXISTS postgis;",
+            " ".join(str(rts_call_args[0][0][0]).split()),
         )
-        self.assertEqual("SELECT PostGIS_Version();", rts_call_args[1][0][0])
+        self.assertEqual(
+            "SELECT PostGIS_Version();", " ".join(str(rts_call_args[1][0][0]).split())
+        )
 
-        mock_new_engine.connect().close.assert_called_once()
-
+        mock_new_engine.begin().__exit__.assert_called_once()
+        
         mock_db_handler_log_info_calls = (
             mock_db_handler_log.getLogger().info.call_args_list
         )
@@ -298,27 +300,26 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.get_value.return_value = mock_new_engine
         handler = PostgresDatabaseHandler()
 
-        mock_db_connection = mock_new_engine.connect()
+        mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="3.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1")
-            ],  # Check PostGIS Version
+            mock.MagicMock(
+                **{"scalar.return_value": "3.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"}
+            ),  # Check PostGIS Version
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
         handler.enable_spatial_extension(mock_model)
 
-        mock_new_engine.connect().close.assert_called_once()
-
+        mock_new_engine.begin().__exit__.assert_called_once()
         mock_execute_calls = mock_db_connection.execute.call_args_list
         self.assertEqual(3, len(mock_execute_calls))
         execute1 = "CREATE EXTENSION IF NOT EXISTS postgis;"
         execute2 = "SELECT PostGIS_Version();"
         execute3 = "CREATE EXTENSION IF NOT EXISTS postgis_raster;"
-        self.assertEqual(execute1, mock_execute_calls[0][0][0])
-        self.assertEqual(execute2, mock_execute_calls[1][0][0])
-        self.assertEqual(execute3, mock_execute_calls[2][0][0])
+        self.assertEqual(execute1, " ".join(str(mock_execute_calls[0][0][0]).split()))
+        self.assertEqual(execute2, " ".join(str(mock_execute_calls[1][0][0]).split()))
+        self.assertEqual(execute3, " ".join(str(mock_execute_calls[2][0][0]).split()))
 
         mock_db_handler_log_info_calls = (
             mock_db_handler_log.getLogger().info.call_args_list
@@ -340,26 +341,26 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.get_value.return_value = mock_new_engine
         handler = PostgresDatabaseHandler()
 
-        mock_db_connection = mock_new_engine.connect()
+        mock_db_connection = mock_new_engine.begin().__enter__()
         mock_db_connection.execute.side_effect = [
             mock.MagicMock(),  # Enable PostGIS Statement
-            [
-                mock.MagicMock(postgis_version="BAD VERSION STRING")
-            ],  # Check PostGIS Version
-            mock.MagicMock(),  # Enable PostGIS Raster Statement
+            mock.MagicMock(
+                **{"scalar.return_value": "BAD VERSION STRING"}
+            )  # Check PostGIS Version
+            
         ]
 
         handler.enable_spatial_extension(mock_model)
 
-        mock_new_engine.connect().close.assert_called_once()
+        mock_new_engine.begin().__exit__.assert_called_once()
 
         # Check mock calls
         mock_execute_calls = mock_db_connection.execute.call_args_list
         self.assertEqual(2, len(mock_execute_calls))
         execute1 = "CREATE EXTENSION IF NOT EXISTS postgis;"
         execute2 = "SELECT PostGIS_Version();"
-        self.assertEqual(execute1, mock_execute_calls[0][0][0])
-        self.assertEqual(execute2, mock_execute_calls[1][0][0])
+        self.assertEqual(execute1, " ".join(str(mock_execute_calls[0][0][0]).split()))
+        self.assertEqual(execute2, " ".join(str(mock_execute_calls[1][0][0]).split()))
 
         mock_db_handler_log_warning_calls = (
             mock_db_handler_log.getLogger().warning.call_args_list
@@ -375,7 +376,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.get_value.side_effect = [mock_url, mock_new_engine]
         handler = PostgresDatabaseHandler()
 
-        mock_db_connection = mock_new_engine.connect()
+        mock_db_connection = mock_new_engine.begin().__enter__()
         # Configure the mock to raise a ProgrammingError when execute is called
         mock_db_connection.execute.side_effect = [
             sqlalchemy.exc.ProgrammingError(statement=None, params=None, orig=None)
@@ -389,8 +390,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             str(context.exception),
         )
 
-        mock_db_connection.close.assert_called_once()
-
+        mock_new_engine.begin().__exit__.assert_called_once()
 
 class SQLiteDatabaseHandlerTests(TethysTestCase):
 
