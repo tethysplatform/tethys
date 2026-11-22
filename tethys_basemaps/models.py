@@ -7,18 +7,14 @@
 ********************************************************************************
 """
 
-from django.conf import settings
-from django.db import models, transaction
-
-from tethys_compute.models import DaskScheduler
-
-from .jobs import refresh_from_result_file
-
 import os
 from pathlib import Path
 
-# Files a generated image run uses
-IMAGE_RUN_SUFFIXES = (".partial", ".result.json", ".cancel")
+from django.conf import settings
+from django.db import models, transaction
+
+from tethys_basemaps.jobs import refresh_from_result_file
+from tethys_compute.models import DaskScheduler
 
 
 def original_basemap_upload_path(instance, filename):
@@ -33,37 +29,7 @@ def basemap_capture_upload_path(instance, filename):
     return f"basemaps/captures/{filename}"
 
 
-def image_generation_run_output_name(image):
-    """
-    A storage name for a new generation run's COG that no earlier run's files use.
-
-    Like unique_capture_output_name: a cancelled run never creates its COG, so
-    get_available_name alone would hand its leftover cancel flag to the next run.
-    """
-    from django.core.files.storage import default_storage
-
-    stem = generated_basemap_upload_path(
-        image, Path(image.source_file.name).stem + "_cog"
-    )
-
-    run = 1
-    while True:
-        output_name = f"{stem}_run_{run}.tif"
-        if not any(
-            default_storage.exists(output_name + suffix)
-            for suffix in IMAGE_RUN_SUFFIXES
-        ):
-            return output_name
-        run += 1
-
-
 class PortalBasemap(models.Model):
-    class Type(models.TextChoices):
-        IMAGE = "image", "Uploaded Image"
-        CAPTURE = "capture", "Capture"
-        SOURCE = "source", "Source"
-
-    type = models.CharField(max_length=16, choices=Type.choices)
     name = models.CharField(max_length=255, unique=True)
     attribution = models.CharField(max_length=255, blank=True, null=True)
     min_x = models.FloatField(blank=True, null=True)
@@ -105,7 +71,6 @@ class PortalBasemapSource(PortalBasemap):
         ESRI = "ESRI", "ESRI"
         AZURE = "Azure", "Azure"
 
-    TYPE = PortalBasemap.Type.SOURCE
     basemap_type = models.CharField(max_length=16, choices=BasemapSourceType.choices)
     options = models.JSONField(blank=True, null=True, default=dict)
 
@@ -133,7 +98,9 @@ class BasemapImage(PortalBasemap):
     MIN_ZOOM = 0
     MAX_ZOOM = 22
 
-    TYPE = PortalBasemap.Type.IMAGE
+    # Files a generated image run uses
+    RUN_SUFFIXES = (".partial", ".result.json", ".cancel")
+
     source_file = models.FileField(upload_to=original_basemap_upload_path, blank=True)
     generated_file = models.FileField(
         upload_to=generated_basemap_upload_path, blank=True, null=True
@@ -145,6 +112,29 @@ class BasemapImage(PortalBasemap):
     wkt = models.TextField(blank=True, null=True)
     georeference_bounds = models.JSONField(blank=True, null=True)
     georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
+
+    def unique_output_name(self):
+        """
+        A storage name for a new generation run's COG that no earlier run's files use.
+
+        Like unique_capture_output_name: a cancelled run never creates its COG, so
+        get_available_name alone would hand its leftover cancel flag to the next run.
+        """
+        from django.core.files.storage import default_storage
+
+        stem = generated_basemap_upload_path(
+            self, Path(self.source_file.name).stem + "_cog"
+        )
+
+        run = 1
+        while True:
+            output_name = f"{stem}_run_{run}.tif"
+            if not any(
+                default_storage.exists(output_name + suffix)
+                for suffix in self.RUN_SUFFIXES
+            ):
+                return output_name
+            run += 1
 
     def as_basemap(self):
         from django.urls import reverse
@@ -194,7 +184,7 @@ class BasemapImage(PortalBasemap):
             if target.status == self.StatusChoices.PROCESSING:
                 raise ValueError(f'The "{self.name}" image is already processing.')
 
-            self.generated_file.name = image_generation_run_output_name(self)
+            self.generated_file.name = self.unique_output_name()
             self.status = self.StatusChoices.PROCESSING
             self.error_message = ""
             self.job = None
@@ -287,7 +277,9 @@ class BasemapCapture(PortalBasemap):
 
     TILE_CONTENT_TYPES = {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}
 
-    TYPE = PortalBasemap.Type.CAPTURE
+    # Files a capture run keeps next to its MBTiles file while it's processing
+    RUN_SUFFIXES = (".partial", ".progress.json", ".result.json", ".cancel")
+
     mbtiles_file = models.FileField(upload_to=basemap_capture_upload_path, blank=True)
     status = models.CharField(
         max_length=20,
@@ -309,6 +301,167 @@ class BasemapCapture(PortalBasemap):
     tile_format = models.CharField(max_length=10, default="png")
     min_zoom = models.PositiveSmallIntegerField()
     max_zoom = models.PositiveSmallIntegerField()
+    tile_size = models.PositiveSmallIntegerField(default=256)
+    max_requests_per_second = models.IntegerField(null=True, blank=True)
+    downloaded_on_server = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("-created_at",)
+
+    @property
+    def tile_content_type(self):
+        return self.TILE_CONTENT_TYPES.get(self.tile_format, "application/octet-stream")
+
+    # Paths to the various run-related files next to the MBTiles file
+    @property
+    def result_path(self):
+        return f"{self.mbtiles_file.path}.result.json" if self.mbtiles_file else None
+
+    @property
+    def progress_path(self):
+        return f"{self.mbtiles_file.path}.progress.json" if self.mbtiles_file else None
+
+    @property
+    def cancel_path(self):
+        return f"{self.mbtiles_file.path}.cancel" if self.mbtiles_file else None
+
+    @classmethod
+    def unique_output_name(cls, name):
+        """
+        Generates a file name for a new capture's MBTiles that isn't used by any
+        earlier run, including the leftover files of a failed or cancelled run
+        """
+        from django.core.files.storage import default_storage
+        from django.utils.crypto import get_random_string
+        from django.utils.text import slugify
+
+        stem = basemap_capture_upload_path(None, slugify(name) or "basemap")
+        candidate = default_storage.get_available_name(f"{stem}.mbtiles")
+        while any(
+            default_storage.exists(candidate + suffix) for suffix in cls.RUN_SUFFIXES
+        ):
+            candidate = default_storage.get_available_name(
+                f"{stem}_{get_random_string(7)}.mbtiles"
+            )
+        return candidate
+
+    def apply_build_result(self, result):
+        """Apply the result of a build job to this capture. Result comes from the worker"""
+        if result.get("ok"):
+            self.mbtiles_file.name = os.path.relpath(
+                result["output_path"], settings.MEDIA_ROOT
+            )
+            self.tile_format = result["tile_format"]
+            self.status = self.StatusChoices.READY
+            self.error_message = ""
+        else:
+            self.status = self.StatusChoices.FAILED
+            self.error_message = result.get("error", "Unknown error")
+        self.save()
+
+    def refresh_status(self):
+        """Apply the build job's result once it's available, and return the status."""
+        if self.status == self.StatusChoices.PROCESSING:
+            refresh_from_result_file(self, self.apply_build_result, "capture")
+        return self.status
+
+    def cancel(self, user=None):
+        """
+        Stop a capture that is processing on Dask.
+
+        Returns:
+            bool: True if it was cancelled, False if it had already finished.
+        """
+        from .jobs import cancel_dask_task
+
+        if self.refresh_status() != self.StatusChoices.PROCESSING:
+            return False
+
+        # Mark it first, so a result the task writes from here on is never applied.
+        # The status filter makes this a no-op if the capture finished just now.
+        message = f"Cancelled by {user}." if user else "Cancelled."
+        updated = BasemapCapture.objects.filter(
+            pk=self.pk, status=self.StatusChoices.PROCESSING
+        ).update(status=self.StatusChoices.CANCELLED, error_message=message)
+        if not updated:
+            self.refresh_from_db()
+            return False
+
+        flag = Path(self.cancel_path)
+        flag.parent.mkdir(parents=True, exist_ok=True)
+        flag.touch()
+        if self.job_id:
+            cancel_dask_task(self.job)
+
+        self.refresh_from_db()
+        return True
+
+    def cannot_restart_reason(self):
+        """Returns if and why this capture cannot be restarted.
+        The messages returned will be used only in the context
+        of direct requests to the server and will not be displayed to the user.
+        """
+        if self.status != self.StatusChoices.CANCELLED:
+            return "Only a cancelled capture can be restarted."
+        if not self.downloaded_on_server:
+            return (
+                "Only captures downloaded on the server can be restarted. "
+                "This one was downloaded in the browser; capture it again instead."
+            )
+        if self.source_id is None and self.secure_source_id is None:
+            return "The basemap this capture was downloaded from no longer exists."
+        return None
+
+    def as_basemap(self):
+        from django.urls import reverse
+        from django.utils.functional import lazy
+
+        def _tile_url(capture_pk):
+            url = reverse(
+                "basemaps:capture_tile",
+                kwargs={"capture_id": capture_pk, "z": 0, "x": 0, "y": 0},
+            )
+            suffix = "/0/0/0"
+            if not url.endswith(suffix):
+                raise ValueError(f"Unexpected tile URL shape: {url}")
+            return url[: -len(suffix)] + "/{z}/{x}/{y}"
+
+        if self.status != self.StatusChoices.READY:
+            raise ValueError(f'The "{self.name}" capture is not ready.')
+
+        options = {
+            "url": lazy(_tile_url, str)(self.pk),
+            "control_label": self.name,
+            "minZoom": self.min_zoom,
+            "maxZoom": self.max_zoom,
+        }
+        if self.attribution:
+            options["attributions"] = self.attribution
+
+        bounds = [self.min_x, self.min_y, self.max_x, self.max_y]
+        if None not in bounds:
+            options["layer_extent"] = bounds
+
+        return {"XYZ": options}
+
+    def get_tile(self, z, x, y):
+        """
+        Return the XYZ tile at z/x/y, or None if the capture doesn't have it.
+        """
+        import sqlite3
+        from pathlib import Path
+
+        if self.status != self.StatusChoices.READY or not self.mbtiles_file:
+            return None
+
+        uri = Path(self.mbtiles_file.path).as_uri() + "?mode=ro"
+        conn = sqlite3.connect(uri, uri=True)
+        try:
+            # MBTiles rows use the TMS scheme: row 0 is the southernmost row
+            row = conn.execute(
+                "SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?",
+                (z, x, (2**z - 1) - y),
+            ).fetchone()
+        finally:
+            conn.close()
+        return row[0] if row else None

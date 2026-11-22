@@ -19,5 +19,15 @@ urlpatterns = [
     ),
     path("images/<int:image_id>/source/", views.original_image, name="original_image"),
     path("images/<int:image_id>/cancel/", views.image_cancel, name="image_cancel"),
+    path("captures/upload/", views.capture_upload, name="capture_upload"),
+    path("captures/server/", views.capture_server, name="capture_server"),
+    path(
+        "captures/<int:capture_id>/cancel/", views.capture_cancel, name="capture_cancel"
+    ),
+    path(
+        "captures/<int:capture_id>/tiles/<int:z>/<int:x>/<int:y>",
+        views.capture_tile,
+        name="capture_tile",
+    ),
     path("<int:basemap_id>/status/", views.basemap_status, name="basemap_status"),
 ]

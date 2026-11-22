@@ -12,8 +12,6 @@ import json
 import logging
 import os
 
-from django.conf import settings
-
 log = logging.getLogger(f"tethys.{__name__}")
 
 JOB_LABEL = "tethys_basemaps"

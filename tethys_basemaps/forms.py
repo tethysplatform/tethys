@@ -10,19 +10,21 @@
 import json
 
 from django import forms
+from django.conf import settings
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from tethys_apps.models import TethysApp
-from tethys_basemaps.models import PortalBasemap, BasemapImage
+from tethys_basemaps.models import PortalBasemap, BasemapCapture, BasemapImage
 from tethys_compute.models import DaskScheduler
-
 
 
 class TethysAppBasemapsForm(forms.ModelForm):
     portal_basemaps = forms.ModelMultipleChoiceField(
-        queryset=PortalBasemap.objects.exclude(basemapimage__status__in=["pending", "processing", "failed", "cancelled"])
-                                      .exclude(basemapcapture__status__in=["processing", "failed", "cancelled"])
-                                      .order_by("name"),
+        queryset=PortalBasemap.objects.exclude(
+            basemapimage__status__in=["pending", "processing", "failed", "cancelled"]
+        )
+        .exclude(basemapcapture__status__in=["processing", "failed", "cancelled"])
+        .order_by("name"),
         required=False,
         widget=FilteredSelectMultiple("basemaps", is_stacked=False),
         help_text="Portal basemaps to include in this app's maps.",
@@ -110,3 +112,23 @@ class BasemapImageForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class BasemapCaptureForm(forms.ModelForm):
+    dask_scheduler = forms.ModelChoiceField(
+        queryset=DaskScheduler.objects.all(),
+        required=False,
+        label="Dask Scheduler",
+    )
+    max_requests_per_second = forms.IntegerField(
+        required=False,
+        label="Max Requests Per Second",
+        max_value=settings.BASEMAP_CAPTURE_SECURE_MAX_RATE,
+        min_value=1,
+        help_text="For server downloads only. Helps avoid hitting rate limits. Leave blank for no limit.",
+        widget=forms.NumberInput(attrs={"step": 1, "placeholder": "No limit"}),
+    )
+
+    class Meta:
+        model = BasemapCapture
+        fields = ("name", "min_zoom", "max_zoom")

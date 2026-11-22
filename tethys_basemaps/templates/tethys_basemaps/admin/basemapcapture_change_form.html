@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load static tethys_gizmos %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  {% gizmo_dependencies global_css %}
+  {% gizmo_dependencies css %}
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {{ tethys.jquery.script_tag|safe }}
+  {{ tethys.bootstrap.script_tag|safe }}
+  {% gizmo_dependencies global_js %}
+{% endblock %}
+
+{% block field_sets %}
+  <p id="capture-message" class="help" style="font-weight: bold;" hidden></p>
+  {{ block.super }}
+  {% gizmo capture_map %}
+  {% gizmo_dependencies js %}
+  {{ capture_urls|json_script:"capture-urls" }}
+  <script src="{% static 'tethys_basemaps/js/basemap_capture.js' %}"></script>
+  <script src="{% static 'tethys_basemaps/js/basemap_capture_admin.js' %}"></script>
+{% endblock %}

@@ -16,7 +16,11 @@ from django.utils.html import format_html
 
 from tethys_apps.admin import TethysAppAdmin
 from tethys_apps.models import TethysApp
-from tethys_basemaps.forms import TethysAppBasemapsForm, BasemapCaptureForm, BasemapImageForm
+from tethys_basemaps.forms import (
+    TethysAppBasemapsForm,
+    BasemapCaptureForm,
+    BasemapImageForm,
+)
 from tethys_basemaps.models import PortalBasemapSource, BasemapCapture, BasemapImage
 from tethys_gizmos.gizmo_options import MapView, MVView, MVDraw
 from tethys_portal.dependencies import vendor_static_dependencies
@@ -139,11 +143,17 @@ class BasemapImageAdmin(admin.ModelAdmin):
 
 @admin.register(BasemapCapture)
 class BasemapCaptureAdmin(admin.ModelAdmin):
-    list_display = ("name", "status",)
+    list_display = (
+        "name",
+        "status",
+    )
     search_fields = ("name",)
     change_form_template = "tethys_basemaps/admin/basemapcapture_change_form.html"
     fields = ("name", "min_zoom", "max_zoom")
     form = BasemapCaptureForm
+
+    class Media:
+        js = ("tethys_sdk/js/csrf.js",)
 
     def get_fields(self, request, obj=None):
         fields = list(self.fields)
@@ -155,11 +165,20 @@ class BasemapCaptureAdmin(admin.ModelAdmin):
                 fields += ["error_message"]
             if obj.dask_scheduler is not None:
                 fields += ["dask_scheduler", "rate_limit"]
-            
+
         return fields
 
     def get_readonly_fields(self, request, obj=None):
-        return () if obj is None else ("min_zoom", "max_zoom", "dask_scheduler", "rate_limit", "status", "error_message")
+        if obj is None:
+            return ()
+        return (
+            "min_zoom",
+            "max_zoom",
+            "dask_scheduler",
+            "rate_limit",
+            "status",
+            "error_message",
+        )
 
     @admin.display(description="Max requests per second")
     def rate_limit(self, obj):
@@ -167,25 +186,35 @@ class BasemapCaptureAdmin(admin.ModelAdmin):
         if rate is None:
             return "No limit"
         return f"{rate:g} per second"
-        
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        sources = PortalBasemapSource.objects.order_by("name")        
+        sources = PortalBasemapSource.objects.order_by("name")
         basemaps = [source.format_options() for source in sources]
 
         secure_map_services = SecureMapService.objects.order_by("name")
         for service in secure_map_services:
-            basemaps.append({"WMS": {"control_label": service.name, "url": service._generate_request()}})
+            basemaps.append(
+                {
+                    "WMS": {
+                        "control_label": service.name,
+                        "url": service._generate_request(),
+                    }
+                }
+            )
 
         new_object = object_id is None
 
         # Get the urls the frontend needs for getting status, cancelling the capture, and restarting it1
         status_url = cancel_url = restart_url = None
         capture = None if new_object else self.get_object(request, object_id)
-        if capture is not None and capture.refresh_status() == BasemapCapture.StatusChoices.PROCESSING:
+        if (
+            capture is not None
+            and capture.refresh_status() == BasemapCapture.StatusChoices.PROCESSING
+        ):
             status_url = reverse("basemaps:basemap_status", args=[capture.pk])
             if capture.job_id:  # only a Dask job can be stopped from here
                 cancel_url = reverse("basemaps:capture_cancel", args=[capture.pk])
-        elif capture is not None and capture.restart_problem() is None:
+        elif capture is not None and capture.cannot_restart_reason() is None:
             restart_url = reverse("basemaps:capture_restart", args=[capture.pk])
 
         capture_map = MapView(
@@ -193,11 +222,15 @@ class BasemapCaptureAdmin(admin.ModelAdmin):
             width="100%",
             basemap=basemaps,
             view=MVView(projection="EPSG:4326", center=[-98.5, 39.8], zoom=4),
-            draw=MVDraw(
-                controls=["Pan", "Box", "Delete"],
-                initial="Pan",
-                output_format="GeoJSON",
-            ) if new_object else None,
+            draw=(
+                MVDraw(
+                    controls=["Pan", "Box", "Delete"],
+                    initial="Pan",
+                    output_format="GeoJSON",
+                )
+                if new_object
+                else None
+            ),
         )
 
         extra_context = {
