@@ -41,4 +41,4 @@ dependencies:
 
   # basemap dependencies
   - rasterio
-  - large-image-source-rasterio
+  - large_image_source_rasterio
