@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 
 import tethys_apps.base.component_base as component_app_base
 from tethys_apps.base.url_map import UrlMapBase
@@ -64,6 +64,35 @@ class TestTethysAppBase(unittest.TestCase):
         )
         self.assertEqual(links, app.nav_links)
 
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_navigation_links_auto_single_app_mode(self):
+        """In single-app mode the app is served at the root, so links must not be under /apps/."""
+        app = component_app_base.ComponentBase()
+        app.nav_links = "auto"
+        app.index = "home"
+        app.root_url = "test-app"
+
+        app._registered_url_maps = [
+            UrlMapBase(name="home", url="", controller=None, title="Home", index=0),
+            UrlMapBase(
+                name="second_page",
+                url="",
+                controller=None,
+                title="Second Page",
+                index=1,
+            ),
+        ]
+
+        links = app.navigation_links
+
+        self.assertListEqual(
+            links,
+            [
+                {"title": "Home", "href": "/"},
+                {"title": "Second Page", "href": "/second-page/"},
+            ],
+        )
+
     @mock.patch("tethys_apps.base.component_base.page_controller")
     def test_page_decorator(self, mock_pc):
         app = component_app_base.ComponentBase()
@@ -73,6 +102,33 @@ class TestTethysAppBase(unittest.TestCase):
 
         self.assertEqual(app.page(test_page), mock_pc.return_value)
         mock_pc.assert_called_once_with(test_page, app=component_app_base.ComponentBase)
+
+    @mock.patch("tethys_apps.base.component_base.page_controller")
+    def test_page_decorator_with_reactjs_version_kwarg(self, mock_pc):
+        app = component_app_base.ComponentBase()
+
+        def test_page(lib):
+            return lib.html.div("Test 123")
+
+        self.assertEqual(
+            app.page(test_page, reactjs_version="18.2.0"), mock_pc.return_value
+        )
+        mock_pc.assert_called_once_with(
+            test_page, app=component_app_base.ComponentBase, reactjs_version="18.2.0"
+        )
+
+    @mock.patch("tethys_apps.base.component_base.page_controller")
+    def test_page_decorator_with_reactjs_version_attr(self, mock_pc):
+        class TestApp(component_app_base.ComponentBase):
+            reactjs_version = "18.2.0"
+
+        def test_page(lib):
+            return lib.html.div("Test 123")
+
+        self.assertEqual(TestApp.page(test_page), mock_pc.return_value)
+        mock_pc.assert_called_once_with(
+            test_page, app=TestApp, reactjs_version="18.2.0"
+        )
 
     def test_base_get_static_url_no_args(self):
         url = component_app_base.ComponentBase.get_static_url()

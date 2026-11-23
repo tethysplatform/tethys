@@ -29,7 +29,9 @@
     {% if signup_enabled %}
       <span class="d-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
     {% endif %}
-    <span class="d-block"><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></span>
+    {% if password_reset_enabled %}
+      <span class="d-block"><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></span>
+    {% endif %}
   </form>
 {% endblock %}
 

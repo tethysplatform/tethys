@@ -1,5 +1,6 @@
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.base.controller import page as page_controller
+from django.conf import settings
 from django.templatetags.static import static
 
 
@@ -33,12 +34,22 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
     Unique Attributes:
+      reactjs_version (string): The version of ReactJS to use for the app (e.g. ``"18.2.0"`` or ``"18.3.0"``).
       default_layout (string): The default layout for the app. Can be ``"NavHeader"`` or ``None``.
       nav_links (list or "auto"): A list of dictionaries containing navigation links for the app.
         Each dictionary should have a "title" and "href" key. If set to "auto", the navigation links will be
         automatically generated based on the functions decorated with ``@App.page``.
 
     """
+
+    reactjs_version = ""
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Fill in metadata for single-file apps run via "tethys run" (express mode)
+        from tethys_apps.base.express import synthesize_express_metadata
+
+        synthesize_express_metadata(cls)
 
     @classmethod
     def get_static_url(cls, *args):
@@ -58,7 +69,7 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
                 self.registered_url_maps,
                 key=lambda x: x.index if x.index is not None else 999,
             ):
-                href = f"/apps/{self.root_url}/"
+                href = f"/apps/{self.root_url}/" if settings.MULTIPLE_APP_MODE else "/"
                 if url_map.name != self.index:
                     href += url_map.name.replace("_", "-") + "/"
                 if url_map.index == -1:
@@ -74,6 +85,7 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
 
     @classmethod
     def page(cls, *args, **kwargs):
-
         kwargs["app"] = cls
+        if "reactjs_version" not in kwargs and cls.reactjs_version:
+            kwargs["reactjs_version"] = cls.reactjs_version
         return page_controller(*args, **kwargs)

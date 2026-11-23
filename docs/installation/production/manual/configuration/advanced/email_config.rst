@@ -4,9 +4,13 @@
 Forgotten Password Recovery (Optional)
 **************************************
 
-**Last Updated:** May 2020
+**Last Updated:** November 2026
 
 Tethys Portal provides a mechanism for resetting forgotten passwords that requires email capabilities. This guide discusses two options for enabling email capabilities to support this feature.
+
+.. note::
+
+    Password reset is disabled by default. You must explicitly enable it by setting ``ENABLE_PASSWORD_RESET`` to ``True`` and configuring email settings in ``EMAIL_CONFIG``. Configuration examples are provided below. If either is missing, the "Forgot your password?" link is hidden and the password reset pages redirect to the login page.
 
 Third-Party Email Services
 ==========================
@@ -54,7 +58,7 @@ Configure the Tethys Portal to use SendGrid as the email relay as follows:
 
 .. code-block::
 
-    tethys settings --set EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_HOST "smtp.sendgrid.net" --set EMAIL_PORT 25 --set EMAIL_HOST_USER "apikey" --set EMAIL_HOST_PASSWORD "<SENDGRID_API_KEY>" --set EMAIL_USE_TLS True --set DEFAULT_FROM_EMAIL "<VERIFIED_SENDER_EMAIL_ADDRESS>"
+    tethys settings --set EMAIL_CONFIG.EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_CONFIG.EMAIL_HOST "smtp.sendgrid.net" --set EMAIL_CONFIG.EMAIL_PORT 25 --set EMAIL_CONFIG.EMAIL_HOST_USER "apikey" --set EMAIL_CONFIG.EMAIL_HOST_PASSWORD "<SENDGRID_API_KEY>" --set EMAIL_CONFIG.EMAIL_USE_TLS True --set EMAIL_CONFIG.DEFAULT_FROM_EMAIL "<VERIFIED_SENDER_EMAIL_ADDRESS>" --set TETHYS_PORTAL_CONFIG.ENABLE_PASSWORD_RESET True
 
 .. note::
 
@@ -141,7 +145,7 @@ Several email settings in the :file:`portal_config.yml` file need to be configur
 
     .. code-block:: bash
 
-        tethys settings --set EMAIL_CONFIG.EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_CONFIG.EMAIL_HOST localhost --set EMAIL_CONFIG.EMAIL_PORT 25 --set EMAIL_CONFIG.EMAIL_HOST_USER "" --set EMAIL_CONFIG.EMAIL_HOST_PASSWORD "" --set EMAIL_CONFIG.EMAIL_USE_TLS False --set EMAIL_CONFIG.DEFAULT_FROM_EMAIL "<DEFAULT_FROM_EMAIL>" --set EMAIL_CONFIG.EMAIL_FROM "<EMAIL_FROM>"
+        tethys settings --set EMAIL_CONFIG.EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_CONFIG.EMAIL_HOST localhost --set EMAIL_CONFIG.EMAIL_PORT 25 --set EMAIL_CONFIG.EMAIL_HOST_USER "" --set EMAIL_CONFIG.EMAIL_HOST_PASSWORD "" --set EMAIL_CONFIG.EMAIL_USE_TLS False --set EMAIL_CONFIG.DEFAULT_FROM_EMAIL "<DEFAULT_FROM_EMAIL>" --set EMAIL_CONFIG.EMAIL_FROM "<EMAIL_FROM>" --set TETHYS_PORTAL_CONFIG.ENABLE_PASSWORD_RESET True
 
     .. note::
 

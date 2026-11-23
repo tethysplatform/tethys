@@ -11,6 +11,15 @@ Refer to this article for information about each new release of Tethys Platform.
 Release |version|
 =================
 
+Tethys Run (Express Mode)
+-------------------------
+
+* The new ``tethys run`` command runs a single-file component app with zero configuration — no portal configuration, no database setup, no ``pip install``, and no login required.
+* Inspired by tools like Shiny and Streamlit, it lowers the barrier to entry for building Tethys apps: write one Python file and run it with one command.
+* Apps developed this way run on the standard portal machinery and can be installed in a full Tethys Portal without modification.
+
+See: :ref:`tethys_run_cmd`
+
 Reported Job Statuses
 ---------------------
 
@@ -42,6 +51,7 @@ See: :doc:`tethys_sdk/gizmos/time_picker`
 Bug Fixes
 ---------
 
+* Node statuses of finished condor workflows are served from the database instead of expiring: `PR 1298 <https://github.com/tethysplatform/tethys/pull/1298>`_
 * Captcha field rendering fix for the login and register pages: `PR 1297 <https://github.com/tethysplatform/tethys/pull/1297>`_
 * Login and register form fixes: `PR 1293 <https://github.com/tethysplatform/tethys/pull/1293>`_
 * Static file discovery fix for ``STATICFILES_USE_NPM``: `PR 1291 <https://github.com/tethysplatform/tethys/pull/1291>`_

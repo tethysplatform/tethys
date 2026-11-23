@@ -56,7 +56,8 @@ class TestUrls(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual("/accounts/password/reset/f00Bar-tok/", url)
         self.assertEqual(
-            "django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path
+            "tethys_portal.views.email.TethysPasswordResetConfirmView",
+            resolver._func_path,
         )
 
     def test_account_urls_accounts_password_done(self):
@@ -282,7 +283,8 @@ class TestUrlsWithPrefix(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/password/reset/f00Bar-tok/", url)
         self.assertEqual(
-            "django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path
+            "tethys_portal.views.email.TethysPasswordResetConfirmView",
+            resolver._func_path,
         )
 
     def test_account_urls_accounts_password_done(self):

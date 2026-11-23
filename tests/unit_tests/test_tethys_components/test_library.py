@@ -37,7 +37,7 @@ class TestComponentLibrary(TestCase):
                     LIBRARY_EVAL_DIR / f"{test_page_name}_expected.importmap"
                 )
 
-                lib = library.ComponentLibrary(test_page_name)
+                lib = library.ComponentLibrary(test_page_name, reactjs_version="18.2.0")
                 lib.hooks = mock.MagicMock()
                 lib.hooks.use_state.return_value = [None, lambda _: None]
                 test_module = __import__(test_page_name, fromlist=["test"])
@@ -46,7 +46,9 @@ class TestComponentLibrary(TestCase):
                 json_vdom = dumps(raw_vdom, default=self.json_serializer)
                 importmap_string = lib.get_importmap()
 
-                alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
+                alternate_lib = library.ComponentLibrary(
+                    f"{test_page_name}_alternate", reactjs_version="18.2.0"
+                )
                 alternate_lib.load_dependencies_from_source_code(test_module.page_test)
                 alternate_lib_js_string = lib.render_js_template()
                 self.assertEqual(js_string, alternate_lib_js_string)
@@ -68,11 +70,13 @@ class TestComponentLibrary(TestCase):
             library.ComponentLibraryManager()
 
     def test_get_library_with_kwargs(self):
-        base_lib = library.ComponentLibraryManager.get_library("test_lib")
+        base_lib = library.ComponentLibraryManager.get_library(
+            "test_lib", library.REACTJS_VERSION
+        )
         base_lib.bs.Col
         base_lib.bs.Button
         lib = library.ComponentLibraryManager.get_library(
-            "test_lib", {"var1": "foo", "var2": "bar"}
+            "test_lib", library.REACTJS_VERSION, {"var1": "foo", "var2": "bar"}
         )
         self.assertIsInstance(lib, library.ComponentLibrary)
         self.assertIn("test_lib_foo_bar", library.ComponentLibraryManager.LIBRARIES)

@@ -192,6 +192,7 @@ class TestScaffoldCommands(unittest.TestCase):
     ):
         # mock the input args
         mock_args = self._get_default_args()
+        mock_args.template = "component"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -211,7 +212,9 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_mkdir.return_value = True
 
-        scaffold_command(args=mock_args)
+        with mock.patch("builtins.__import__") as mock_import:
+            scaffold_command(args=mock_args)
+            mock_import.call_args_list[0].args[0] == "tethys_components.library"
 
         mock_pretty_output.assert_called()
 

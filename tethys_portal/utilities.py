@@ -94,3 +94,70 @@ def sanitize_next_url(next_url):
     ):
         return next_url
     return None
+
+
+def is_password_reset_enabled():
+    """
+    Check if password reset is enabled based on settings.
+
+    Password reset is disabled by default. It is enabled only when both of the
+    following are true in the portal config:
+
+    * Email is configured (see :func:`is_email_configured`), since the reset
+      link must be emailed to the user.
+    * ``ENABLE_PASSWORD_RESET`` is explicitly set to a truthy value.
+
+    Returns:
+        bool: True if password reset is enabled, False otherwise.
+    """
+    # Password reset relies on sending an email, so it requires email to be configured
+    if not is_email_configured():
+        return False
+
+    # Check the portal config for the ENABLE_PASSWORD_RESET setting
+    return bool(getattr(settings, "ENABLE_PASSWORD_RESET", False))
+
+
+def is_email_configured():
+    """
+    Check whether email sending appears to be configured in the portal config.
+
+    The email backend is the most reliable signal that mail can actually be
+    delivered. Backends that do not deliver mail (console, file, in-memory, and
+    dummy) are treated as not configured. Custom/third-party backends (e.g.
+    anymail, SES) are assumed to be deliberately configured. For the default
+    SMTP backend, email settings fall back to Django's defaults, so email is
+    only considered configured when a meaningful sender address or host user has
+    been deliberately provided.
+
+    Returns:
+        bool: True if email appears to be configured, False otherwise.
+    """
+    # Backends that do not actually deliver email
+    non_delivering_backends = (
+        "django.core.mail.backends.console.EmailBackend",
+        "django.core.mail.backends.filebased.EmailBackend",
+        "django.core.mail.backends.locmem.EmailBackend",
+        "django.core.mail.backends.dummy.EmailBackend",
+    )
+
+    # Default SMTP backend to fall back on if EMAIL_BACKEND is not specified
+    smtp_backend = "django.core.mail.backends.smtp.EmailBackend"
+
+    # Get the email backend from settings, defaulting to the SMTP backend if not specified
+    backend = getattr(settings, "EMAIL_BACKEND", smtp_backend)
+
+    # A backend that does not deliver mail cannot send a password reset email
+    if not backend or backend in non_delivering_backends:
+        return False
+
+    # Custom/third-party backends manage their own settings
+    if backend != smtp_backend:
+        return True
+
+    # Default SMTP backend: require a deliberately provided sender address or
+    # host user, since the other SMTP settings fall back to Django's defaults
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "")
+    return (bool(from_email) and from_email != "webmaster@localhost") or bool(
+        getattr(settings, "EMAIL_HOST_USER", "")
+    )

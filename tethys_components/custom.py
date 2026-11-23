@@ -1,3 +1,4 @@
+from django.conf import settings
 from tethys_portal.settings import STATIC_URL
 from pathlib import Path
 
@@ -298,8 +299,31 @@ def NavIcon(lib, src="", style=None):
     )
 
 
+DEFAULT_APP_ICON = "tethys_apps/images/default_app_icon.gif"
+
+
+def _app_icon_url(app):
+    """
+    Resolve the URL of an app's icon the same way the Django app templates do: absolute
+    URLs are used as-is, other values are static paths, and a missing icon falls back to
+    the default app icon.
+    """
+    icon = getattr(app, "icon", "") or ""
+    if not icon:
+        return f"{STATIC_URL}{DEFAULT_APP_ICON}"
+    if icon.startswith(("http://", "https://")):
+        return icon
+    return f"{STATIC_URL}{icon}"
+
+
 def HeaderWithNavBar(lib, app, user, nav_links=None):
     nav_links = nav_links or []
+    # In single-app mode the app is served at the site root, not under /apps/<root_url>/
+    if settings.MULTIPLE_APP_MODE:
+        app_home_url = f"/apps/{app.root_url}/"
+        nav_active_key = f"/apps/{app.root_url}"
+    else:
+        app_home_url = nav_active_key = "/"
     app_db_query = lib.hooks.use_query(lib.utils._get_db_object, {"app": app})
     app_id = app_db_query.data.id if app_db_query.data else 999
     margin_top, set_margin_top = lib.hooks.use_state(-56)
@@ -364,12 +388,12 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                     else lib.html.span()
                 ),
                 lib.bs.NavbarBrand(
-                    href=f"/apps/{app.root_url}/",
+                    href=app_home_url,
                     class_name="mx-0 d-none d-sm-block",
                     style=lib.Style(color="white"),
                 )(
                     lib.tethys.NavIcon(
-                        src=f"{STATIC_URL}{app.icon}",
+                        src=_app_icon_url(app),
                         style=lib.Style(background_color=app.color),
                     ),
                     f" {app.name}",
@@ -404,7 +428,7 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                         lib.bs.Nav(
                             {
                                 "variant": "pills",
-                                "defaultActiveKey": f"/apps/{app.root_url}",
+                                "defaultActiveKey": nav_active_key,
                                 "class_name": "flex-column",
                             },
                             AppNavLinks(lib, app=app, from_package="bs"),

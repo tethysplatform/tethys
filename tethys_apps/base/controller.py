@@ -473,6 +473,7 @@ def page(
     custom_css=None,
     custom_js=None,
     preload: list = None,
+    reactjs_version: str = None,
     app=None,
 ) -> Callable:
     """
@@ -521,7 +522,8 @@ def page(
 
         component_source_code = inspect.getsource(component_function)
         lib = ComponentLibraryManager.get_library(
-            f"{app.package}-{component_function.__name__}"
+            f"{app.package}-{component_function.__name__}",
+            **{"reactjs_version": reactjs_version} if reactjs_version else {},
         )
         lib.load_dependencies_from_source_code(component_source_code)
 

@@ -40,3 +40,4 @@ conda.recipe/meta.yaml
 tethysapp-*
 _build
 .claude/*
+.remember/
