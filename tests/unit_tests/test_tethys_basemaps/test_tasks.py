@@ -731,6 +731,27 @@ def test_build_mbtiles_cancelled(tmp_path):
     assert not packed_path.exists()
 
 
+@mock.patch("tethys_basemaps.tasks.mbtiles.insert_tile", side_effect=KeyboardInterrupt)
+@mock.patch("tethys_basemaps.tasks.mbtiles.create_mbtiles")
+def test_build_mbtiles_interrupted(mock_create_mbtiles, mock_insert_tile, tmp_path):
+    packed_path = tmp_path / "test.tiles"
+    packed_path.write_bytes(PNG)
+
+    with pytest.raises(KeyboardInterrupt):
+        tasks.build_mbtiles(
+            1,
+            str(packed_path),
+            [[0, 0, 0, len(PNG)]],
+            WORLD_BBOX,
+            "Test Capture",
+            "Test Source",
+            str(tmp_path / "test.mbtiles"),
+        )
+
+    mock_create_mbtiles.return_value.close.assert_called_once()
+    assert not packed_path.exists()
+
+
 @mock.patch("tethys_basemaps.tasks.PROGRESS_EVERY", 2)
 @mock.patch("tethys_basemaps.tasks._make_reader")
 def test_fetch_and_build_mbtiles(mock_make_reader, tmp_path):

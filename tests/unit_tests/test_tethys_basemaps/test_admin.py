@@ -9,7 +9,7 @@ from django.urls import reverse
 from tethys_apps.models import TethysApp
 from tethys_basemaps.admin import BasemapCaptureAdmin, TethysAppBasemapsAdmin
 from tethys_basemaps.models import BasemapCapture, BasemapImage, PortalBasemapSource
-from tethys_compute.models import DaskJob
+from tethys_compute.models import DaskJob, DaskScheduler
 
 
 @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
@@ -99,6 +99,50 @@ def test_admin_basemap_image_change_geotiff_ready(admin_client):
     )
     assert response.status_code == 200
     assert response.context["image_overlay"]["tile_url"].endswith("/{z}/{x}/{y}")
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
+@pytest.mark.django_db
+def test_admin_basemap_image_change_processing(admin_client, admin_user):
+    job = DaskJob.objects.create(name="image job", user=admin_user)
+    image = BasemapImage.objects.create(
+        name="Test Image", status=BasemapImage.StatusChoices.PROCESSING, job=job
+    )
+    with mock.patch.object(
+        BasemapImage,
+        "refresh_status",
+        return_value=BasemapImage.StatusChoices.PROCESSING,
+    ):
+        response = admin_client.get(
+            f"/admin/tethys_basemaps/basemapimage/{image.id}/change/"
+        )
+    assert response.status_code == 200
+    assert response.context["image_urls"] == {
+        "status": reverse("basemaps:basemap_status", args=[image.id]),
+        "cancel": reverse("basemaps:image_cancel", args=[image.id]),
+    }
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
+@pytest.mark.django_db
+def test_admin_basemap_image_save_change_while_processing(admin_client):
+    image = BasemapImage.objects.create(
+        name="Test Image", status=BasemapImage.StatusChoices.PROCESSING
+    )
+    with mock.patch.object(BasemapImage, "start_generation"):
+        response = admin_client.post(
+            f"/admin/tethys_basemaps/basemapimage/{image.id}/change/",
+            {
+                "name": "Test Image",
+                "attribution": "",
+                "dask_scheduler": "",
+                "georeference": "",
+            },
+        )
+    assert response.status_code == 302
+    assert response["Location"] == reverse(
+        "admin:tethys_basemaps_basemapimage_change", args=[image.id]
+    )
 
 
 @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
@@ -251,6 +295,22 @@ def test_basemap_capture_admin_get_fields_change():
     ]
 
 
+def test_basemap_capture_admin_get_fields_with_scheduler():
+    capture_admin = BasemapCaptureAdmin(BasemapCapture, admin.site)
+    capture = BasemapCapture(
+        name="Test Capture", dask_scheduler=DaskScheduler(name="Test Scheduler")
+    )
+
+    assert capture_admin.get_fields(None, capture) == [
+        "name",
+        "min_zoom",
+        "max_zoom",
+        "status",
+        "dask_scheduler",
+        "rate_limit",
+    ]
+
+
 def test_basemap_capture_admin_get_readonly_fields():
     capture_admin = BasemapCaptureAdmin(BasemapCapture, admin.site)
 
@@ -356,14 +416,14 @@ def test_admin_basemap_capture_edit_processing(
 
 
 @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
-@mock.patch("tethys_basemaps.models.BasemapCapture.cannot_restart_reason")
+@mock.patch("tethys_basemaps.models.BasemapCapture.restart_problem")
 @mock.patch("tethys_basemaps.admin.SecureMapService")
 @pytest.mark.django_db
 def test_admin_basemap_capture_edit_restart(
-    mock_sms, mock_cannot_restart_reason, admin_client
+    mock_sms, mock_restart_problem, admin_client
 ):
     capture = BasemapCapture.objects.create(name="Test Capture", min_zoom=4, max_zoom=7)
-    mock_cannot_restart_reason.return_value = None
+    mock_restart_problem.return_value = None
     service = mock.MagicMock()
     service.name = (
         "Secure Service"  # can't pass name= to MagicMock; that names the mock

@@ -277,7 +277,42 @@ def test_cancel_dask_task_no_key():
     mock_job.scheduler.client.cancel.assert_not_called()
 
 
+def test_cancel_dask_task_no_scheduler():
+    mock_job = mock.MagicMock(key="test-key", scheduler=None)
+
+    assert jobs.cancel_dask_task(mock_job) is None
+
+
 @mock.patch("tethys_basemaps.jobs.log")
 def test_cancel_dask_task_no_connection(mock_log):
     mock_job = mock.MagicMock(key="test-key")
     type(mock_job.scheduler).client = mock.PropertyMock(side_effect=Exception("down"))
+
+    jobs.cancel_dask_task(mock_job)
+
+    mock_log.exception.assert_called_once()
+
+
+@mock.patch("dask.distributed.Future")
+def test_cancel_dask_task(mock_future):
+    mock_job = mock.MagicMock(key="test-key")
+    mock_client = mock_job.scheduler.client
+
+    jobs.cancel_dask_task(mock_job)
+
+    mock_future.assert_called_once_with("test-key", client=mock_client)
+    mock_client.cancel.assert_called_once_with(mock_future.return_value, force=True)
+    mock_client.close.assert_called_once()
+
+
+@mock.patch("tethys_basemaps.jobs.log")
+@mock.patch("dask.distributed.Future")
+def test_cancel_dask_task_error(mock_future, mock_log):
+    mock_job = mock.MagicMock(key="test-key")
+    mock_client = mock_job.scheduler.client
+    mock_client.cancel.side_effect = Exception("Test error")
+
+    jobs.cancel_dask_task(mock_job)
+
+    mock_log.exception.assert_called_once()
+    mock_client.close.assert_called_once()

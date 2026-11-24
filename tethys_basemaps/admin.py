@@ -245,7 +245,7 @@ class BasemapCaptureAdmin(admin.ModelAdmin):
             status_url = reverse("basemaps:basemap_status", args=[capture.pk])
             if capture.job_id:  # only a Dask job can be stopped from here
                 cancel_url = reverse("basemaps:capture_cancel", args=[capture.pk])
-        elif capture is not None and capture.cannot_restart_reason() is None:
+        elif capture is not None and capture.restart_problem() is None:
             restart_url = reverse("basemaps:capture_restart", args=[capture.pk])
 
         capture_map = MapView(

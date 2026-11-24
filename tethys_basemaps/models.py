@@ -454,22 +454,6 @@ class BasemapCapture(PortalBasemap):
         self.refresh_from_db()
         return True
 
-    def cannot_restart_reason(self):
-        """Returns if and why this capture cannot be restarted.
-        The messages returned will be used only in the context
-        of direct requests to the server and will not be displayed to the user.
-        """
-        if self.status != self.StatusChoices.CANCELLED:
-            return "Only a cancelled capture can be restarted."
-        if not self.downloaded_on_server:
-            return (
-                "Only captures downloaded on the server can be restarted. "
-                "This one was downloaded in the browser; capture it again instead."
-            )
-        if self.source_id is None and self.secure_source_id is None:
-            return "The basemap this capture was downloaded from no longer exists."
-        return None
-
     def as_basemap(self):
         from django.urls import reverse
         from django.utils.functional import lazy

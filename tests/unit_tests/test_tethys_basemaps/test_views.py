@@ -1038,3 +1038,157 @@ def test_capture_tile(mock_captures):
     mock_capture.get_tile.assert_called_once_with(2, 3, 4)
     assert response.content == b"tile bytes"
     assert response["Content-Type"] == "image/jpeg"
+
+
+@mock.patch("tethys_basemaps.views.BasemapImage.objects")
+def test_image_cancel_not_found(mock_images):
+    mock_images.get.side_effect = BasemapImage.DoesNotExist
+
+    response = views.image_cancel(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 404
+
+
+@mock.patch("tethys_basemaps.views.BasemapImage.objects")
+def test_image_cancel_no_job(mock_images):
+    mock_images.get.return_value.job_id = None
+
+    response = views.image_cancel(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 400
+
+
+@mock.patch("tethys_basemaps.views.BasemapImage.objects")
+def test_image_cancel_already_finished(mock_images):
+    mock_image = mock_images.get.return_value
+    mock_image.cancel.return_value = False
+    mock_image.status = "ready"
+    mock_image.get_status_display.return_value = "Ready"
+
+    response = views.image_cancel(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 409
+    assert json.loads(response.content) == {
+        "error": "The image has already finished (Ready).",
+        "status": "ready",
+    }
+
+
+@mock.patch("tethys_basemaps.views.BasemapImage.objects")
+def test_image_cancel(mock_images):
+    mock_image = mock_images.get.return_value
+    mock_image.pk = 1
+    mock_image.status = "cancelled"
+    mock_image.cancel.return_value = True
+    mock_request = mock.MagicMock(method="POST")
+
+    response = views.image_cancel(mock_request, 1)
+
+    mock_image.cancel.assert_called_once_with(mock_request.user)
+    assert response.status_code == 200
+    assert json.loads(response.content) == {"id": 1, "status": "cancelled"}
+
+
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+def test_capture_restart_not_found(mock_captures):
+    mock_captures.select_related.return_value.get.side_effect = (
+        BasemapCapture.DoesNotExist
+    )
+
+    response = views.capture_restart(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 404
+
+
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+def test_capture_restart_problem(mock_captures):
+    mock_capture = mock_captures.select_related.return_value.get.return_value
+    mock_capture.restart_problem.return_value = (
+        "Only a cancelled capture can be restarted."
+    )
+
+    response = views.capture_restart(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 400
+    assert response.content == b"Only a cancelled capture can be restarted."
+
+
+@mock.patch(
+    "tethys_basemaps.views.source_tile_templates", side_effect=ValueError("Test error")
+)
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+def test_capture_restart_source_error(mock_captures, mock_templates):
+    mock_capture = mock_captures.select_related.return_value.get.return_value
+    mock_capture.restart_problem.return_value = None
+
+    response = views.capture_restart(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 400
+    assert response.content == b"Test error"
+    mock_captures.filter.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.views._submit_server_download")
+@mock.patch("tethys_basemaps.views.source_tile_templates", return_value=([], {}))
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+def test_capture_restart_not_claimed(mock_captures, mock_templates, mock_submit):
+    mock_capture = mock_captures.select_related.return_value.get.return_value
+    mock_capture.restart_problem.return_value = None
+    mock_captures.filter.return_value.update.return_value = 0
+
+    response = views.capture_restart(mock.MagicMock(method="POST"), 1)
+
+    assert response.status_code == 409
+    assert json.loads(response.content) == {
+        "error": "The capture is no longer cancelled."
+    }
+    mock_submit.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.views._capture_response")
+@mock.patch("tethys_basemaps.views.count_tiles", return_value=2)
+@mock.patch("tethys_basemaps.views._submit_server_download")
+@mock.patch("tethys_basemaps.views.source_tile_templates")
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+def test_capture_restart(
+    mock_captures, mock_templates, mock_submit, mock_count_tiles, mock_capture_response
+):
+    mock_capture = mock_captures.select_related.return_value.get.return_value
+    mock_capture.restart_problem.return_value = None
+    mock_templates.return_value = (["https://test/{z}/{x}/{y}"], {"X-Test": "1"})
+    mock_captures.filter.return_value.update.return_value = 1
+    mock_request = mock.MagicMock(method="POST")
+
+    response = views.capture_restart(mock_request, 1)
+
+    mock_captures.select_related.assert_called_once_with("source", "secure_source")
+    mock_templates.assert_called_once_with(mock_capture.source)
+    mock_captures.filter.assert_called_once_with(
+        pk=mock_capture.pk, status=BasemapCapture.StatusChoices.CANCELLED
+    )
+    mock_captures.filter.return_value.update.assert_called_once_with(
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        error_message="",
+        mbtiles_file=mock_capture.unique_output_name.return_value,
+        job=None,
+    )
+    mock_capture.refresh_from_db.assert_called_once()
+    mock_submit.assert_called_once_with(
+        mock_capture,
+        mock_capture.source,
+        ["https://test/{z}/{x}/{y}"],
+        {"X-Test": "1"},
+        mock_request.user,
+    )
+    mock_count_tiles.assert_called_once_with(
+        [
+            mock_capture.min_x,
+            mock_capture.min_y,
+            mock_capture.max_x,
+            mock_capture.max_y,
+        ],
+        mock_capture.min_zoom,
+        mock_capture.max_zoom,
+    )
+    mock_capture_response.assert_called_once_with(mock_capture, 2)
+    assert response == mock_capture_response.return_value

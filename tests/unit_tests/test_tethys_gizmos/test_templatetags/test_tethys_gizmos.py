@@ -165,6 +165,17 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Result
         self.assertEqual('["foo", {"bar": ["baz", null, 1.0, 2]}]', result)
 
+    @mock.patch(
+        "tethys_gizmos.templatetags.tethys_gizmos.json.dumps", side_effect=Exception
+    )
+    @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.log")
+    def test_jsonify_exception(self, mock_log, mock_dumps):
+        with self.assertRaises(Exception):
+            gizmos_templatetags.jsonify("test_data")
+        mock_log.exception.assert_called_with(
+            "Failed to serialize Gizmo data. type %s, Data %r", (str, "test_data")
+        )
+
     def test_divide(self):
         value = 10
         divisor = 2

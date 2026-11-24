@@ -9,6 +9,8 @@ from tethys_basemaps.models import (
     BasemapImage,
     PortalBasemap,
     PortalBasemapSource,
+    _delete_basemap_files,
+    remove_files,
 )
 
 PNG = b"\x89PNG\r\n\x1a\ntest png"
@@ -236,6 +238,27 @@ def test_basemap_image_start_generation_error(
     assert image.error_message == "Test error"
 
 
+@mock.patch("tethys_basemaps.jobs.run_basemap_task")
+@mock.patch.object(
+    BasemapImage, "unique_output_name", return_value="generated/test_cog_run_1.tif"
+)
+@mock.patch("tethys_basemaps.models.BasemapImage.objects.filter")
+def test_basemap_image_start_generation_saves_job(
+    mock_filter, mock_unique_output_name, mock_run, db, settings, tmp_path
+):
+    settings.MEDIA_ROOT = str(tmp_path)
+    image = BasemapImage.objects.create(
+        name="Test Image", source_file="original/test.png"
+    )
+    mock_job = mock.MagicMock()
+    mock_run.return_value = mock_job
+
+    image.start_generation(mock.MagicMock())
+
+    mock_filter.assert_called_once_with(pk=image.pk)
+    mock_filter.return_value.update.assert_called_once_with(job=mock_job)
+
+
 def test_basemap_image_apply_generation_result(db, settings, tmp_path):
     settings.MEDIA_ROOT = str(tmp_path)
     image = BasemapImage.objects.create(
@@ -303,6 +326,152 @@ def test_basemap_image_apply_generation_result_not_processing(db):
     image.apply_generation_result({"ok": False, "error": "Test error"})
 
     assert image.status == BasemapImage.StatusChoices.CANCELLED
+
+
+@mock.patch("tethys_basemaps.jobs.cancel_dask_task")
+def test_basemap_image_stop_run_touches_cancel_flag(mock_cancel, settings, tmp_path):
+    settings.MEDIA_ROOT = str(tmp_path)
+    image = BasemapImage(generated_file="generated/test.tif")
+
+    image._stop_run()
+
+    assert (tmp_path / "generated/test.tif.cancel").exists()
+    mock_cancel.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.jobs.cancel_dask_task")
+def test_basemap_image_stop_run_no_cancel_path(mock_cancel):
+    image = BasemapImage()
+
+    image._stop_run()
+
+    mock_cancel.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.jobs.cancel_dask_task")
+def test_basemap_image_stop_run_cancels_dask_job(mock_cancel):
+    image = BasemapImage(job_id=1)
+    mock_job = mock.MagicMock()
+
+    with mock.patch.object(
+        BasemapImage, "job", new_callable=mock.PropertyMock, return_value=mock_job
+    ):
+        image._stop_run()
+
+    mock_cancel.assert_called_once_with(mock_job)
+
+
+def test_basemap_image_cancel_not_processing():
+    image = BasemapImage(status=BasemapImage.StatusChoices.READY)
+
+    assert image.cancel() is False
+
+
+@mock.patch.object(BasemapImage, "_stop_run")
+def test_basemap_image_cancel(mock_stop_run, db):
+    image = BasemapImage.objects.create(
+        name="Test Image", status=BasemapImage.StatusChoices.PROCESSING
+    )
+
+    with mock.patch.object(BasemapImage, "refresh_status", return_value="processing"):
+        result = image.cancel("testuser")
+
+    assert result is True
+    assert image.status == BasemapImage.StatusChoices.CANCELLED
+    assert image.error_message == "Cancelled by testuser."
+    mock_stop_run.assert_called_once()
+
+
+@mock.patch.object(BasemapImage, "_stop_run")
+def test_basemap_image_cancel_no_user(mock_stop_run, db):
+    image = BasemapImage.objects.create(
+        name="Test Image", status=BasemapImage.StatusChoices.PROCESSING
+    )
+
+    with mock.patch.object(BasemapImage, "refresh_status", return_value="processing"):
+        result = image.cancel()
+
+    assert result is True
+    assert image.error_message == "Cancelled."
+    mock_stop_run.assert_called_once()
+
+
+@mock.patch.object(BasemapImage, "_stop_run")
+def test_basemap_image_cancel_finished_just_now(mock_stop_run, db):
+    image = BasemapImage.objects.create(
+        name="Test Image", status=BasemapImage.StatusChoices.READY
+    )
+
+    with mock.patch.object(BasemapImage, "refresh_status", return_value="processing"):
+        result = image.cancel()
+
+    assert result is False
+    assert image.status == BasemapImage.StatusChoices.READY
+    mock_stop_run.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.models.os.rmdir", side_effect=OSError)
+@mock.patch("tethys_basemaps.models.remove_files")
+@mock.patch.object(BasemapImage, "_stop_run")
+def test_basemap_image_delete_files(
+    mock_stop_run, mock_remove_files, mock_rmdir, settings, tmp_path
+):
+    settings.MEDIA_ROOT = str(tmp_path)
+    image = BasemapImage(
+        status=BasemapImage.StatusChoices.READY,
+        source_file="original/test.png",
+        generated_file="generated/test.tif",
+    )
+    cog = str(tmp_path / "generated/test.tif")
+
+    image.delete_files()
+
+    mock_stop_run.assert_not_called()
+    mock_remove_files.assert_called_once_with(
+        str(tmp_path / "original/test.png"),
+        cog,
+        cog + ".partial",
+        cog + ".result.json",
+        cog + ".cancel",
+    )
+    mock_rmdir.assert_has_calls(
+        [mock.call(str(tmp_path / "original")), mock.call(str(tmp_path / "generated"))],
+        any_order=True,
+    )
+
+
+@mock.patch("tethys_basemaps.models.os.rmdir")
+@mock.patch("tethys_basemaps.models.remove_files")
+@mock.patch.object(BasemapImage, "_stop_run")
+def test_basemap_image_delete_files_processing(
+    mock_stop_run, mock_remove_files, mock_rmdir, settings, tmp_path
+):
+    settings.MEDIA_ROOT = str(tmp_path)
+    image = BasemapImage(
+        status=BasemapImage.StatusChoices.PROCESSING,
+        job_id=1,
+        generated_file="generated/test.tif",
+    )
+    cog = str(tmp_path / "generated/test.tif")
+
+    image.delete_files()
+
+    mock_stop_run.assert_called_once()
+    mock_remove_files.assert_called_once_with(
+        cog, cog + ".partial", cog + ".result.json"
+    )
+    mock_rmdir.assert_called_once_with(str(tmp_path / "generated"))
+
+
+@mock.patch("tethys_basemaps.models.os.rmdir")
+@mock.patch("tethys_basemaps.models.remove_files")
+def test_basemap_image_delete_files_no_files(mock_remove_files, mock_rmdir):
+    image = BasemapImage(status=BasemapImage.StatusChoices.READY)
+
+    image.delete_files()
+
+    mock_remove_files.assert_called_once_with()
+    mock_rmdir.assert_not_called()
 
 
 def test_basemap_capture_tile_content_type():
@@ -476,42 +645,63 @@ def test_basemap_capture_cancel_finished_just_now(db):
     assert capture.status == BasemapCapture.StatusChoices.READY
 
 
-def test_basemap_capture_cannot_restart_reason_not_cancelled():
+@mock.patch("tethys_basemaps.jobs.cancel_dask_task")
+def test_basemap_capture_cancel_with_job(mock_cancel_dask_task, db, settings, tmp_path):
+    settings.MEDIA_ROOT = str(tmp_path)
+    capture = BasemapCapture.objects.create(
+        name="Test Capture",
+        min_zoom=0,
+        max_zoom=1,
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        mbtiles_file="captures/test.mbtiles",
+    )
+    capture.job_id = 1
+    mock_job = mock.MagicMock(key=None)
+
+    with mock.patch.object(
+        BasemapCapture, "job", new_callable=mock.PropertyMock, return_value=mock_job
+    ):
+        result = capture.cancel("testuser")
+
+    assert result is True
+    assert capture.status == BasemapCapture.StatusChoices.CANCELLED
+    mock_cancel_dask_task.assert_called_once_with(mock_job)
+
+
+def test_basemap_capture_restart_problem_not_cancelled():
     capture = BasemapCapture(status=BasemapCapture.StatusChoices.READY)
 
-    assert (
-        capture.cannot_restart_reason() == "Only a cancelled capture can be restarted."
-    )
+    assert capture.restart_problem() == "Only a cancelled capture can be restarted."
 
 
-def test_basemap_capture_cannot_restart_reason_browser_capture():
+def test_basemap_capture_restart_problem_browser_capture():
     capture = BasemapCapture(
         status=BasemapCapture.StatusChoices.CANCELLED, downloaded_on_server=False
     )
 
-    assert capture.cannot_restart_reason().startswith(
+    assert capture.restart_problem().startswith(
         "Only captures downloaded on the server can be restarted."
     )
 
 
-def test_basemap_capture_cannot_restart_reason_source_deleted():
+def test_basemap_capture_restart_problem_source_deleted():
     capture = BasemapCapture(
         status=BasemapCapture.StatusChoices.CANCELLED, downloaded_on_server=True
     )
 
-    assert capture.cannot_restart_reason() == (
+    assert capture.restart_problem() == (
         "The basemap this capture was downloaded from no longer exists."
     )
 
 
-def test_basemap_capture_cannot_restart_reason_none():
+def test_basemap_capture_restart_problem_none():
     capture = BasemapCapture(
         status=BasemapCapture.StatusChoices.CANCELLED,
         downloaded_on_server=True,
         source_id=1,
     )
 
-    assert capture.cannot_restart_reason() is None
+    assert capture.restart_problem() is None
 
 
 def test_basemap_capture_as_basemap_not_ready():
@@ -597,3 +787,70 @@ def test_basemap_capture_get_tile_no_file():
     capture = BasemapCapture(status=BasemapCapture.StatusChoices.READY)
 
     assert capture.get_tile(0, 0, 0) is None
+
+
+@mock.patch("tethys_basemaps.models.os.remove")
+def test_remove_files(mock_remove):
+    path1 = "file1"
+    path2 = "path/to/file2"
+    remove_files(path1, path2)
+    mock_remove.assert_has_calls([mock.call(path1), mock.call(path2)], any_order=True)
+    assert mock_remove.call_count == 2
+
+
+@mock.patch("tethys_basemaps.models.remove_files")
+def test_basemap_capture_delete_files_no_file(mock_remove_files):
+    capture = BasemapCapture()
+
+    capture.delete_files()
+
+    mock_remove_files.assert_not_called()
+
+
+@mock.patch("tethys_basemaps.models.remove_files")
+def test_basemap_capture_delete_files(mock_remove_files, settings, tmp_path):
+    settings.MEDIA_ROOT = str(tmp_path)
+    capture = BasemapCapture(
+        status=BasemapCapture.StatusChoices.READY,
+        mbtiles_file="captures/test.mbtiles",
+    )
+    base = str(tmp_path / "captures/test.mbtiles")
+
+    capture.delete_files()
+
+    mock_remove_files.assert_called_once_with(
+        base, *(base + s for s in BasemapCapture.RUN_SUFFIXES)
+    )
+
+
+@mock.patch("tethys_basemaps.jobs.cancel_dask_task")
+@mock.patch("tethys_basemaps.models.remove_files")
+def test_basemap_capture_delete_files_processing(
+    mock_remove_files, mock_cancel_dask_task, settings, tmp_path
+):
+    settings.MEDIA_ROOT = str(tmp_path)
+    (tmp_path / "captures").mkdir()
+    capture = BasemapCapture(
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        job_id=1,
+        mbtiles_file="captures/test.mbtiles",
+    )
+    mock_job = mock.MagicMock()
+
+    with mock.patch.object(
+        BasemapCapture, "job", new_callable=mock.PropertyMock, return_value=mock_job
+    ):
+        capture.delete_files()
+
+    assert (tmp_path / "captures/test.mbtiles.cancel").exists()
+    mock_cancel_dask_task.assert_called_once_with(mock_job)
+    mock_remove_files.assert_called_once_with(capture.result_path)
+
+
+@mock.patch("tethys_basemaps.models.transaction.on_commit")
+def test_delete_basemap_files(mock_on_commit):
+    instance = mock.MagicMock()
+
+    _delete_basemap_files(BasemapImage, instance)
+
+    mock_on_commit.assert_called_once_with(instance.delete_files)
