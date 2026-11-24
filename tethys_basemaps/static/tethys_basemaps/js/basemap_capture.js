@@ -11,6 +11,7 @@ const BASEMAP_CAPTURE = (function () {
   const FETCH_CONCURRENCY = 6;
   const MAX_GRID_ZOOM = 24;
   const BASEMAP_PREFIX = "Basemap: ";  // MapView's tethys_legend_title for basemap layers
+  const BLOCKED_HOSTS = ["tile.openstreetmap.org"]; // Doesn't allow bulk downloads
 
   function getCurrentBasemap(map) {
     const layer = map.getLayers().getArray().find((l) =>
@@ -52,6 +53,19 @@ const BASEMAP_CAPTURE = (function () {
       }
     }
     return grid;
+  }
+
+  function isBlockedSource(source) {
+    const urls = (source.getUrls && source.getUrls()) || [];
+    return urls.some((url) => {
+      try {
+        // Fill in {z}, {a-c} and the like so the URL can be parsed
+        const host = new URL(url.replace(/\{[^}]+\}/g, "a"), window.location.href).hostname;
+        return BLOCKED_HOSTS.some((blocked) => host === blocked || host.endsWith(`.${blocked}`));
+      } catch (e) {
+        return false;
+      }
+    });
   }
 
   // Work out which tiles to fetch. 
@@ -352,7 +366,7 @@ const BASEMAP_CAPTURE = (function () {
       const elapsed = (now - first.at) / 1000;
       const perSecond = elapsed > 0 ? (s.done - first.done) / elapsed : 0;
       const left = perSecond > 0
-        ? ` · about ${formatDuration((s.total - s.done) / perSecond)} left`
+        ? ` · about ${formatDuration((s.total - s.done) / perSecond)} left. `
         : "";
       const percent = Math.floor((100 * s.done) / s.total);
       return `Downloading on the server: ${s.done.toLocaleString()} / ${s.total.toLocaleString()} ` +
