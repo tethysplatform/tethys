@@ -94,7 +94,7 @@ def test_basemap_image_as_basemap_not_ready():
         image.as_basemap()
 
 
-@mock.patch("django.urls.reverse", return_value="/basemaps/image/1/0/0/0/")
+@mock.patch("django.urls.reverse", return_value="/basemaps/image/1/0/0/0")
 def test_basemap_image_as_basemap(mock_reverse):
     image = BasemapImage(
         pk=1,
@@ -106,7 +106,6 @@ def test_basemap_image_as_basemap(mock_reverse):
         max_x=1,
         max_y=1,
     )
-
     result = image.as_basemap()
 
     options = result["XYZ"]
@@ -524,7 +523,7 @@ def test_basemap_capture_as_basemap_not_ready():
         capture.as_basemap()
 
 
-@mock.patch("django.urls.reverse", return_value="/basemaps/capture/1/0/0/0/")
+@mock.patch("django.urls.reverse", return_value="/basemaps/capture/1/0/0/0")
 def test_basemap_capture_as_basemap(mock_reverse):
     capture = BasemapCapture(
         pk=1,
