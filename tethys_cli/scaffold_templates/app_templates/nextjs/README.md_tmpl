@@ -1,0 +1,58 @@
+# {{proper_name}}
+
+This app was created using the Tethys + Next.js app scaffold. It uses Next.js (as a static export) for the frontend of the app and Tethys as the backend.
+
+## Development Installation
+
+You need to install both the Tethys dependencies and the node dependencies:
+
+1. Install the app in Tethys Platform
+
+```
+conda activate tethys
+cd tethysapp-{{project}}
+tethys install -d
+```
+
+2. Install the node dependencies
+
+```
+cd tethysapp-{{project}}
+npm install
+```
+
+## Development
+
+The Next.js dev server is configured to forward any route it does not handle to the Tethys development server (see `next.config.mjs`). Start both in separate terminals.
+
+1. Start Tethys development server
+
+```
+tethys manage start
+```
+
+2. Start the Next.js development server (in separate terminal)
+
+```
+npm run dev
+```
+
+Then open http://localhost:3000/apps/{{project_url}}/
+
+### Logging in during development
+
+Log in at http://localhost:8000/accounts/login/, on the Tethys server. Django rejects logins sent through the Next.js dev server on port 3000.
+
+Use `localhost` in both addresses, not `127.0.0.1`. Browsers keep logins per hostname, so a login on `127.0.0.1:8000` is not seen by `localhost:3000`.
+
+### Port 8000 or 3000
+
+http://localhost:8000/apps/{{project_url}}/ serves the output of the last `npm run build`, so it does not change when you edit files. Use port 3000 while developing, and run `npm run build` again to update the port 8000 version.
+
+## Build
+
+Next.js is configured to export the app as static files and copy them into the `tethysapp/{{project}}/public/frontend` directory. Before building a Python distribution for release, run:
+
+```
+npm run build
+```

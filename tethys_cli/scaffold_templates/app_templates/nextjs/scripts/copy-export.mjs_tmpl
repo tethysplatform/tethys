@@ -1,0 +1,7 @@
+import { cpSync, rmSync } from 'node:fs';
+
+const dest = 'tethysapp/{{project}}/public/frontend';
+
+rmSync(dest, { recursive: true, force: true });
+cpSync('out', dest, { recursive: true });
+console.log(`Copied Next.js export to ${dest}`);

@@ -1,0 +1,17 @@
+{
+  "name": "{{project}}_frontend",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Next.js frontend for {{proper_name}}",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && node scripts/copy-export.mjs"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "next": "^16.4.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-leaflet": "^5.0.0"
+  }
+}
