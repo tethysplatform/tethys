@@ -423,3 +423,45 @@ class TestMapView(unittest.TestCase):
         # Check Result
         self.assertEqual(value, result["value"])
         self.assertEqual(image_url, result["image_url"])
+
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
+    def test_get_render_options_no_basemap(self, mock_gab, mock_gaa):
+        mock_gab.return_value = []
+        mock_request = mock.MagicMock()
+        mock_app = mock.MagicMock()
+        mock_gaa.return_value = mock_app
+
+        test_map_view = gizmo_map_view.MapView(basemap=[])
+
+        result = test_map_view.get_render_options(mock_request)
+        mock_gaa.assert_called_with(mock_request)
+        mock_gab.assert_called_with(mock_app)
+        self.assertIs(result, test_map_view)
+
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
+    def test_get_render_options_with_basemap(self, mock_gab, mock_gaa):
+        mock_gab.return_value = ["basemap1"]
+        # MapView has no basemaps
+        mock_request1 = mock.MagicMock()
+        mock_app1 = mock.MagicMock()
+        mock_gaa.return_value = mock_app1
+        test_map_view = gizmo_map_view.MapView(basemap=[])
+        result = test_map_view.get_render_options(mock_request1)
+        self.assertIsNot(result, test_map_view)
+        self.assertEqual(result["basemap"], ["basemap1"])
+        mock_gaa.assert_called_with(mock_request1)
+        mock_gab.assert_called_with(mock_app1)
+
+        # MapView has basemaps
+        mock_request2 = mock.MagicMock()
+        mock_app2 = mock.MagicMock()
+        mock_gaa.return_value = mock_app2
+        test_map_view = gizmo_map_view.MapView(basemap=["basemap2"])
+        result = test_map_view.get_render_options(mock_request2)
+        self.assertIsNot(result, test_map_view)
+        self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
+        self.assertEqual(test_map_view["basemap"], ["basemap2"])
+        mock_gaa.assert_called_with(mock_request2)
+        mock_gab.assert_called_with(mock_app2)

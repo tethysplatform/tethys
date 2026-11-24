@@ -672,3 +672,68 @@ class SecureMapServiceTests(TethysTestCase):
         mock_log.warning.assert_called_with(
             f"Prevented saving the API Key for SecureMapService '{service.name}' due to lack of a configured SALT_KEY.\nThis would make the API key unreadable after a restart.\nRun 'tethys gen portal_config' (or 'tethys settings --generate-salt-key' if portal_config.yml already exists) and restart the portal."
         )
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_resolved_params",
+    )
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+    )
+    def test__server_request_no_user_oauth2(self, mock_got, mock_grp):
+        service = self.map_service_with_oauth_no_proxy
+
+        mock_got.return_value = "test_oauth_token"
+        mock_grp.return_value = {"test_param": "test_value"}
+
+        with self.assertRaises(ValueError) as context:
+            service._server_request(user=None)
+            self.assertEqual(
+                f'"{service.name}" uses OAuth2, so a user is needed to get the necessary OAuth2 token.',
+                str(context.exception),
+            )
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_resolved_params",
+    )
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+    )
+    def test__server_request_with_user_oauth2(self, mock_got, mock_grp):
+        service = self.map_service_with_oauth_no_proxy
+        user = mock.MagicMock()
+
+        mock_got.return_value = "test_oauth_token"
+        mock_grp.return_value = {"test_param": "test_value"}
+        endpoint, params, headers = service._server_request(user=user)
+
+        self.assertEqual(endpoint, service.endpoint)
+        self.assertEqual(params, {"test_param": "test_value"})
+        self.assertEqual(headers, {"Authorization": "Bearer test_oauth_token"})
+
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_resolved_params",
+    )
+    @mock.patch(
+        "tethys_services.models.SecureMapService._get_oauth_token",
+    )
+    def test__server_request_api_key(self, mock_got, mock_grp):
+        service = self.map_service_with_api_key_no_proxy
+
+        mock_got.return_value = "test_oauth_token"
+        mock_grp.return_value = {"test_param": "test_value"}
+
+        # With user
+        user = mock.MagicMock()
+
+        endpoint, params, headers = service._server_request(user=user)
+
+        self.assertEqual(endpoint, service.endpoint)
+        self.assertEqual(params, {"test_param": "test_value"})
+        self.assertEqual(headers, {})
+
+        # Without user
+        endpoint, params, headers = service._server_request(user=None)
+
+        self.assertEqual(endpoint, service.endpoint)
+        self.assertEqual(params, {"test_param": "test_value"})
+        self.assertEqual(headers, {})

@@ -28,7 +28,9 @@ def get_app_basemaps(app):
 
     # Only the basemaps selected for this app (the apps M2M on PortalBasemap)
     assigned = db_app.portal_basemaps.select_related(
-        "portalbasemapsource", "basemapcapture"
+        "portalbasemapsource",
+        "basemapcapture",
+        "basemapimage",
     ).order_by("name")
 
     basemaps = []
