@@ -2,9 +2,13 @@
 {% load static %}
 
 {% block field_sets %}
-  {% if image_missing_georeference %}
+  {% if original.status == "cancelled" %}
     <p class="help" style="font-weight: bold;">
-      This image has no coordinate system. Place it on the map and save again.
+      Processing this image was cancelled. Save to process it again.
+    </p>
+  {% elif image_urls.status %}
+    <p class="help" id="basemap-image-processing" style="font-weight: bold;">
+      This image is being processed.
     </p>
   {% endif %}
   {{ block.super }}
@@ -15,6 +19,7 @@
     GeoTIFFs with a coordinate system are placed automatically.
   </p>
   {{ image_overlay|json_script:"basemap-image-overlay" }}
+  {{ image_urls|json_script:"basemap-image-urls" }}
 
   <script src="{% static 'tethys_basemaps/js/basemap_upload_image.js' %}"></script>
 

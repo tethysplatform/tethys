@@ -25,6 +25,11 @@ urlpatterns = [
         "captures/<int:capture_id>/cancel/", views.capture_cancel, name="capture_cancel"
     ),
     path(
+        "captures/<int:capture_id>/restart/",
+        views.capture_restart,
+        name="capture_restart",
+    ),
+    path(
         "captures/<int:capture_id>/tiles/<int:z>/<int:x>/<int:y>",
         views.capture_tile,
         name="capture_tile",

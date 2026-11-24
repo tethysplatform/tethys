@@ -191,8 +191,24 @@ def basemap_status(request, basemap_id):
 @require_POST
 def image_cancel(request, image_id):
     """Stop an image generation that is processing on Dask."""
-    # TODO implement this cancel endpoint+
-    pass
+    try:
+        image = BasemapImage.objects.get(pk=image_id)
+    except BasemapImage.DoesNotExist:
+        return HttpResponse("Image not found.", status=404)
+
+    if not image.job_id:
+        return HttpResponseBadRequest(
+            "Only images processing on Dask can be cancelled."
+        )
+    if not image.cancel(request.user):
+        return JsonResponse(
+            {
+                "error": f"The image has already finished ({image.get_status_display()}).",
+                "status": image.status,
+            },
+            status=409,
+        )
+    return JsonResponse({"id": image.pk, "status": image.status})
 
 
 def _capture_response(capture, tiles):
@@ -525,3 +541,51 @@ def capture_tile(request, capture_id, z, x, y):
         return HttpResponse(status=204)
 
     return HttpResponse(tile, content_type=capture.tile_content_type)
+
+
+@staff_member_required
+@require_POST
+@sensitive_variables("templates")
+def capture_restart(request, capture_id):
+    """Download a cancelled server capture again, from the start, with its original plan."""
+    try:
+        capture = BasemapCapture.objects.select_related("source", "secure_source").get(
+            pk=capture_id
+        )
+    except BasemapCapture.DoesNotExist:
+        return HttpResponse("Capture not found.", status=404)
+
+    problem = capture.restart_problem()
+    if problem:
+        return HttpResponseBadRequest(problem)
+
+    source = capture.source or capture.secure_source
+    try:
+        templates, headers = source_tile_templates(source)
+    except (BrowserOnlySource, ValueError) as e:
+        return HttpResponseBadRequest(str(e))
+
+    # Claim it with a conditional update so a double click can't start two downloads.
+    # The new run gets its own files: the cancelled task may still be shutting down.
+    claimed = BasemapCapture.objects.filter(
+        pk=capture.pk, status=BasemapCapture.StatusChoices.CANCELLED
+    ).update(
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        error_message="",
+        mbtiles_file=capture.unique_output_name(capture.name),
+        job=None,
+    )
+    if not claimed:
+        return JsonResponse(
+            {"error": "The capture is no longer cancelled."}, status=409
+        )
+
+    capture.refresh_from_db()
+    _submit_server_download(capture, source, templates, headers, request.user)
+    # Earlier runs' leftovers (e.g. a flag from a run cancelled before it started)
+    total = count_tiles(
+        [capture.min_x, capture.min_y, capture.max_x, capture.max_y],
+        capture.min_zoom,
+        capture.max_zoom,
+    )
+    return _capture_response(capture, total)

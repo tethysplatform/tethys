@@ -9,6 +9,7 @@ from django.urls import reverse
 from tethys_apps.models import TethysApp
 from tethys_basemaps.admin import BasemapCaptureAdmin, TethysAppBasemapsAdmin
 from tethys_basemaps.models import BasemapCapture, BasemapImage, PortalBasemapSource
+from tethys_compute.models import DaskJob
 
 
 @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
@@ -286,3 +287,105 @@ def test_tethys_app_basemaps_admin_save_related():
     app_admin.save_related(None, form, [], True)
 
     assert list(app.portal_basemaps.values_list("name", flat=True)) == ["Test Source"]
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
+@mock.patch("tethys_basemaps.admin.SecureMapService")
+@pytest.mark.django_db
+def test_admin_basemap_capture_add_secure_map_service(mock_sms, admin_client):
+    service = mock.MagicMock()
+    service.name = (
+        "Secure Service"  # can't pass name= to MagicMock; that names the mock
+    )
+    service._generate_request.return_value = "https://secure.example.com/wms"
+
+    mock_sms.objects.order_by.return_value = [service]
+    response = admin_client.get("/admin/tethys_basemaps/basemapcapture/add/")
+
+    assert response.status_code == 200
+    assert response.context["capture_map"]["basemap"] == [
+        {
+            "WMS": {
+                "control_label": "Secure Service",
+                "url": "https://secure.example.com/wms",
+            }
+        }
+    ]
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
+@mock.patch("tethys_basemaps.models.BasemapCapture.refresh_status")
+@mock.patch("tethys_basemaps.admin.SecureMapService")
+@pytest.mark.django_db
+def test_admin_basemap_capture_edit_processing(
+    mock_sms, mock_refresh_status, admin_client, admin_user
+):
+    job = DaskJob.objects.create(name="capture job", user=admin_user)
+    capture = BasemapCapture.objects.create(
+        name="Test Capture",
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        min_zoom=5,
+        max_zoom=9,
+        job=job,
+    )
+    mock_refresh_status.return_value = BasemapCapture.StatusChoices.PROCESSING
+    service = mock.MagicMock()
+    service.name = (
+        "Secure Service"  # can't pass name= to MagicMock; that names the mock
+    )
+    service._generate_request.return_value = "https://secure.example.com/wms"
+
+    mock_sms.objects.order_by.return_value = [service]
+    response = admin_client.get(
+        f"/admin/tethys_basemaps/basemapcapture/{capture.id}/change/"
+    )
+
+    assert response.status_code == 200
+    assert response.context["capture_map"]["basemap"] == [
+        {
+            "WMS": {
+                "control_label": "Secure Service",
+                "url": "https://secure.example.com/wms",
+            }
+        }
+    ]
+    urls = response.context["capture_urls"]
+    assert urls["status"] == reverse("basemaps:basemap_status", args=[capture.id])
+    assert urls["cancel"] == reverse("basemaps:capture_cancel", args=[capture.id])
+    assert urls["restart"] is None
+
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
+@mock.patch("tethys_basemaps.models.BasemapCapture.cannot_restart_reason")
+@mock.patch("tethys_basemaps.admin.SecureMapService")
+@pytest.mark.django_db
+def test_admin_basemap_capture_edit_restart(
+    mock_sms, mock_cannot_restart_reason, admin_client
+):
+    capture = BasemapCapture.objects.create(name="Test Capture", min_zoom=4, max_zoom=7)
+    mock_cannot_restart_reason.return_value = None
+    service = mock.MagicMock()
+    service.name = (
+        "Secure Service"  # can't pass name= to MagicMock; that names the mock
+    )
+    service._generate_request.return_value = "https://secure.example.com/wms"
+
+    mock_sms.objects.order_by.return_value = [service]
+    response = admin_client.get(
+        f"/admin/tethys_basemaps/basemapcapture/{capture.id}/change/"
+    )
+
+    assert response.status_code == 200
+    assert response.context["capture_map"]["basemap"] == [
+        {
+            "WMS": {
+                "control_label": "Secure Service",
+                "url": "https://secure.example.com/wms",
+            }
+        }
+    ]
+
+    urls = response.context["capture_urls"]
+    assert urls["status"] is None
+    assert urls["cancel"] is None
+    assert urls["restart"] == reverse("basemaps:capture_restart", args=[capture.id])

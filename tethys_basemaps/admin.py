@@ -11,6 +11,7 @@ from pathlib import Path
 
 from django.contrib import admin, messages
 from django.db.models import JSONField
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -80,8 +81,9 @@ class BasemapImageAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+        restart = change and obj.status == BasemapImage.StatusChoices.CANCELLED
         # Check if there is a new source file or if the georeferencing on an existing basemap image has changed
-        if "source_file" in form.changed_data or form.georeference_changed:
+        if "source_file" in form.changed_data or form.georeference_changed or restart:
             try:
                 obj.start_generation(
                     request.user, dask_scheduler=form.cleaned_data.get("dask_scheduler")
@@ -98,6 +100,26 @@ class BasemapImageAdmin(admin.ModelAdmin):
             if obj.status == BasemapImage.StatusChoices.PROCESSING:
                 request._basemap_note = ("It is being processed.", messages.SUCCESS)
 
+    def response_add(self, request, obj, post_url_continue=None):
+        response = super().response_add(request, obj, post_url_continue)
+        return self._stay_while_processing(request, obj, response)
+
+    def response_change(self, request, obj):
+        response = super().response_change(request, obj)
+        return self._stay_while_processing(request, obj, response)
+
+    def _stay_while_processing(self, request, obj, response):
+        """If the image is still processing, redirect back to its change page."""
+        if (
+            obj.status == BasemapImage.StatusChoices.PROCESSING
+            and isinstance(response, HttpResponseRedirect)
+            and "_addanother" not in request.POST
+        ):
+            response["Location"] = reverse(
+                "admin:tethys_basemaps_basemapimage_change", args=[obj.pk]
+            )
+        return response
+
     def message_user(self, request, message, level=messages.INFO, *args, **kwargs):
         # Add extra information to Django's messages
         # ex: adding to the "Successfully added" message
@@ -109,10 +131,19 @@ class BasemapImageAdmin(admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         overlay = {}
+        image_urls = {"status": None, "cancel": None}
         # Check if this is an existing image object being edited
         image = self.get_object(request, object_id) if object_id else None
         if image is not None:
-            image.refresh_status()
+            status = image.refresh_status()
+            if status == BasemapImage.StatusChoices.PROCESSING:
+                image_urls["status"] = reverse(
+                    "basemaps:basemap_status", args=[image.pk]
+                )
+                if image.job_id:  # only a Dask run can be stopped from here
+                    image_urls["cancel"] = reverse(
+                        "basemaps:image_cancel", args=[image.pk]
+                    )
             if image.georeference_bounds:
                 overlay["bounds"] = image.georeference_bounds
                 overlay["epsg"] = image.georeference_epsg or 3857
@@ -137,6 +168,7 @@ class BasemapImageAdmin(admin.ModelAdmin):
         extra_context = {
             **(extra_context or {}),
             "image_overlay": overlay,
+            "image_urls": image_urls,
         }
         return super().changeform_view(request, object_id, form_url, extra_context)
 
@@ -190,7 +222,6 @@ class BasemapCaptureAdmin(admin.ModelAdmin):
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         sources = PortalBasemapSource.objects.order_by("name")
         basemaps = [source.format_options() for source in sources]
-
         secure_map_services = SecureMapService.objects.order_by("name")
         for service in secure_map_services:
             basemaps.append(

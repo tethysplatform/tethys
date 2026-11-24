@@ -28,6 +28,64 @@
     view: new ol.View({ center: ol.proj.fromLonLat([0, 20]), zoom: 2 }),
   });
 
+   const urls = JSON.parse(document.getElementById("basemap-image-urls").textContent);
+    const processingNote = document.getElementById("basemap-image-processing");
+
+    function csrfToken() {
+      const input = document.querySelector("[name=csrfmiddlewaretoken]");
+      return input ? input.value : "";
+    }
+
+    if (urls.cancel && processingNote) {
+      const cancelButton = document.createElement("input");
+      cancelButton.type = "button";
+      cancelButton.className = "button";
+      cancelButton.value = "Cancel processing";
+      cancelButton.style.marginLeft = "1em";
+      processingNote.append(cancelButton);
+
+      cancelButton.addEventListener("click", () => {
+        if (!window.confirm("Stop processing this image? Save it again later to process it.")) {
+          return;
+        }
+        cancelButton.disabled = true;
+        cancelButton.value = "Cancelling…";
+        fetch(urls.cancel, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "X-CSRFToken": csrfToken() },
+        })
+          .then((response) => {
+            // 409 means it finished before the cancel landed
+            if (response.ok || response.status === 409) {
+              window.location.reload();
+              return;
+            }
+            return response.text().then((text) => {
+              throw new Error(text || `The image could not be cancelled (HTTP ${response.status}).`);
+            });
+          })
+          .catch((error) => {
+            cancelButton.disabled = false;
+            cancelButton.value = "Cancel processing";
+            window.alert(error.message);
+          });
+      });
+    }
+    if (urls.status) {
+      const poll = setInterval(() => {
+        fetch(urls.status, { credentials: "same-origin" })
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            if (data && data.status !== "processing") {
+              clearInterval(poll);
+              window.location.reload();  // Reload the page to show results
+            }
+          })
+          // Ignore errors, let the next poll try again
+          .catch(() => {});
+      }, 3000);
+    } 
   // Everything added for the current image, so picking a new file starts clean
   let overlayLayers = [];
   let overlayInteractions = [];

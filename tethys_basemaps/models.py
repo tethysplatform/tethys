@@ -7,11 +7,14 @@
 ********************************************************************************
 """
 
+import contextlib
 import os
 from pathlib import Path
 
 from django.conf import settings
 from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 from tethys_basemaps.jobs import refresh_from_result_file
 from tethys_compute.models import DaskScheduler
@@ -27,6 +30,12 @@ def generated_basemap_upload_path(instance, filename):
 
 def basemap_capture_upload_path(instance, filename):
     return f"basemaps/captures/{filename}"
+
+
+def remove_files(*paths):
+    for path in paths:
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(path)
 
 
 class PortalBasemap(models.Model):
@@ -112,6 +121,12 @@ class BasemapImage(PortalBasemap):
     wkt = models.TextField(blank=True, null=True)
     georeference_bounds = models.JSONField(blank=True, null=True)
     georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
+
+    @property
+    def result_path(self):
+        return (
+            f"{self.generated_file.path}.result.json" if self.generated_file else None
+        )
 
     def unique_output_name(self):
         """
@@ -249,11 +264,54 @@ class BasemapImage(PortalBasemap):
         ).update(**fields)
         self.refresh_from_db()
 
-    @property
-    def result_path(self):
-        return (
-            f"{self.generated_file.path}.result.json" if self.generated_file else None
-        )
+    def _stop_run(self):
+        from .jobs import cancel_dask_task
+
+        if self.cancel_path:
+            flag = Path(self.cancel_path)
+            flag.parent.mkdir(parents=True, exist_ok=True)
+            flag.touch()
+        # Stop a dask task if its still in the queue
+        if self.job_id and self.job is not None:
+            cancel_dask_task(self.job)
+
+    def cancel(self, user=None):
+        """
+        Stop a generation that is processing on Dask.
+
+        Returns:
+            bool: True if it was cancelled, False if it had already finished.
+        """
+        if self.refresh_status() != self.StatusChoices.PROCESSING:
+            return False
+
+        message = f"Cancelled by {user}." if user else "Cancelled."
+        updated = BasemapImage.objects.filter(
+            pk=self.pk, status=self.StatusChoices.PROCESSING
+        ).update(status=self.StatusChoices.CANCELLED, error_message=message)
+        if not updated:
+            self.refresh_from_db()
+            return False
+
+        self._stop_run()
+        self.refresh_from_db()
+        return True
+
+    def delete_files(self):
+        """Remove this image's upload, COG and run files;"""
+        processing = self.status == self.StatusChoices.PROCESSING
+        if processing and self.job_id:
+            self._stop_run()
+        paths = [self.source_file.path] if self.source_file else []
+        if self.generated_file:
+            cog = self.generated_file.path
+            paths += [cog, cog + ".partial", cog + ".result.json"]
+            if not processing:
+                paths.append(cog + ".cancel")  # a running task removes its own flag
+        remove_files(*paths)
+        for folder in {os.path.dirname(p) for p in paths}:
+            with contextlib.suppress(OSError):
+                os.rmdir(folder)
 
     @property
     def cancel_path(self):
@@ -465,3 +523,43 @@ class BasemapCapture(PortalBasemap):
         finally:
             conn.close()
         return row[0] if row else None
+
+    def restart_problem(self):
+        """Why this capture can't be restarted, or None if it can."""
+        if self.status != self.StatusChoices.CANCELLED:
+            return "Only a cancelled capture can be restarted."
+        if not self.downloaded_on_server:
+            return (
+                "Only captures downloaded on the server can be restarted. "
+                "This one was downloaded in the browser; capture it again instead."
+            )
+        if self.source_id is None and self.secure_source_id is None:
+            return "The basemap this capture was downloaded from no longer exists."
+        return None
+
+    def delete_files(self):
+        """Remove this capture's mbtiles file, result file, and run files"""
+        from .jobs import cancel_dask_task
+
+        if not self.mbtiles_file:
+            return
+        base = self.mbtiles_file.path
+        if self.status == self.StatusChoices.PROCESSING and self.job_id:
+            Path(self.cancel_path).touch()
+            cancel_dask_task(self.job)
+            remove_files(self.result_path)
+        else:
+            remove_files(base, *(base + s for s in self.RUN_SUFFIXES))
+
+
+@receiver(
+    post_delete,
+    sender=BasemapCapture,
+    dispatch_uid="tethys_basemaps_delete_capture_files",
+)
+@receiver(
+    post_delete, sender=BasemapImage, dispatch_uid="tethys_basemaps_delete_image_files"
+)
+def _delete_basemap_files(sender, instance, **kwargs):
+    """Remove a deleted capture's or image's files once the delete commits."""
+    transaction.on_commit(instance.delete_files)
