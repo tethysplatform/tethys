@@ -1,0 +1,253 @@
+:root {
+  /* Tethys blue */
+  --primary: #054b96;
+  --primary-dark: #033a75;
+  --primary-soft: #e6eef7;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #5b6573;
+  --line: #e0e0e0;
+  --header-height: 60px;
+  --sidebar-width: 240px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Raleway', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+a {
+  color: var(--primary);
+}
+
+code {
+  font-size: 0.9em;
+  background: var(--primary-soft);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Header */
+.app-header {
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--header-height);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toggle-nav:hover {
+  background: var(--primary-dark);
+}
+
+.toggle-nav span {
+  display: block;
+  height: 2px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.app-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.header-exit {
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  padding: 5px 12px;
+}
+
+.header-exit:hover {
+  background: var(--primary-dark);
+}
+
+/* Sidebar + content */
+.app-body {
+  padding-top: var(--header-height);
+}
+
+.app-sidebar {
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  padding: 16px 12px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  transition: transform 0.2s;
+}
+
+.hide-nav .app-sidebar {
+  transform: translateX(-100%);
+}
+
+.nav-heading {
+  margin: 4px 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.app-sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.app-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.app-sidebar a:hover {
+  background: var(--primary-soft);
+}
+
+.app-sidebar a.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.app-content {
+  margin-left: var(--sidebar-width);
+  min-height: calc(100vh - var(--header-height));
+  transition: margin-left 0.2s;
+}
+
+.hide-nav .app-content {
+  margin-left: 0;
+}
+
+/* Home page */
+.page {
+  max-width: 960px;
+  padding: 32px;
+}
+
+.hero {
+  padding: 8px 0 24px;
+}
+
+.hero h1 {
+  font-size: 34px;
+  margin: 0 0 8px;
+  color: var(--primary);
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 17px;
+  margin: 0 0 20px;
+}
+
+.button {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.button:hover {
+  background: var(--primary-dark);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--primary);
+  border-radius: 8px;
+  padding: 16px 20px;
+  min-width: 0;
+}
+
+.card h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.card pre {
+  background: var(--primary-soft);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+/* Map page */
+.map-page {
+  height: calc(100vh - var(--header-height));
+}
+
+.map {
+  height: 100%;
+  width: 100%;
+}
+
+.error {
+  color: #b42318;
+}

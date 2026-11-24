@@ -1,0 +1,37 @@
+const isProd = process.env.NODE_ENV === 'production';
+const TETHYS_DEV_SERVER = 'http://localhost:8000';
+
+// Next.js loads .env.development / .env.production before reading this file
+const prefix = (process.env.NEXT_PUBLIC_TETHYS_PREFIX_URL ?? '').replace(/^\/|\/$/g, '');
+const prefixPath = prefix ? `/${prefix}` : '';
+const appRoot = (process.env.NEXT_PUBLIC_TETHYS_APP_ROOT_URL ?? '').replace(/\/$/, '');
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Pages live at the same URL Tethys gives the app ("" in single app mode)
+  basePath: `${prefixPath}${appRoot}`,
+  // Django URLs end in "/", and the export becomes page/index.html
+  trailingSlash: true,
+  images: { unoptimized: true },
+  ...(isProd
+    ? {
+        output: 'export',
+        // JS/CSS chunks are served from the app's public/frontend folder
+        assetPrefix: `${prefixPath}/static/{{project}}/frontend`,
+      }
+    : {
+        async rewrites() {
+          return {
+            // Anything Next.js has no page for goes to Django:
+            // app controllers, /api/*, /accounts/*, /static/*
+            fallback: [
+              // Keep Django's trailing slash, or it redirects back through this proxy
+              { source: '/:path*/', destination: `${TETHYS_DEV_SERVER}/:path*/`, basePath: false },
+              { source: '/:path*', destination: `${TETHYS_DEV_SERVER}/:path*`, basePath: false },
+            ],
+          };
+        },
+      }),
+};
+
+export default nextConfig;

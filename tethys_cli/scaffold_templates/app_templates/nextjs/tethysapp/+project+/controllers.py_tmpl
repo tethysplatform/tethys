@@ -1,0 +1,45 @@
+from pathlib import Path
+
+from django.http import FileResponse, Http404, JsonResponse
+from django.urls import reverse
+
+from tethys_sdk.routing import controller
+from .app import App
+
+FRONTEND_DIR = (Path(__file__).parent / 'public' / 'frontend').resolve()
+
+
+@controller
+def home(request):
+    """Serve the exported Next.js page, or the route data Next.js fetches on navigation."""
+    # reverse() includes any PREFIX_URL and handles single app mode
+    app_root = reverse('{{project}}:home')
+    sub_path = request.path.removeprefix(app_root).strip('/')
+
+    target = (FRONTEND_DIR / sub_path).resolve()
+    if not target.is_relative_to(FRONTEND_DIR):
+        raise Http404()
+
+    # Clicking a link makes Next.js fetch route data such as map/__next._tree.txt
+    if target.suffix == '.txt' and target.is_file():
+        return FileResponse(target.open('rb'), content_type='text/plain')
+
+    page = target / 'index.html'
+    if page.is_file():
+        return FileResponse(page.open('rb'), content_type='text/html')
+
+    not_found = FRONTEND_DIR / '404.html'
+    if not_found.is_file():
+        return FileResponse(not_found.open('rb'), content_type='text/html', status=404)
+    raise Http404('Frontend has not been built. Run "npm run build".')
+
+
+@controller
+def data(request):
+    """Example JSON API used by src/app/page.js."""
+    return JsonResponse({
+        'app': App.name,
+        'series': [
+            {'title': 'Example', 'x': [1, 2, 3, 4], 'y': [3, 1, 4, 1]},
+        ],
+    })
