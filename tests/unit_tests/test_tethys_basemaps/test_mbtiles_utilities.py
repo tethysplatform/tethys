@@ -173,7 +173,7 @@ def test_write_metadata():
     mock_conn = mock.MagicMock()
 
     mbtiles_utilities.write_metadata(
-        mock_conn, "My Capture", "Test Source", "png", [0, 0, 0, 0], 3, 10
+        mock_conn, "Test Capture", "Test Source", "png", [0, 0, 0, 0], 3, 10
     )
 
     mock_conn.execute.assert_called_once_with("DELETE FROM metadata")
