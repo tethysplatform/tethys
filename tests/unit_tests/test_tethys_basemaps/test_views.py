@@ -438,8 +438,9 @@ def test_capture_upload(
     mock_basemaps.filter.return_value.exists.return_value = False
     mock_storage.save.return_value = "basemaps/captures/staging/test.tiles"
     mock_storage.path.side_effect = lambda name: f"/media/{name}"
+    mock_user = mock.MagicMock()
     mock_request = mock.MagicMock(
-        method="POST", FILES={"tiles": mock.MagicMock(size=10)}, POST=UPLOAD_POST
+        method="POST", FILES={"tiles": mock.MagicMock(size=10)}, POST=UPLOAD_POST, user=mock_user
     )
     mock_capture = mock_captures.create.return_value
 
@@ -457,6 +458,7 @@ def test_capture_upload(
         min_y=0.0,
         max_x=1.0,
         max_y=1.0,
+        created_by=mock_user,
     )
     mock_run.assert_called_once_with(
         views.build_mbtiles,
@@ -826,8 +828,9 @@ def test_capture_server(
     mock_source = mock_sources.filter.return_value.first.return_value
     mock_templates.return_value = (["https://test/{z}/{x}/{y}"], {})
     mock_basemaps.filter.return_value.exists.return_value = False
+    mock_user = mock.MagicMock()
     mock_request = mock.MagicMock(
-        method="POST", body=json.dumps({**SERVER_PLAN, "max_requests_per_second": 20})
+        method="POST", body=json.dumps({**SERVER_PLAN, "max_requests_per_second": 20}), user=mock_user
     )
     mock_capture = mock_captures.create.return_value
 
@@ -851,6 +854,7 @@ def test_capture_server(
         min_y=0.0,
         max_x=1.0,
         max_y=1.0,
+        created_by=mock_user,
     )
     mock_submit.assert_called_once_with(
         mock_capture, mock_source, ["https://test/{z}/{x}/{y}"], {}, mock_request.user

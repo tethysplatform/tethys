@@ -1,6 +1,7 @@
 import unittest
 import tethys_gizmos.gizmo_options.map_view as gizmo_map_view
 from unittest import mock
+from django.test.utils import override_settings
 
 
 class TestMapView(unittest.TestCase):
@@ -460,8 +461,62 @@ class TestMapView(unittest.TestCase):
         mock_gaa.return_value = mock_app2
         test_map_view = gizmo_map_view.MapView(basemap=["basemap2"])
         result = test_map_view.get_render_options(mock_request2)
+        
         self.assertIsNot(result, test_map_view)
         self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
+        self.assertEqual(result["basemap_capture"], False)
         self.assertEqual(test_map_view["basemap"], ["basemap2"])
         mock_gaa.assert_called_with(mock_request2)
         mock_gab.assert_called_with(mock_app2)
+
+    @override_settings(BASEMAP_CAPTURE_SECURE_MAX_RATE=23)
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.MapView._capture_schedulers")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.can_capture")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
+    def test_get_render_options_with_basemap_and_capture(self, mock_gab, mock_gaa, mock_cc, mock_cs):
+        mock_gab.return_value = ["basemap1"]
+        mock_request = mock.MagicMock(user=mock.MagicMock())
+        mock_app1 = mock.MagicMock()
+        mock_app1.db_object.package = "Test package"
+        mock_gaa.return_value = mock_app1
+        mock_cc.return_value = True
+        mock_cs.return_value = [{"id": 1, "name": "Test Scheduler 1"}]
+        test_map_view = gizmo_map_view.MapView(basemap=["basemap2"], basemap_capture=True)
+        result = test_map_view.get_render_options(mock_request)
+        self.assertIsNot(result, test_map_view)
+        self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
+        self.assertEqual(result["basemap_capture_schedulers"], [{"id": 1, "name": "Test Scheduler 1"}])
+        self.assertEqual(result["basemap_capture_max_rate"], 23)
+        self.assertEqual(result["basemap_capture_app"], "Test package")
+        self.assertEqual(result["basemap_capture"], True)
+
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.can_capture")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
+    def test_get_render_options_with_basemap_capture_not_allowed(self, mock_gab, mock_gaa, mock_cc):
+        mock_gab.return_value = ["basemap1"]
+        mock_request = mock.MagicMock(user=mock.MagicMock())
+        mock_app1 = mock.MagicMock()
+        mock_gaa.return_value = mock_app1
+        mock_cc.return_value = False
+        test_map_view = gizmo_map_view.MapView(basemap=["basemap2"], basemap_capture=True)
+        result = test_map_view.get_render_options(mock_request)
+        self.assertIsNot(result, test_map_view)
+        self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
+        self.assertEqual(result["basemap_capture"], False)
+
+    @mock.patch("tethys_compute.models.DaskScheduler.objects")
+    def test__capture_schedulers(self, mock_schedulers):
+        mock_scheduler1 = mock.MagicMock(id=1)
+        mock_scheduler1.name = "Test Scheduler 1"
+        mock_scheduler2 = mock.MagicMock(id=2)
+        mock_scheduler2.name = "Test Scheduler 2"
+        mock_schedulers.all.return_value = [mock_scheduler1, mock_scheduler2]
+
+        result = gizmo_map_view.MapView._capture_schedulers()
+        expected_result = [
+            {"id": 1, "name": "Test Scheduler 1"},
+            {"id": 2, "name": "Test Scheduler 2"},
+        ]
+        self.assertEqual(result, expected_result)
