@@ -21,8 +21,14 @@ from tethys_basemaps.forms import (
     TethysAppBasemapsForm,
     BasemapCaptureForm,
     BasemapImageForm,
+    BasemapImageSourceForm,
 )
-from tethys_basemaps.models import PortalBasemapSource, BasemapCapture, BasemapImage
+from tethys_basemaps.models import (
+    PortalBasemapSource,
+    BasemapCapture,
+    BasemapImage,
+    BasemapImageSource,
+)
 from tethys_gizmos.gizmo_options import MapView, MVView, MVDraw
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_portal.optional_dependencies import has_module, optional_import
@@ -47,9 +53,24 @@ class PortalBasemapSourceAdmin(admin.ModelAdmin):
         }
 
 
+class BasemapImageSourceInline(admin.TabularInline):
+    model = BasemapImageSource
+    form = BasemapImageSourceForm
+    fields = ("source_file", "order", "georeference")
+    extra = 0
+    min_num = 1
+
+    def get_formset(self, request, obj=None, **kwargs):
+        # Django doesn't pass validate_min on from the inline, and without it
+        # every image could be deleted, leaving nothing to build the mosaic from
+        kwargs.setdefault("validate_min", True)
+        return super().get_formset(request, obj, **kwargs)
+
+
 @admin.register(BasemapImage)
 class BasemapImageAdmin(admin.ModelAdmin):
     form = BasemapImageForm
+    inlines = (BasemapImageSourceInline,)
     change_form_template = "tethys_basemaps/admin/basemap_image_change_form.html"
     list_display = ("name", "status")
     list_filter = ("status",)
@@ -57,9 +78,7 @@ class BasemapImageAdmin(admin.ModelAdmin):
     fields = (
         "name",
         "attribution",
-        "source_file",
         "dask_scheduler",
-        "georeference",
         "status",
         "error_message",
     )
@@ -79,11 +98,27 @@ class BasemapImageAdmin(admin.ModelAdmin):
             ),
         )
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
+    def _images_changes(self, formsets):
+        for formset in formsets:
+            if formset.model is not BasemapImageSource:
+                continue
+            if formset.deleted_objects:
+                return True
+            for row in formset.forms:
+                if row in formset.forms:
+                    if row in formset.deleted_forms:
+                        continue
+                    if row.needs_regeneration:
+                        return True
+        return False
+
+    def save_related(self, request, form, formsets, change):
+        # The images are saved with the inlines, so the mosaic is built after them
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
         restart = change and obj.status == BasemapImage.StatusChoices.CANCELLED
-        # Check if there is a new source file or if the georeferencing on an existing basemap image has changed
-        if "source_file" in form.changed_data or form.georeference_changed or restart:
+        # A new, replaced, moved, reordered or deleted image changes the mosaic
+        if self._images_changes(formsets) or restart:
             try:
                 obj.start_generation(
                     request.user, dask_scheduler=form.cleaned_data.get("dask_scheduler")
@@ -130,7 +165,7 @@ class BasemapImageAdmin(admin.ModelAdmin):
         super().message_user(request, message, level, *args, **kwargs)
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        overlay = {}
+        overlay = {"sources": [], "tile_url": None, "bounds": None}
         image_urls = {"status": None, "cancel": None}
         # Check if this is an existing image object being edited
         image = self.get_object(request, object_id) if object_id else None
@@ -144,25 +179,32 @@ class BasemapImageAdmin(admin.ModelAdmin):
                     image_urls["cancel"] = reverse(
                         "basemaps:image_cancel", args=[image.pk]
                     )
-            if image.georeference_bounds:
-                overlay["bounds"] = image.georeference_bounds
-                overlay["epsg"] = image.georeference_epsg or 3857
-            elif None not in (image.min_x, image.min_y, image.max_x, image.max_y):
-                overlay["bounds"] = [image.min_x, image.min_y, image.max_x, image.max_y]
-                overlay["epsg"] = 3857
+            for source in image.sources.all():
+                entry = {
+                    "id": source.pk,
+                    "bounds": None,
+                    "epsg": 3857,
+                    "image_url": None,
+                }
+                if source.georeference_bounds:
+                    entry["bounds"] = source.georeference_bounds
+                    entry["epsg"] = source.georeference_epsg or 3857
+                if (
+                    source.source_file
+                    and Path(source.source_file.name).suffix.lower()
+                    in BROWSER_IMAGE_EXTENSIONS
+                ):
+                    # Use the original file to adjust its placement, not the mosaic
+                    entry["image_url"] = reverse(
+                        "basemaps:original_image", args=[image.pk, source.pk]
+                    )
+                overlay["sources"].append(entry)
 
-            if (
-                image.source_file
-                and Path(image.source_file.name).suffix.lower()
-                in BROWSER_IMAGE_EXTENSIONS
-            ):
-                # Use the original source file to make changes rather than the processed COG file
-                overlay["image_url"] = reverse(
-                    "basemaps:original_image", args=[image.pk]
-                )
-            elif image.status == BasemapImage.StatusChoices.READY:
-                # If the image is a file format that isn't in BROWSER_IMAGE_EXTENSIONS, (ex: GeoTIFF),
-                # then use the processed tiled version of the image
+            if None not in (image.min_x, image.min_y, image.max_x, image.max_y):
+                # The finished mosaic's extent, in EPSG:3857
+                overlay["bounds"] = [image.min_x, image.min_y, image.max_x, image.max_y]
+            if image.status == BasemapImage.StatusChoices.READY:
+                # Shows images that browsers can't display (ex: GeoTIFF) and the white fill background
                 overlay["tile_url"] = str(image.as_basemap()["XYZ"]["url"])
 
         extra_context = {

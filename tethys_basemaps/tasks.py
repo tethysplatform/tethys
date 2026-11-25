@@ -433,104 +433,210 @@ class _COGReader:
         pass
 
 
+MOSAIC_FILL = 255  # gaps between a mosaic's images are filled with white
+
+
+def _rgb_bands(src):
+    """
+    Which source bands give red, green and blue, and the colormap of a paletted
+    image. Grayscale images use their one color band for all three.
+    """
+    from rasterio.enums import ColorInterp
+
+    interp = list(src.colorinterp)
+    if src.count == 1 and interp[0] == ColorInterp.palette:
+        return [1, 1, 1], src.colormap(1)
+    color = [i for i, ci in enumerate(interp, start=1) if ci != ColorInterp.alpha] or [
+        1
+    ]
+    return (color[:3] if len(color) >= 3 else [color[0]] * 3), None
+
+
+def _to_byte(data):
+    """Clip a band to 0-255 so every image in a mosaic shares one data type."""
+    import numpy as np
+
+    if data.dtype == np.uint8:
+        return data
+    return np.clip(data, 0, 255).astype(np.uint8)
+
+
+def _warp_source(source, out_path, cancel_path):
+    """
+    Reproject one source image to a web mercator RGB GeoTIFF at out_path, with
+    a mask marking where the image is. Transparent parts are blended onto white.
+
+    Returns:
+        dict: the source's own EPSG code (or None) and the output's resolution.
+    """
+    import numpy as np
+    import rasterio
+    from rasterio.errors import NotGeoreferencedWarning
+    from rasterio.transform import from_bounds
+    from rasterio.warp import Resampling, calculate_default_transform, reproject
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", NotGeoreferencedWarning)
+        src = rasterio.open(source["path"])
+
+    with src:
+        source_epsg = src.crs.to_epsg() if src.crs else None
+        name = Path(source["path"]).name
+
+        if src.crs is None:
+            if not source.get("bounds"):
+                raise ValueError(
+                    f'"{name}" has no georeferencing. Please place it on the map.'
+                )
+            src_crs = rasterio.crs.CRS.from_epsg(source.get("epsg") or 3857)
+            src_transform = from_bounds(*source["bounds"], src.width, src.height)
+            src_bounds = tuple(source["bounds"])
+        else:
+            src_crs, src_transform, src_bounds = src.crs, src.transform, src.bounds
+
+        dst_crs = "EPSG:3857"
+        transform, width, height = calculate_default_transform(
+            src_crs, dst_crs, src.width, src.height, *src_bounds
+        )
+
+        def warp(data, resampling):
+            out = np.zeros((height, width), dtype=data.dtype)
+            reproject(
+                source=data,
+                destination=out,
+                src_transform=src_transform,
+                src_crs=src_crs,
+                dst_transform=transform,
+                dst_crs=dst_crs,
+                resampling=resampling,
+                # No nodata: GDAL would nudge real 0 pixels to 1 to avoid it.
+                # The warped mask below marks where the image is instead.
+                init_dest_nodata=False,
+            )
+            return out
+
+        # 255 where the image is, 0 where it's transparent or nodata.
+        # Outside the image after the warp is 0 too.
+        _check_cancel(cancel_path)
+        alpha = warp(src.dataset_mask(), Resampling.nearest).astype(np.float32)
+
+        band_indexes, colormap = _rgb_bands(src)
+        if colormap:
+            _check_cancel(cancel_path)
+            lut = np.zeros((256, 4), dtype=np.uint8)
+            for value, rgba in colormap.items():
+                if 0 <= value < 256:
+                    lut[value] = rgba
+            rgba = lut[warp(_to_byte(src.read(1)), Resampling.nearest)]
+            bands = [rgba[..., i] for i in range(3)]
+            alpha *= rgba[..., 3] / 255.0
+        else:
+            bands, warped = [], {}
+            for index in band_indexes:
+                if index not in warped:
+                    _check_cancel(cancel_path)
+                    warped[index] = warp(_to_byte(src.read(index)), Resampling.bilinear)
+                bands.append(warped[index])
+
+    # Blend partly transparent pixels onto white, so overlaps match the gap fill
+    alpha /= 255.0
+    profile = {
+        "driver": "GTiff",
+        "dtype": "uint8",
+        "count": 3,
+        "crs": dst_crs,
+        "transform": transform,
+        "width": width,
+        "height": height,
+        "tiled": True,
+        "blockxsize": 512,
+        "blockysize": 512,
+        "compress": "DEFLATE",
+        "photometric": "RGB",
+    }
+    with rasterio.Env(GDAL_TIFF_INTERNAL_MASK=True):
+        with rasterio.open(out_path, "w", **profile) as dst:
+            for i, band in enumerate(bands, start=1):
+                blended = band * alpha + MOSAIC_FILL * (1.0 - alpha)
+                dst.write(np.rint(blended).astype(np.uint8), i)
+            dst.write_mask(alpha > 0)
+
+    return {"epsg": source_epsg, "res": (abs(transform.a), abs(transform.e))}
+
+
 def build_cog(
     image_id,
-    source_path,
+    sources,
     output_path,
-    georeference_bounds=None,
-    georeference_epsg=None,
     result_path=None,
     cancel_path=None,
 ):
     """
-    Reproject an uploaded image to a web mercator COG at output_path.
-
-    Stops without output if the ``cancel_path`` file appears. It is checked between
-    steps (each band, the COG conversion, the final copy), not during one.
+    Reproject each uploaded image to web mercator and mosaic them into one COG
+    at output_path. Later sources are drawn on top of earlier ones, and the space
+    between images is filled with white.
     """
     partial = f"{output_path}.partial"
     try:
         # Make sure the job wasn't cancelled while it waited in the queue
         _check_cancel(cancel_path)
+        if not sources:
+            raise ValueError("The basemap has no images to build from.")
+
         import rasterio
-        from rasterio.errors import NotGeoreferencedWarning
-        from rasterio.warp import calculate_default_transform, reproject, Resampling
+        from rasterio.merge import merge
         from rasterio.shutil import copy as rio_copy
-        from rasterio.transform import from_bounds
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", NotGeoreferencedWarning)
-            src = rasterio.open(source_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            warped_paths, source_epsgs, resolutions = [], {}, []
+            for n, source in enumerate(sources):
+                warped = str(Path(tmpdir) / f"warped_{n}.tif")
+                info = _warp_source(source, warped, cancel_path)
+                warped_paths.append(warped)
+                source_epsgs[str(source["id"])] = info["epsg"]
+                resolutions.append(info["res"])
 
-        with src:
-            source_epsg = src.crs.to_epsg() if src.crs else None
-
-            if src.crs is None:
-                if not georeference_bounds:
-                    raise ValueError(
-                        "The image has no georeferencing. Please provide georeference bounds."
-                    )
-                src_crs = rasterio.crs.CRS.from_epsg(georeference_epsg)
-                src_transform = from_bounds(*georeference_bounds, src.width, src.height)
-                src_bounds = tuple(georeference_bounds)
-            else:
-                src_crs, src_transform, src_bounds = src.crs, src.transform, src.bounds
-
-            dst_crs = "EPSG:3857"
-            transform, width, height = calculate_default_transform(
-                src_crs, dst_crs, src.width, src.height, *src_bounds
+            # Keep all detail of any image
+            res = (
+                min(r[0] for r in resolutions),
+                min(r[1] for r in resolutions),
             )
-            profile = {
-                "driver": "GTiff",
-                "dtype": src.dtypes[0],
-                "count": src.count,
-                "crs": dst_crs,
-                "transform": transform,
-                "width": width,
-                "height": height,
-                "tiled": True,
-                "blockxsize": 512,
-                "blockysize": 512,
-                "compress": "DEFLATE",
-            }
 
-            with tempfile.TemporaryDirectory() as tmpdir:
-                warped = Path(tmpdir) / "warped.tif"
-                with rasterio.open(warped, "w", **profile) as dst:
-                    for i in range(1, src.count + 1):
-                        _check_cancel(cancel_path)
-                        reproject(
-                            source=(
-                                src.read(i)
-                                if src.crs is None
-                                else rasterio.band(src, i)
-                            ),
-                            destination=rasterio.band(dst, i),
-                            src_transform=src_transform,
-                            src_crs=src_crs,
-                            dst_transform=transform,
-                            dst_crs=dst_crs,
-                            resampling=Resampling.bilinear,
-                            src_nodata=None,
-                            dst_nodata=0,
-                        )
+            _check_cancel(cancel_path)
+            mosaic = str(Path(tmpdir) / "mosaic.tif")
+            merge(
+                warped_paths,
+                res=res,
+                nodata=MOSAIC_FILL,
+                method="last",
+                dst_path=mosaic,
+                dst_kwds={
+                    "tiled": True,
+                    "blockxsize": 512,
+                    "blockysize": 512,
+                    "photometric": "RGB",
+                },
+            )
+            # The white fill is part of the picture, not missing data
+            with rasterio.open(mosaic, "r+") as ds:
+                ds.nodata = None
 
-                _check_cancel(cancel_path)
-                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-                rio_copy(
-                    warped,
-                    partial,
-                    driver="COG",
-                    compress="DEFLATE",
-                    overview_resampling="nearest",
-                )
+            _check_cancel(cancel_path)
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            rio_copy(
+                mosaic,
+                partial,
+                driver="COG",
+                compress="DEFLATE",
+                overview_resampling="nearest",
+            )
 
-            with rasterio.open(partial) as final:
-                bounds = list(final.bounds)
-                srs = str(final.crs.to_epsg() or "")
-                wkt = final.crs.to_wkt()
+        with rasterio.open(partial) as final:
+            bounds = list(final.bounds)
+            srs = str(final.crs.to_epsg() or "")
+            wkt = final.crs.to_wkt()
 
-            os.replace(partial, output_path)
+        os.replace(partial, output_path)
 
         return _write_result(
             result_path,
@@ -541,7 +647,7 @@ def build_cog(
                 "bounds": bounds,
                 "srs": srs,
                 "wkt": wkt,
-                "source_epsg": source_epsg,
+                "source_epsgs": source_epsgs,
             },
         )
     except BasemapTaskCancelled:

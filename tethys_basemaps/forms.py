@@ -8,13 +8,19 @@
 """
 
 import json
+import warnings
 
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from tethys_apps.models import TethysApp
-from tethys_basemaps.models import PortalBasemap, BasemapCapture, BasemapImage
+from tethys_basemaps.models import (
+    PortalBasemap,
+    BasemapCapture,
+    BasemapImage,
+    BasemapImageSource,
+)
 from tethys_compute.models import DaskScheduler
 
 
@@ -41,7 +47,6 @@ class TethysAppBasemapsForm(forms.ModelForm):
 
 
 class BasemapImageForm(forms.ModelForm):
-    georeference = forms.CharField(required=False, widget=forms.HiddenInput)
     dask_scheduler = forms.ModelChoiceField(
         queryset=DaskScheduler.objects.all(),
         required=False,
@@ -50,7 +55,17 @@ class BasemapImageForm(forms.ModelForm):
 
     class Meta:
         model = BasemapImage
-        fields = ("name", "attribution", "source_file")
+        fields = ("name", "attribution")
+
+
+class BasemapImageSourceForm(forms.ModelForm):
+    """One image in a basemap image's mosaic, with its placement on the map."""
+
+    georeference = forms.CharField(required=False, widget=forms.HiddenInput)
+
+    class Meta:
+        model = BasemapImageSource
+        fields = ("source_file", "order")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,6 +81,38 @@ class BasemapImageForm(forms.ModelForm):
                     "bounds": self.instance.georeference_bounds,
                 }
             )
+
+    def clean_source_file(self):
+        """
+        Check if the uploaded file is a valid image for the mosaic.
+        """
+        upload = self.cleaned_data.get("source_file")
+        if not upload or "source_file" not in self.changed_data:
+            return upload
+
+        import rasterio
+        from rasterio.errors import NotGeoreferencedWarning, RasterioIOError
+        from rasterio.io import MemoryFile
+
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", NotGeoreferencedWarning)
+                if hasattr(upload, "temporary_file_path"):
+                    # Large uploads are already on disk; only the header is read
+                    with rasterio.open(upload.temporary_file_path()):
+                        pass
+                else:
+                    upload.seek(0)
+                    with MemoryFile(upload.read()) as memfile, memfile.open():
+                        pass
+        except RasterioIOError:
+            raise forms.ValidationError(
+                f'"{upload.name}" isn\'t an image format that can be used. '
+                "Use a PNG, JPEG, WebP or GeoTIFF."
+            )
+        finally:
+            upload.seek(0)
+        return upload
 
     def clean_georeference(self):
         raw = self.cleaned_data.get("georeference")
@@ -103,12 +150,27 @@ class BasemapImageForm(forms.ModelForm):
             != self._saved_georeference
         )
 
+    @property
+    def needs_regeneration(self):
+        """Determine if saving will change the mosaic."""
+        if not self.has_changed() and not self.instance.pk:
+            return False  # an empty extra row
+        return (
+            "source_file" in self.changed_data
+            or "order" in self.changed_data
+            or self.georeference_changed
+        )
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         geo_reference_data = self.cleaned_data.get("georeference")
         if geo_reference_data:
             instance.georeference_epsg = geo_reference_data["epsg"]
             instance.georeference_bounds = geo_reference_data["bounds"]
+        elif "source_file" in self.changed_data:
+            # A new file without a placement: don't keep the old file's placement
+            instance.georeference_epsg = None
+            instance.georeference_bounds = None
         if commit:
             instance.save()
         return instance

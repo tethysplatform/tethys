@@ -9,6 +9,7 @@
 
 import contextlib
 import os
+import re
 from pathlib import Path
 
 from django.conf import settings
@@ -22,7 +23,7 @@ from tethys_compute.models import DaskScheduler
 
 
 def original_basemap_upload_path(instance, filename):
-    return f"basemaps/images/original/{instance.name}/{filename}"
+    return f"basemaps/images/original/{instance.basemap.name}/{filename}"
 
 
 def generated_basemap_upload_path(instance, filename):
@@ -111,7 +112,6 @@ class BasemapImage(PortalBasemap):
     # Files a generated image run uses
     RUN_SUFFIXES = (".partial", ".result.json", ".cancel")
 
-    source_file = models.FileField(upload_to=original_basemap_upload_path, blank=True)
     generated_file = models.FileField(
         upload_to=generated_basemap_upload_path, blank=True, null=True
     )
@@ -120,8 +120,6 @@ class BasemapImage(PortalBasemap):
     )
     srs = models.CharField(max_length=64, blank=True, null=True)
     wkt = models.TextField(blank=True, null=True)
-    georeference_bounds = models.JSONField(blank=True, null=True)
-    georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
 
     @property
     def result_path(self):
@@ -138,16 +136,15 @@ class BasemapImage(PortalBasemap):
         """
         from django.core.files.storage import default_storage
 
-        stem = generated_basemap_upload_path(
-            self, Path(self.source_file.name).stem + "_cog"
-        )
+        stem = generated_basemap_upload_path(self, "_cog")
 
-        run = 1
+        current = re.search(r"_run_(\d+)\.tif$", self.generated_file.name or "")
+        run = int(current.group(1)) + 1 if current else 1
         while True:
             output_name = f"{stem}_run_{run}.tif"
             if not any(
                 default_storage.exists(output_name + suffix)
-                for suffix in self.RUN_SUFFIXES
+                for suffix in ("", *self.RUN_SUFFIXES)
             ):
                 return output_name
             run += 1
@@ -191,7 +188,7 @@ class BasemapImage(PortalBasemap):
         return self.status
 
     def start_generation(self, user, dask_scheduler=None):
-        """Convert the uploaded image into a COG."""
+        """Build the mosaic COG from this basemap's images."""
         from .jobs import run_basemap_task
         from .tasks import build_cog
 
@@ -200,6 +197,21 @@ class BasemapImage(PortalBasemap):
             if target.status == self.StatusChoices.PROCESSING:
                 raise ValueError(f'The "{self.name}" image is already processing.')
 
+            # Drawn in this order: later sources will cover up earlier ones if there is overlap
+            sources = [
+                {
+                    "id": source.pk,
+                    "path": source.source_file.path,
+                    "bounds": source.georeference_bounds,
+                    "epsg": source.georeference_epsg,
+                }
+                for source in self.sources.all()
+                if source.source_file
+            ]
+            if not sources:
+                raise ValueError(f'Add at least one image to "{self.name}".')
+
+            self._remove_old_cogs()
             self.generated_file.name = self.unique_output_name()
             self.status = self.StatusChoices.PROCESSING
             self.error_message = ""
@@ -212,10 +224,8 @@ class BasemapImage(PortalBasemap):
             job = run_basemap_task(
                 build_cog,
                 self.pk,
-                self.source_file.path,
+                sources,
                 self.generated_file.path,
-                georeference_bounds=self.georeference_bounds,
-                georeference_epsg=self.georeference_epsg,
                 name=f"Generate basemap image {self.pk}",
                 user=user,
                 result_path=self.result_path,
@@ -258,12 +268,24 @@ class BasemapImage(PortalBasemap):
                 "status": self.StatusChoices.READY,
                 "error_message": "",
             }
-            if result.get("source_epsg") and not self.georeference_epsg:
-                fields["georeference_epsg"] = result["source_epsg"]
-        BasemapImage.objects.filter(
+        updated = BasemapImage.objects.filter(
             pk=self.pk, status=self.StatusChoices.PROCESSING
         ).update(**fields)
+        if updated and result.get("ok"):
+            # Remember each georeferenced source's own coordinate system
+            for source_id, epsg in (result.get("source_epsgs") or {}).items():
+                if epsg:
+                    BasemapImageSource.objects.filter(
+                        pk=source_id, basemap=self, georeference_epsg__isnull=True
+                    ).update(georeference_epsg=epsg)
         self.refresh_from_db()
+
+    def _remove_old_cogs(self):
+        """
+        Delete this basemap's finished COGs
+        """
+        folder = Path(settings.MEDIA_ROOT) / generated_basemap_upload_path(self, "")
+        remove_files(*(str(old) for old in folder.glob("*_run_*.tif")))
 
     def _stop_run(self):
         from .jobs import cancel_dask_task
@@ -299,11 +321,14 @@ class BasemapImage(PortalBasemap):
         return True
 
     def delete_files(self):
-        """Remove this image's upload, COG and run files;"""
+        """
+        Remove this image's COG and run files. Each source removes its own upload
+        when it is deleted (see BasemapImageSource.delete_files).
+        """
         processing = self.status == self.StatusChoices.PROCESSING
         if processing and self.job_id:
             self._stop_run()
-        paths = [self.source_file.path] if self.source_file else []
+        paths = []
         if self.generated_file:
             cog = self.generated_file.path
             paths += [cog, cog + ".partial", cog + ".result.json"]
@@ -321,6 +346,37 @@ class BasemapImage(PortalBasemap):
         COG name (see unique_image_output_name), so a new run never sees an old run's flag.
         """
         return f"{self.generated_file.path}.cancel" if self.generated_file else None
+
+
+class BasemapImageSource(models.Model):
+    """Uploaded image in a BasemapImage's mosaic."""
+
+    basemap = models.ForeignKey(
+        BasemapImage, on_delete=models.CASCADE, related_name="sources"
+    )
+    source_file = models.FileField(upload_to=original_basemap_upload_path)
+    georeference_bounds = models.JSONField(blank=True, null=True)
+    georeference_epsg = models.PositiveIntegerField(blank=True, null=True)
+    order = models.PositiveIntegerField(
+        default=0, help_text="Images with a higher order are drawn on top."
+    )
+
+    class Meta:
+        ordering = ("order", "pk")
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
+
+    def __str__(self):
+        return Path(self.source_file.name).name if self.source_file else "Image"
+
+    def delete_files(self):
+        """Remove this source's upload, and its folder once it is empty."""
+        if not self.source_file:
+            return
+        path = self.source_file.path
+        remove_files(path)
+        with contextlib.suppress(OSError):
+            os.rmdir(os.path.dirname(path))
 
 
 class BasemapCapture(PortalBasemap):
@@ -551,6 +607,11 @@ class BasemapCapture(PortalBasemap):
 @receiver(
     post_delete, sender=BasemapImage, dispatch_uid="tethys_basemaps_delete_image_files"
 )
+@receiver(
+    post_delete,
+    sender=BasemapImageSource,
+    dispatch_uid="tethys_basemaps_delete_image_source_files",
+)
 def _delete_basemap_files(sender, instance, **kwargs):
-    """Remove a deleted capture's or image's files once the delete commits."""
+    """Remove a deleted capture's, image's or image source's files once the delete commits."""
     transaction.on_commit(instance.delete_files)

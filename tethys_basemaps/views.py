@@ -39,6 +39,7 @@ from tethys_basemaps.models import (
     PortalBasemapSource,
     BasemapCapture,
     BasemapImage,
+    BasemapImageSource,
 )
 from tethys_basemaps.permissions import can_capture
 from tethys_basemaps.tasks import build_mbtiles, count_tiles, fetch_and_build_mbtiles
@@ -177,18 +178,18 @@ def image_tile(request, image_id, z, x, y):
 
 
 @login_required
-def original_image(request, image_id):
-    """The original uploaded file, for the georeference map's preview."""
+def original_image(request, image_id, source_id):
+    """One of an image's original uploaded files, for the georeference map's preview."""
     try:
-        image = BasemapImage.objects.get(pk=image_id)
-    except BasemapImage.DoesNotExist:
+        source = BasemapImageSource.objects.get(pk=source_id, basemap_id=image_id)
+    except BasemapImageSource.DoesNotExist:
         return HttpResponse("Image not found.", status=404)
-    if not image.source_file:
+    if not source.source_file:
         return HttpResponse("Image has no source file.", status=404)
 
-    content_type, _ = mimetypes.guess_type(image.source_file.name)
+    content_type, _ = mimetypes.guess_type(source.source_file.name)
     return FileResponse(
-        image.source_file.open("rb"),
+        source.source_file.open("rb"),
         content_type=content_type or "application/octet-stream",
     )
 

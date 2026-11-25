@@ -12,15 +12,20 @@
     </p>
   {% endif %}
   {{ block.super }}
+{% endblock %}
+
+{% block inline_field_sets %}
+  {{ block.super }}
   <div id="basemap-image-map"
        style="width: 100%; height: 500px; border: 1px solid var(--border-color); margin: 1em 0;"></div>
   <p class="help">
-    Pick a PNG or JPEG to place it on the map: drag it to move, drag a corner to resize.
-    GeoTIFFs with a coordinate system are placed automatically.
+    Add one or more images. Pick a PNG or JPEG to place it on the map: drag it to move,
+    drag a corner to resize. GeoTIFFs with a coordinate system are placed automatically.
+    Images with a higher order are drawn on top, and any space between images is filled with white.
   </p>
   {{ image_overlay|json_script:"basemap-image-overlay" }}
   {{ image_urls|json_script:"basemap-image-urls" }}
 
+  <script src="{% static 'tethys_sdk/js/csrf.js' %}"></script>
   <script src="{% static 'tethys_basemaps/js/basemap_upload_image.js' %}"></script>
-
 {% endblock %}

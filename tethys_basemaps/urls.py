@@ -17,7 +17,11 @@ urlpatterns = [
         views.image_tile,
         name="image_tile",
     ),
-    path("images/<int:image_id>/source/", views.original_image, name="original_image"),
+    path(
+        "images/<int:image_id>/sources/<int:source_id>/",
+        views.original_image,
+        name="original_image",
+    ),
     path("images/<int:image_id>/cancel/", views.image_cancel, name="image_cancel"),
     path("captures/upload/", views.capture_upload, name="capture_upload"),
     path("captures/server/", views.capture_server, name="capture_server"),

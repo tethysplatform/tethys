@@ -9,17 +9,19 @@
   "use strict";
 
   const mapContainer = document.getElementById("basemap-image-map");
-  const fileInput = document.getElementById("id_source_file");
-  const georefInput = document.getElementById("id_georeference");
+  // The inline formset of the basemap's images (BasemapImageSource rows)
+  const FORMSET = "sources";
 
-  // Minimum border for the overlay image on the map for height or width
-  const MIN_BORDER = 1; 
-  // Overlay image data for the current basemap image
+  // Minimum border for an overlay image on the map for height or width
+  const MIN_BORDER = 1;
+  // Outline colors, so each box on the map can be differentiated
+  const COLORS = ["#ff0", "#0ff", "#f0f", "#f80", "#0f0", "#08f", "#f44", "#fff"];
+  // Overlay data for the current basemap image: its saved sources and finished mosaic
   const overlayData = JSON.parse(document.getElementById("basemap-image-overlay").textContent);
 
   if (!mapContainer) { return; }
 
-  // TODO we may want to change this from using open street 
+  // TODO we may want to change this from using open street
   // maps to use a local basemap that's already been uploaded
   // since these uploads are meant to be able to work offline too
   const map = new ol.Map({
@@ -28,67 +30,85 @@
     view: new ol.View({ center: ol.proj.fromLonLat([0, 20]), zoom: 2 }),
   });
 
-   const urls = JSON.parse(document.getElementById("basemap-image-urls").textContent);
-    const processingNote = document.getElementById("basemap-image-processing");
+  const urls = JSON.parse(document.getElementById("basemap-image-urls").textContent);
+  const processingNote = document.getElementById("basemap-image-processing");
 
-    function csrfToken() {
-      const input = document.querySelector("[name=csrfmiddlewaretoken]");
-      return input ? input.value : "";
-    }
 
-    if (urls.cancel && processingNote) {
-      const cancelButton = document.createElement("input");
-      cancelButton.type = "button";
-      cancelButton.className = "button";
-      cancelButton.value = "Cancel processing";
-      cancelButton.style.marginLeft = "1em";
-      processingNote.append(cancelButton);
+  if (urls.cancel && processingNote) {
+    const cancelButton = document.createElement("input");
+    cancelButton.type = "button";
+    cancelButton.className = "button";
+    cancelButton.value = "Cancel processing";
+    cancelButton.style.marginLeft = "1em";
+    processingNote.append(cancelButton);
 
-      cancelButton.addEventListener("click", () => {
-        if (!window.confirm("Stop processing this image? Save it again later to process it.")) {
-          return;
-        }
-        cancelButton.disabled = true;
-        cancelButton.value = "Cancelling…";
-        fetch(urls.cancel, {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "X-CSRFToken": csrfToken() },
-        })
-          .then((response) => {
-            // 409 means it finished before the cancel landed
-            if (response.ok || response.status === 409) {
-              window.location.reload();
-              return;
-            }
-            return response.text().then((text) => {
-              throw new Error(text || `The image could not be cancelled (HTTP ${response.status}).`);
-            });
-          })
-          .catch((error) => {
-            cancelButton.disabled = false;
-            cancelButton.value = "Cancel processing";
-            window.alert(error.message);
+    cancelButton.addEventListener("click", () => {
+      if (!window.confirm("Stop processing this image? Save it again later to process it.")) {
+        return;
+      }
+      cancelButton.disabled = true;
+      cancelButton.value = "Cancelling…";
+      fetch(urls.cancel, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "X-CSRFToken": get_csrf_token() },
+      })
+        .then((response) => {
+          // 409 means it finished before the cancel landed
+          if (response.ok || response.status === 409) {
+            window.location.reload();
+            return;
+          }
+          return response.text().then((text) => {
+            throw new Error(text || `The image could not be cancelled (HTTP ${response.status}).`);
           });
-      });
-    }
-    if (urls.status) {
-      const poll = setInterval(() => {
-        fetch(urls.status, { credentials: "same-origin" })
-          .then((response) => (response.ok ? response.json() : null))
-          .then((data) => {
-            if (data && data.status !== "processing") {
-              clearInterval(poll);
-              window.location.reload();  // Reload the page to show results
-            }
-          })
-          // Ignore errors, let the next poll try again
-          .catch(() => {});
-      }, 3000);
-    } 
-  // Everything added for the current image, so picking a new file starts clean
-  let overlayLayers = [];
-  let overlayInteractions = [];
+        })
+        .catch((error) => {
+          cancelButton.disabled = false;
+          cancelButton.value = "Cancel processing";
+          window.alert(error.message);
+        });
+    });
+  }
+  if (urls.status) {
+    const poll = setInterval(() => {
+      fetch(urls.status, { credentials: "same-origin" })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (data && data.status !== "processing") {
+            clearInterval(poll);
+            window.location.reload();  // Reload the page to show results
+          }
+        })
+        // Ignore errors, let the next poll try again
+        .catch(() => {});
+    }, 3000);
+  }
+
+  // The finished mosaic, under the adjustable overlays, so the white fill shows too
+  if (overlayData.tile_url) {
+    const mosaicOptions = {
+      source: new ol.source.XYZ({ url: overlayData.tile_url }),
+      opacity: 0.6,
+      zIndex: 1,
+    };
+    if (overlayData.bounds) { mosaicOptions.extent = overlayData.bounds; }
+    map.addLayer(new ol.layer.Tile(mosaicOptions));
+  }
+
+  // One entry per inline row, with the row element as the key
+  const rows = new Map();
+  let colorCount = 0;
+
+  function rowInput(row, suffix) {
+    return row.querySelector(`[name^="${FORMSET}-"][name$="-${suffix}"]`);
+  }
+
+  function rowOrder(row) {
+    const input = rowInput(row, "order");
+    const value = input ? parseInt(input.value, 10) : 0;
+    return Number.isNaN(value) ? 0 : value;
+  }
 
   // After a vertex drag, keep the box axis-aligned: anchor the opposite corner
   function resizeFromDrag(feature, pre) {
@@ -113,40 +133,63 @@
     return next;
   }
 
-  function writeGeoreference(extent) {
-    if (georefInput) {
-      georefInput.value = JSON.stringify({ epsg: 3857, bounds: extent });
+  function writeGeoreference(state, extent) {
+    const input = rowInput(state.row, "georeference");
+    if (input) {
+      input.value = extent ? JSON.stringify({ epsg: 3857, bounds: extent }) : "";
     }
   }
 
-  function clearOverlay() {
-    overlayLayers.forEach((layer) => map.removeLayer(layer));
-    overlayInteractions.forEach((interaction) => map.removeInteraction(interaction));
-    overlayLayers = [];
-    overlayInteractions = [];
+  // Higher order draws on top; each row's outline sits just above its image
+  function applyOrder(state) {
+    const z = 10 + rowOrder(state.row) * 2;
+    if (state.imageLayer) { state.imageLayer.setZIndex(z); }
+    if (state.boxLayer) { state.boxLayer.setZIndex(z + 1); }
   }
 
-  function addOverlay(url, extent, writeInput) {
-    const layer = new ol.layer.Image({
-      source: new ol.source.ImageStatic({ url, imageExtent: extent, projection: "EPSG:3857" }),
-      opacity: 0.7,
-    });
+  function clearOverlay(state) {
+    [state.imageLayer, state.boxLayer].forEach((layer) => layer && map.removeLayer(layer));
+    state.interactions.forEach((interaction) => map.removeInteraction(interaction));
+    if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); }
+    state.imageLayer = null;
+    state.boxLayer = null;
+    state.interactions = [];
+    state.objectUrl = null;
+  }
+
+  function setVisible(state, visible) {
+    [state.imageLayer, state.boxLayer].forEach((layer) => layer && layer.setVisible(visible));
+    state.interactions.forEach((interaction) => interaction.setActive(visible));
+  }
+
+  // A box for the row's image. Without a url (ex: a GeoTIFF shown by the mosaic tiles),
+  // only the outline is drawn and it can't be moved.
+  function addOverlay(state, url, extent, writeInput) {
+    clearOverlay(state);
+    const color = state.color;
+
+    if (url) {
+      state.imageLayer = new ol.layer.Image({
+        source: new ol.source.ImageStatic({ url, imageExtent: extent, projection: "EPSG:3857" }),
+        opacity: 0.7,
+      });
+      map.addLayer(state.imageLayer);
+    }
 
     const feature = new ol.Feature(ol.geom.Polygon.fromExtent(extent));
     const vectorSource = new ol.source.Vector({ features: [feature] });
-    const vectorLayer = new ol.layer.Vector({
+    state.boxLayer = new ol.layer.Vector({
       source: vectorSource,
       style: new ol.style.Style({
-        stroke: new ol.style.Stroke({ color: "#ff0", width: 2 }),
-        fill: new ol.style.Fill({ color: "rgba(255,255,0,0.05)" }),
+        stroke: new ol.style.Stroke({ color, width: 2, lineDash: url ? undefined : [6, 4] }),
+        fill: new ol.style.Fill({ color: "rgba(255,255,255,0.05)" }),
       }),
     });
+    map.addLayer(state.boxLayer);
+    applyOrder(state);
 
-    map.addLayer(layer);
-    map.addLayer(vectorLayer);
-    overlayLayers.push(layer, vectorLayer);
-
-    if (writeInput) { writeGeoreference(extent); }
+    if (writeInput) { writeGeoreference(state, extent); }
+    if (!url) { return; }
 
     const translate = new ol.interaction.Translate({ features: new ol.Collection([feature]) });
     const modify = new ol.interaction.Modify({
@@ -158,21 +201,21 @@
 
     function applyExtent(e) {
       feature.getGeometry().setCoordinates(ol.geom.Polygon.fromExtent(e).getCoordinates());
-      layer.setSource(new ol.source.ImageStatic({ url, imageExtent: e, projection: "EPSG:3857" }));
-      writeGeoreference(e);
+      state.imageLayer.setSource(new ol.source.ImageStatic({ url, imageExtent: e, projection: "EPSG:3857" }));
+      writeGeoreference(state, e);
     }
 
     translate.on("translateend", () => applyExtent(feature.getGeometry().getExtent().slice()));
-    modify.on("modifystart", () => { preExtent = feature.getGeometry().getExtent().slice();  });
+    modify.on("modifystart", () => { preExtent = feature.getGeometry().getExtent().slice(); });
     modify.on("modifyend", () => applyExtent(resizeFromDrag(feature, preExtent)));
 
     map.addInteraction(translate);
     map.addInteraction(modify);
-    overlayInteractions.push(translate, modify);  
+    state.interactions.push(translate, modify);
   }
 
   // A newly picked file: drop it at the center of the view, sized to ~400 screen pixels wide
-  function placeImage(file) {
+  function placeImage(state, file) {
     const url = URL.createObjectURL(file);
     const probe = new Image();
 
@@ -181,43 +224,98 @@
       const center = view.getCenter();
       const w = view.getResolution() * 400;
       const h = w * (probe.naturalHeight / probe.naturalWidth);
-      addOverlay(url, [center[0] - w / 2, center[1] - h / 2, center[0] + w / 2, center[1] + h / 2], true);
+      addOverlay(state, url, [center[0] - w / 2, center[1] - h / 2, center[0] + w / 2, center[1] + h / 2], true);
+      state.objectUrl = url;
     };
 
     probe.onerror = () => {
       // Not browser-viewable (e.g. GeoTIFF). Don't submit a stale placement for it;
       // if it has a coordinate system, the server places it on save.
       URL.revokeObjectURL(url);
-      if (georefInput) { georefInput.value = ""; }
+      writeGeoreference(state, null);
     };
 
     probe.src = url;
   }
 
-  // Use when editing to show the saved placement (adjustable preview) or the image's tiles
-  if (overlayData.bounds && overlayData.bounds.length === 4) {
-    let extent = overlayData.bounds;
-    if (overlayData.epsg && overlayData.epsg !== 3857) {
-      extent = ol.proj.transformExtent(extent, `EPSG:${overlayData.epsg}`, "EPSG:3857");
+  function toMapExtent(source) {
+    let extent = source.bounds;
+    if (source.epsg && source.epsg !== 3857) {
+      extent = ol.proj.transformExtent(extent, `EPSG:${source.epsg}`, "EPSG:3857");
     }
-
-    if (overlayData.image_url) {
-      addOverlay(overlayData.image_url, extent, false);
-    } else if (overlayData.tile_url) {
-      map.addLayer(new ol.layer.Tile({
-        source: new ol.source.XYZ({ url: overlayData.tile_url }),
-        extent,
-      }));
-    }
-    map.getView().fit(extent, { padding: [40, 40, 40, 40] });
+    return extent;
   }
 
-  if (fileInput) {
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (!file) { return; }
-      clearOverlay();
-      placeImage(file);
+  // Start tracking an inline row: its saved placement, and any file picked for it
+  function registerRow(row, saved) {
+    if (rows.has(row)) { return rows.get(row); }
+    const state = {
+      row,
+      color: COLORS[colorCount++ % COLORS.length],
+      imageLayer: null,
+      boxLayer: null,
+      interactions: [],
+      objectUrl: null,
+    };
+    rows.set(row, state);
+
+    // Match the row's color to its box on the map
+    const fileInput = rowInput(row, "source_file");
+    if (fileInput) {
+      fileInput.style.borderLeft = `6px solid ${state.color}`;
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (!file) { return; }
+        clearOverlay(state);
+        placeImage(state, file);
+      });
+    }
+
+    const orderInput = rowInput(row, "order");
+    if (orderInput) { orderInput.addEventListener("input", () => applyOrder(state)); }
+
+    const deleteInput = rowInput(row, "DELETE");
+    if (deleteInput) {
+      deleteInput.addEventListener("change", () => setVisible(state, !deleteInput.checked));
+    }
+
+    if (saved && saved.bounds && saved.bounds.length === 4) {
+      addOverlay(state, saved.image_url, toMapExtent(saved), false);
+    }
+    return state;
+  }
+
+  // Saved sources, matched to their rows by the inline's hidden id input
+  const savedById = new Map(overlayData.sources.map((source) => [String(source.id), source]));
+  const extents = [];
+  document.querySelectorAll(`#${FORMSET}-group tr.form-row:not(.empty-form)`).forEach((row) => {
+    const idInput = rowInput(row, "id");
+    const saved = idInput ? savedById.get(idInput.value) : undefined;
+    registerRow(row, saved);
+    if (saved && saved.bounds && saved.bounds.length === 4) { extents.push(toMapExtent(saved)); }
+  });
+  if (overlayData.bounds) { extents.push(overlayData.bounds); }
+
+  if (extents.length) {
+    const all = extents.reduce((acc, e) => ol.extent.extend(acc, e), ol.extent.createEmpty());
+    map.getView().fit(all, { padding: [40, 40, 40, 40] });
+  }
+
+  // Rows added with "Add another Image"
+  document.addEventListener("formset:added", (event) => {
+    if (event.detail && event.detail.formsetName === FORMSET) {
+      registerRow(event.target, null);
+    }
+  });
+
+  // An unsaved row was removed: drop the overlays of rows no longer on the page
+  document.addEventListener("formset:removed", (event) => {
+    if (!event.detail || event.detail.formsetName !== FORMSET) { return; }
+    rows.forEach((state, row) => {
+      if (!row.isConnected) {
+        clearOverlay(state);
+        rows.delete(row);
+      }
     });
-  }
+  });
 })();
