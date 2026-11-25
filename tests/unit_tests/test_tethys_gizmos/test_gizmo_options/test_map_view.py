@@ -461,7 +461,7 @@ class TestMapView(unittest.TestCase):
         mock_gaa.return_value = mock_app2
         test_map_view = gizmo_map_view.MapView(basemap=["basemap2"])
         result = test_map_view.get_render_options(mock_request2)
-        
+
         self.assertIsNot(result, test_map_view)
         self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
         self.assertEqual(result["basemap_capture"], False)
@@ -474,7 +474,9 @@ class TestMapView(unittest.TestCase):
     @mock.patch("tethys_gizmos.gizmo_options.map_view.can_capture")
     @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
     @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
-    def test_get_render_options_with_basemap_and_capture(self, mock_gab, mock_gaa, mock_cc, mock_cs):
+    def test_get_render_options_with_basemap_and_capture(
+        self, mock_gab, mock_gaa, mock_cc, mock_cs
+    ):
         mock_gab.return_value = ["basemap1"]
         mock_request = mock.MagicMock(user=mock.MagicMock())
         mock_app1 = mock.MagicMock()
@@ -482,11 +484,16 @@ class TestMapView(unittest.TestCase):
         mock_gaa.return_value = mock_app1
         mock_cc.return_value = True
         mock_cs.return_value = [{"id": 1, "name": "Test Scheduler 1"}]
-        test_map_view = gizmo_map_view.MapView(basemap=["basemap2"], basemap_capture=True)
+        test_map_view = gizmo_map_view.MapView(
+            basemap=["basemap2"], basemap_capture=True
+        )
         result = test_map_view.get_render_options(mock_request)
         self.assertIsNot(result, test_map_view)
         self.assertEqual(result["basemap"], ["basemap2", "basemap1"])
-        self.assertEqual(result["basemap_capture_schedulers"], [{"id": 1, "name": "Test Scheduler 1"}])
+        self.assertEqual(
+            result["basemap_capture_schedulers"],
+            [{"id": 1, "name": "Test Scheduler 1"}],
+        )
         self.assertEqual(result["basemap_capture_max_rate"], 23)
         self.assertEqual(result["basemap_capture_app"], "Test package")
         self.assertEqual(result["basemap_capture"], True)
@@ -494,13 +501,17 @@ class TestMapView(unittest.TestCase):
     @mock.patch("tethys_gizmos.gizmo_options.map_view.can_capture")
     @mock.patch("tethys_gizmos.gizmo_options.map_view.get_active_app")
     @mock.patch("tethys_gizmos.gizmo_options.map_view.get_app_basemaps")
-    def test_get_render_options_with_basemap_capture_not_allowed(self, mock_gab, mock_gaa, mock_cc):
+    def test_get_render_options_with_basemap_capture_not_allowed(
+        self, mock_gab, mock_gaa, mock_cc
+    ):
         mock_gab.return_value = ["basemap1"]
         mock_request = mock.MagicMock(user=mock.MagicMock())
         mock_app1 = mock.MagicMock()
         mock_gaa.return_value = mock_app1
         mock_cc.return_value = False
-        test_map_view = gizmo_map_view.MapView(basemap=["basemap2"], basemap_capture=True)
+        test_map_view = gizmo_map_view.MapView(
+            basemap=["basemap2"], basemap_capture=True
+        )
         result = test_map_view.get_render_options(mock_request)
         self.assertIsNot(result, test_map_view)
         self.assertEqual(result["basemap"], ["basemap2", "basemap1"])

@@ -20,7 +20,13 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
-from django.http import HttpResponse, HttpResponseBadRequest, FileResponse, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    FileResponse,
+    HttpResponseNotFound,
+    JsonResponse,
+)
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from django.views.decorators.http import require_POST
@@ -73,8 +79,8 @@ def _get_capture_app(request, package):
 
     app = TethysApp.objects.filter(package=package).first()
     if app is None:
-        return None, HttpResponseBadRequest(
-            "Coudln't find Tethys app with the specified package."
+        return None, HttpResponseNotFound(
+            "Couldn't find Tethys app with the specified package.", status=404
         )
     return app, None
 
@@ -207,7 +213,7 @@ def basemap_status(request, basemap_id):
     if not request.user.is_staff and not (
         isinstance(record, BasemapCapture) and can_capture(request.user)
     ):
-        return HttpResponse(status=404)
+        return HttpResponse(status=403)
 
     status = record.refresh_status()
     data = {"id": record.pk, "status": status, "error": record.error_message}

@@ -2,6 +2,8 @@ import io
 import json
 from unittest import mock
 
+import pytest
+
 from rasterio.enums import ColorInterp
 
 from tethys_basemaps import views
@@ -269,6 +271,44 @@ def test_basemap_status_image(mock_basemaps):
     assert json.loads(response.content) == {"id": 1, "status": "ready", "error": ""}
 
 
+@mock.patch("tethys_basemaps.views.PortalBasemap.objects")
+@mock.patch("tethys_basemaps.views.can_capture")
+def test_basemap_status_not_authorized(mock_can_capture, mock_basemaps):
+    mock_capture = (
+        mock_basemaps.select_related.return_value.get.return_value.basemapcapture
+    )
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = False
+    mock_can_capture.return_value = False
+
+    response = views.basemap_status(mock_request, 1)
+
+    assert response.status_code == 403
+
+
+@mock.patch("tethys_basemaps.views.PortalBasemap.objects")
+def test_basemap_status_capture_progress(mock_basemaps, tmp_path):
+    progress_path = tmp_path / "test.progress.json"
+    progress_path.write_text(json.dumps({"done": 1, "total": 2}))
+    mock_capture = (
+        mock_basemaps.select_related.return_value.get.return_value.basemapcapture
+    )
+    mock_capture.pk = 1
+    mock_capture.error_message = ""
+    mock_capture.progress_path = str(progress_path)
+    mock_capture.refresh_status.return_value = "processing"
+
+    response = views.basemap_status(mock.MagicMock(), 1)
+
+    assert json.loads(response.content) == {
+        "id": 1,
+        "status": "processing",
+        "error": "",
+        "done": 1,
+        "total": 2,
+    }
+
+
 @mock.patch("tethys_basemaps.views.reverse", return_value="/test/url/")
 def test_capture_response_processing(mock_reverse):
     mock_capture = mock.MagicMock(
@@ -440,7 +480,10 @@ def test_capture_upload(
     mock_storage.path.side_effect = lambda name: f"/media/{name}"
     mock_user = mock.MagicMock()
     mock_request = mock.MagicMock(
-        method="POST", FILES={"tiles": mock.MagicMock(size=10)}, POST=UPLOAD_POST, user=mock_user
+        method="POST",
+        FILES={"tiles": mock.MagicMock(size=10)},
+        POST=UPLOAD_POST,
+        user=mock_user,
     )
     mock_capture = mock_captures.create.return_value
 
@@ -599,6 +642,116 @@ def test_capture_upload_build_error(
     mock_captures.filter.return_value.update.assert_called_once_with(
         status=BasemapCapture.StatusChoices.FAILED, error_message="Test error"
     )
+
+
+@mock.patch("tethys_basemaps.views._get_capture_app")
+@mock.patch("tethys_basemaps.views._capture_response")
+@mock.patch("tethys_basemaps.views.run_basemap_task", return_value=None)
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+@mock.patch(
+    "tethys_basemaps.views.BasemapCapture.unique_output_name",
+    return_value="basemaps/captures/test-capture.mbtiles",
+)
+@mock.patch("tethys_basemaps.views.default_storage")
+@mock.patch("tethys_basemaps.views.PortalBasemap.objects")
+def test_capture_upload_with_capture_app(
+    mock_basemaps,
+    mock_storage,
+    mock_unique_output_name,
+    mock_captures,
+    mock_run,
+    mock_capture_response,
+    mock_get_capture_app,
+):
+    mock_basemaps.filter.return_value.exists.return_value = False
+    mock_storage.save.return_value = "basemaps/captures/staging/test.tiles"
+    mock_storage.path.side_effect = lambda name: f"/media/{name}"
+    mock_user = mock.MagicMock()
+    mock_request = mock.MagicMock(
+        method="POST",
+        FILES={"tiles": mock.MagicMock(size=10)},
+        POST=UPLOAD_POST,
+        user=mock_user,
+    )
+    mock_capture = mock_captures.create.return_value
+
+    mock_app = mock.MagicMock()
+    mock_get_capture_app.return_value = (mock_app, None)
+
+    response = views.capture_upload(mock_request)
+
+    mock_captures.create.assert_called_once_with(
+        name="Test Capture",
+        source=None,
+        secure_source=None,
+        status=BasemapCapture.StatusChoices.PROCESSING,
+        mbtiles_file="basemaps/captures/test-capture.mbtiles",
+        min_zoom=0,
+        max_zoom=0,
+        min_x=0.0,
+        min_y=0.0,
+        max_x=1.0,
+        max_y=1.0,
+        created_by=mock_user,
+    )
+    mock_run.assert_called_once_with(
+        views.build_mbtiles,
+        mock_capture.pk,
+        "/media/basemaps/captures/staging/test.tiles",
+        [[0, 0, 0, 10]],
+        [0.0, 0.0, 1.0, 1.0],
+        "Test Capture",
+        "",
+        "/media/basemaps/captures/test-capture.mbtiles",
+        name=f"Build basemap capture {mock_capture.pk}",
+        user=mock_request.user,
+        result_path=mock_capture.result_path,
+        non_dask_result_handler=mock_capture.apply_build_result,
+        cancel_path=mock_capture.cancel_path,
+    )
+    mock_captures.filter.return_value.update.assert_not_called()
+    mock_capture.refresh_from_db.assert_called_once()
+    mock_capture_response.assert_called_once_with(mock_capture, 1)
+    mock_capture.apps.add.assert_called_once_with(mock_app)
+    assert response == mock_capture_response.return_value
+
+
+@mock.patch("tethys_basemaps.views._get_capture_app")
+@mock.patch("tethys_basemaps.views._capture_response")
+@mock.patch("tethys_basemaps.views.run_basemap_task", return_value=None)
+@mock.patch("tethys_basemaps.views.BasemapCapture.objects")
+@mock.patch(
+    "tethys_basemaps.views.BasemapCapture.unique_output_name",
+    return_value="basemaps/captures/test-capture.mbtiles",
+)
+@mock.patch("tethys_basemaps.views.default_storage")
+@mock.patch("tethys_basemaps.views.PortalBasemap.objects")
+def test_capture_upload_with_capture_app_error(
+    mock_basemaps,
+    mock_storage,
+    mock_unique_output_name,
+    mock_captures,
+    mock_run,
+    mock_capture_response,
+    mock_get_capture_app,
+):
+    mock_basemaps.filter.return_value.exists.return_value = False
+    mock_storage.save.return_value = "basemaps/captures/staging/test.tiles"
+    mock_storage.path.side_effect = lambda name: f"/media/{name}"
+    mock_user = mock.MagicMock()
+    mock_request = mock.MagicMock(
+        method="POST",
+        FILES={"tiles": mock.MagicMock(size=10)},
+        POST=UPLOAD_POST,
+        user=mock_user,
+    )
+    mock_capture = mock_captures.create.return_value
+
+    mock_app = mock.MagicMock()
+    mock_get_capture_app.return_value = (None, "error getting capture app")
+
+    response = views.capture_upload(mock_request)
+    assert response == mock_get_capture_app.return_value[1]
 
 
 def test_capture_server_invalid_json():
@@ -830,7 +983,9 @@ def test_capture_server(
     mock_basemaps.filter.return_value.exists.return_value = False
     mock_user = mock.MagicMock()
     mock_request = mock.MagicMock(
-        method="POST", body=json.dumps({**SERVER_PLAN, "max_requests_per_second": 20}), user=mock_user
+        method="POST",
+        body=json.dumps({**SERVER_PLAN, "max_requests_per_second": 20}),
+        user=mock_user,
     )
     mock_capture = mock_captures.create.return_value
 
@@ -1196,3 +1351,67 @@ def test_capture_restart(
     )
     mock_capture_response.assert_called_once_with(mock_capture, 2)
     assert response == mock_capture_response.return_value
+
+
+def test__get_capture_app_cannot_capture():
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = False
+    mock_request.user.has_perm.return_value = False
+    mock_package = mock.MagicMock()
+
+    _, response = views._get_capture_app(mock_request, mock_package)
+
+    assert response.status_code == 403
+    assert json.loads(response.content) == {
+        "error": "You don't have permission to capture basemaps"
+    }
+
+
+def test__get_capture_app_no_package_is_staff():
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = True
+    mock_package = None
+
+    app, response = views._get_capture_app(mock_request, mock_package)
+    assert app is None
+    assert response is None
+
+
+def test__get_capture_no_package_is_not_staff():
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = False
+    mock_package = None
+
+    app, response = views._get_capture_app(mock_request, mock_package)
+
+    assert app is None
+    assert response.status_code == 400
+    assert json.loads(response.content) == {"error": "Package is required for capture"}
+
+
+@mock.patch("tethys_basemaps.views.TethysApp.objects")
+def test__get_capture_app_not_found(mock_objects):
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = True
+
+    mock_objects.filter.return_value.first.return_value = None
+    app, response = views._get_capture_app(mock_request, "test_app")
+
+    mock_objects.filter.assert_called_once_with(package="test_app")
+    assert app is None
+    assert response.status_code == 404
+    assert response.content == b"Couldn't find Tethys app with the specified package."
+
+
+@mock.patch("tethys_basemaps.views.TethysApp.objects")
+def test__get_capture_app_found(mock_objects):
+    mock_request = mock.MagicMock()
+    mock_request.user.is_staff = True
+
+    mock_app = mock.MagicMock()
+    mock_objects.filter.return_value.first.return_value = mock_app
+    app, response = views._get_capture_app(mock_request, "test_app")
+
+    mock_objects.filter.assert_called_once_with(package="test_app")
+    assert app == mock_app
+    assert response is None

@@ -1043,6 +1043,34 @@ def test_fetch_and_build_mbtiles_cancelled_while_running(mock_make_reader, tmp_p
     mock_reader.cancel.assert_called_once()
 
 
+@mock.patch("tethys_basemaps.tasks.mbtiles.insert_tile", side_effect=KeyboardInterrupt)
+@mock.patch("tethys_basemaps.tasks.mbtiles.open_mbtiles_for_writing")
+@mock.patch("tethys_basemaps.tasks._make_reader")
+def test_fetch_and_build_mbtiles_interrupted(
+    mock_make_reader, mock_open_mbtiles, mock_insert_tile, tmp_path
+):
+    mock_reader = mock.MagicMock(return_value=PNG)
+    mock_make_reader.return_value = mock_reader
+
+    with pytest.raises(KeyboardInterrupt):
+        tasks.fetch_and_build_mbtiles(
+            1,
+            [{"basemap_type": "xyz"}],
+            WORLD_BBOX,
+            0,
+            1,
+            256,
+            "Test Capture",
+            "Test Source",
+            str(tmp_path / "test.mbtiles"),
+            concurrency=1,
+        )
+
+    mock_open_mbtiles.return_value.close.assert_called_once()
+    mock_reader.cancel.assert_called_once()
+    mock_reader.close.assert_called_once()
+
+
 def test_dask_task_state_released():
     mock_scheduler = mock.MagicMock(tasks={})
 
