@@ -95,6 +95,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
     # Optional Properties
     basemaps = ["OpenStreetMap", "ESRI"]
+    basemap_capture = False
     cesium_ion_token = None
     default_disable_basemap = False
     default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:4326
@@ -484,6 +485,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             show_clicks=self.show_map_clicks,
             draw=self.draw,
             form_id=self.form_id,
+            basemap_capture=self.basemap_capture,
         )
 
         # Configure initial basemap visibility

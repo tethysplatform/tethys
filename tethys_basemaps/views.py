@@ -25,6 +25,8 @@ from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from django.views.decorators.http import require_POST
 
+from tethys_apps.models import TethysApp
+from tethys_basemaps.capture_sources import BrowserOnlySource, source_tile_templates
 from tethys_basemaps.jobs import run_basemap_task
 from tethys_basemaps.models import (
     PortalBasemap,
@@ -32,7 +34,7 @@ from tethys_basemaps.models import (
     BasemapCapture,
     BasemapImage,
 )
-from tethys_basemaps.capture_sources import BrowserOnlySource, source_tile_templates
+from tethys_basemaps.permissions import can_capture
 from tethys_basemaps.tasks import build_mbtiles, count_tiles, fetch_and_build_mbtiles
 from tethys_compute.models import DaskScheduler
 from tethys_services.models import SecureMapService
@@ -48,6 +50,33 @@ SECURE_CAPTURE_FETCH = {
 }
 SECURE_MAX_RATE = settings.BASEMAP_CAPTURE_SECURE_MAX_RATE
 TILE_SECONDS = 0.1
+
+
+def _get_capture_app(request, package):
+    """Get the Tethys app instance for the capture.
+
+    Returns (app or None, error_response or None)
+    """
+    if not can_capture(request.user):
+        return None, JsonResponse(
+            {"error": "You don't have permission to capture basemaps"}, status=403
+        )
+
+    if not package:
+        if (
+            request.user.is_staff
+        ):  # Staff users can proceed without specifying a package(such as in the admin interface)
+            return None, None
+        return None, JsonResponse(
+            {"error": "Package is required for capture"}, status=400
+        )
+
+    app = TethysApp.objects.filter(package=package).first()
+    if app is None:
+        return None, HttpResponseBadRequest(
+            "Coudln't find Tethys app with the specified package."
+        )
+    return app, None
 
 
 @lru_cache(maxsize=32)
@@ -158,7 +187,7 @@ def original_image(request, image_id):
     )
 
 
-@staff_member_required
+@login_required
 def basemap_status(request, basemap_id):
     """Status of a capture or image while it's processing."""
     try:
@@ -173,6 +202,12 @@ def basemap_status(request, basemap_id):
     )
     if record is None:
         return HttpResponse("Sources don't have a processing status.", status=404)
+
+    # Only staff users or users with capture permissions can view the status
+    if not request.user.is_staff and not (
+        isinstance(record, BasemapCapture) and can_capture(request.user)
+    ):
+        return HttpResponse(status=404)
 
     status = record.refresh_status()
     data = {"id": record.pk, "status": status, "error": record.error_message}
@@ -234,7 +269,7 @@ def _capture_response(capture, tiles):
     )
 
 
-@staff_member_required
+@login_required
 @require_POST
 def capture_upload(request):
     """
@@ -285,6 +320,10 @@ def capture_upload(request):
     if not name:
         return HttpResponseBadRequest("Enter a name for the capture.")
 
+    app, error = _get_capture_app(request, request.POST.get("app", ""))
+    if error:
+        return error
+
     # Find the basemap source based on the source label
     source_label = request.POST.get("source", "").strip()
     source = secure_source = None
@@ -317,8 +356,10 @@ def capture_upload(request):
         min_y=bbox[1],
         max_x=bbox[2],
         max_y=bbox[3],
+        created_by=request.user,
     )
-
+    if app:
+        capture.apps.add(app)
     try:
         job = run_basemap_task(
             build_mbtiles,
@@ -348,7 +389,7 @@ def capture_upload(request):
     return _capture_response(capture, len(entries))
 
 
-@staff_member_required
+@login_required
 @require_POST
 @sensitive_variables("templates", "headers", "layer")
 def capture_server(request):
@@ -375,6 +416,10 @@ def capture_server(request):
     name = str(plan.get("name", "")).strip()[:255]
     if not name:
         return HttpResponseBadRequest("Enter a name for the capture.")
+
+    app, error = _get_capture_app(request, str(plan.get("app", "")))
+    if error:
+        return error
 
     try:
         bbox = [float(v) for v in plan.get("bbox") or []]
@@ -455,7 +500,10 @@ def capture_server(request):
         min_y=bbox[1],
         max_x=bbox[2],
         max_y=bbox[3],
+        created_by=request.user,
     )
+    if app:
+        capture.apps.add(app)
     _submit_server_download(capture, source, templates, headers, request.user)
     return _capture_response(capture, total)
 

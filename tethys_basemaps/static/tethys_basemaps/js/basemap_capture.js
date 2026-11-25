@@ -185,7 +185,7 @@ const BASEMAP_CAPTURE = (function () {
    * The server builds the MBTiles file inline, so this resolves with the capture's
    * final status (the upload endpoint's JSON response).
    */
-  function capture({ map, extent, name, minZoom, maxZoom, uploadUrl, csrfToken, onProgress, onUploading }) {
+  function capture({ map, extent, name, minZoom, maxZoom, uploadUrl, csrfToken, onProgress, onUploading, app }) {
     const basemap = getCurrentBasemap(map);
     if (!basemap) {
       return Promise.reject(new Error("Select a basemap to capture."));
@@ -262,6 +262,7 @@ const BASEMAP_CAPTURE = (function () {
         form.append("bbox", plan.extent.join(","));
         form.append("name", name);
         form.append("source", basemap.label);
+        form.append("app", app || "");
 
         if (onUploading) { onUploading(index.length); }
 
@@ -276,7 +277,7 @@ const BASEMAP_CAPTURE = (function () {
   }
   // Ask the server to download the tiles on a Dask worker. Rejects with error.browserOnly
   // set when only the browser can download this basemap.
-  function startServerCapture({ map, extent, name, minZoom, maxZoom, daskScheduler, maxRequestsPerSecond, serverUrl, csrfToken }) {
+  function startServerCapture({ map, extent, name, minZoom, maxZoom, daskScheduler, maxRequestsPerSecond, serverUrl, csrfToken, app }) {
     const basemap = getCurrentBasemap(map);
     if (!basemap) {
       return Promise.reject(new Error("Select a basemap to capture."));
@@ -299,6 +300,7 @@ const BASEMAP_CAPTURE = (function () {
         tile_size: plan.tileSize[0],
         max_requests_per_second: maxRequestsPerSecond,
         dask_scheduler: daskScheduler,
+        app: app || "",
       }),
     }).then((response) => {
       if (response.ok) { return response.json(); }

@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -362,6 +363,12 @@ class BasemapCapture(PortalBasemap):
     tile_size = models.PositiveSmallIntegerField(default=256)
     max_requests_per_second = models.IntegerField(null=True, blank=True)
     downloaded_on_server = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         ordering = ("-created_at",)

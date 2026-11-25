@@ -20,6 +20,5 @@
   {% gizmo capture_map %}
   {% gizmo_dependencies js %}
   {{ capture_urls|json_script:"capture-urls" }}
-  <script src="{% static 'tethys_basemaps/js/basemap_capture.js' %}"></script>
   <script src="{% static 'tethys_basemaps/js/basemap_capture_admin.js' %}"></script>
 {% endblock %}
