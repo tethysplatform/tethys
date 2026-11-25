@@ -124,7 +124,7 @@ const BASEMAP_CAPTURE_CONTROL = (function () {
     if (modalElement) { bootstrap.Modal.getOrCreateInstance(modalElement).show(); }
   }
 
-  // Place the capture button in the basemap picker container if it exists
+    // Put the capture button in its own map control, just to the right of the basemap picker
   function placeButton() {
     const button = document.getElementById("basemap-capture-button");
     if (!button) { return; }
@@ -132,10 +132,25 @@ const BASEMAP_CAPTURE_CONTROL = (function () {
 
     const toggle = document.getElementById("basemap_dropdown");
     const container = document.getElementById("basemap_dropdown_container");
-    if (!toggle || !container) { return; }  
+    if (!toggle || !container) { return; }   // no picker: the button stays where the template put it
 
     button.className = toggle.className.replace(/\bdropdown-toggle\b/g, "").trim();
-    container.appendChild(button);
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "ol-control basemap-capture-control";
+    wrapper.style.pointerEvents = "auto";
+    wrapper.appendChild(button);
+    container.after(wrapper);
+
+    // Line it up with the basemap picker and keep it the same size as the picker button
+    const position = () => {
+      button.style.width = `${toggle.offsetWidth}px`;
+      button.style.height = `${toggle.offsetHeight}px`;
+      wrapper.style.top = `${container.offsetTop}px`;
+      wrapper.style.left = `${container.offsetLeft + container.offsetWidth + 8}px`;
+    };
+    position();
+    window.addEventListener("resize", position);
   }
 
   // Show a status message in the modal
