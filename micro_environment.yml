@@ -38,3 +38,7 @@ dependencies:
   - django-bootstrap5
   - django-model-utils
   - django-guardian
+
+  # basemap dependencies
+  - rasterio
+  - large_image_source_rasterio

@@ -75,6 +75,10 @@ dependencies:
   # Map Layout
   - PyShp
 
+  # basemap dependencies
+  - rasterio
+  - large_image_source_rasterio
+
   # Docker CLI
   - docker-py
 

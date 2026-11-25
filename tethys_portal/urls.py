@@ -262,6 +262,10 @@ urlpatterns = [
         tethys_apps_views.secure_map_token,
         name="secure_map_token",
     ),
+    re_path(
+        r"^basemaps/",
+        include(("tethys_basemaps.urls", "basemaps"), namespace="basemaps"),
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 

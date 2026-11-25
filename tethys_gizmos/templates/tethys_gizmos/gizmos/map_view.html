@@ -46,7 +46,87 @@
          {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}
          {% if disable_basemap %}data-disable-base-map="{{ disable_basemap|jsonify }}"{% endif %}
          {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}
+         {% if basemap_capture %}data-basemap-capture="true"{% endif %}
          data-show-clicks="{{ show_clicks|jsonify }}"></div>
+    {% if basemap_capture %}
+      <button type="button" id="basemap-capture-button" class="btn btn-light btn-sm"
+              title="Save this basemap" aria-label="Save this basemap">
+        <i class="bi bi-cloud-download"></i>
+      </button>
+    {% endif %}
     <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden {% if form_id %}form="{{ form_id }}"{% endif %}></textarea>
+
   </div>
 </div> <!-- end outerContainer -->
+{% if basemap_capture %}
+  <div class="modal fade" id="basemap-capture-modal" tabindex="-1"
+    aria-labelledby="basemap-capture-title" aria-hidden="true"
+    data-app="{{ basemap_capture_app|default:'' }}"
+    data-upload-url="{% url 'basemaps:capture_upload' %}"
+    data-server-url="{% url 'basemaps:capture_server' %}">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="basemap-capture-title">Save basemap for offline use</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">
+            Save an area of <strong id="basemap-capture-basemap"></strong>
+            so it can be used as a basemap later.
+          </p>
+          <div class="mb-3">
+            <label class="form-label" for="basemap-capture-name">Name</label>
+            <input class="form-control" id="basemap-capture-name" maxlength="255" autocomplete="off">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Area</label>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted flex-grow-1" id="basemap-capture-area">Visible map area</span>
+              <button type="button" class="btn btn-outline-secondary btn-sm" id="basemap-capture-draw">
+                <i class="bi bi-bounding-box"></i> Draw area
+              </button>
+              <button type="button" class="btn btn-link btn-sm" id="basemap-capture-clear" hidden>Use visible area</button>
+            </div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <label class="form-label" for="basemap-capture-min-zoom">Min zoom</label>
+              <input type="number" class="form-control" id="basemap-capture-min-zoom" min="0" max="24" step="1">
+            </div>
+            <div class="col">
+              <label class="form-label" for="basemap-capture-max-zoom">Max zoom</label>
+              <input type="number" class="form-control" id="basemap-capture-max-zoom" min="0" max="24" step="1">
+            </div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="basemap-capture-download-type">Download on server</label>
+            <input type="checkbox" class="form-check-input" id="basemap-capture-download-type">
+          </div>
+          {% if basemap_capture_schedulers %}
+            <div class="mb-3" style="display: none;">
+              <label class="form-label" for="basemap-capture-scheduler">Dask Scheduler</label>
+              <select class="form-select mb-2" id="basemap-capture-scheduler">
+                {% for scheduler in basemap_capture_schedulers %}
+                <option value="{{ scheduler.id }}">{{ scheduler.name }}</option>
+                {% endfor %}
+              </select>
+              <label class="form-label" for="basemap-capture-rate">Max requests per second</label>
+              <input type="number" class="form-control" id="basemap-capture-rate"
+                    min="1" max="{{ basemap_capture_max_rate }}" step="1" placeholder="Default">
+              <div class="form-text">Helps avoid hitting rate limits. Leave blank for the server's default.</div>
+            </div>
+            {% endif %}
+            <div class="progress mb-2" id="basemap-capture-progress" hidden>
+              <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <p class="small mb-0" id="basemap-capture-status" aria-live="polite"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="basemap-capture-save" disabled>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

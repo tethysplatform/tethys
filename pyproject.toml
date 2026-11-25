@@ -44,6 +44,9 @@ dependencies = [
     "django-guardian",
     "djangorestframework_simplejwt",
     "django-fernet-encrypted-fields",
+  # basemap dependencies
+    "rasterio",
+    "large-image-source-rasterio",
 ]
 
 [project.optional-dependencies]

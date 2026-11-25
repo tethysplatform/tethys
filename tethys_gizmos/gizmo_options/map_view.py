@@ -8,7 +8,14 @@
 ********************************************************************************
 """
 
+from copy import copy
 import logging
+
+from django.conf import settings
+
+from tethys_apps.utilities import get_active_app
+from tethys_basemaps.permissions import can_capture
+from tethys_basemaps.utilities import get_app_basemaps
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
@@ -46,6 +53,7 @@ class MapView(TethysGizmoOptions):
         feature_selection(bool): A dictionary of global feature selection options. See below.
         show_clicks (bool): Show a point on the map where the user clicks if True. Defaults to False. Use the TETHYS_MAP_VIEW.mapClicked() JavaScript API endpoint to provide a callback that will be called each time the map is clicked on. Use the TETHYS_MAP_VIEW.clearClickedPoint() to remove the clicked point.
         form_id(str): The id of a form on the page to which the hidden geometry text field will be linked.
+        basemap_capture(bool): Allow users to create basemap captures with this map.
 
     **Options Dictionaries**
 
@@ -360,6 +368,7 @@ class MapView(TethysGizmoOptions):
         feature_selection=None,
         show_clicks=False,
         form_id=None,
+        basemap_capture=False,
     ):
         """
         Constructor
@@ -402,6 +411,45 @@ class MapView(TethysGizmoOptions):
         self.feature_selection = feature_selection
         self.show_clicks = show_clicks
         self.form_id = form_id
+        self.basemap_capture = basemap_capture
+
+    def get_render_options(self, request):
+        app = get_active_app(request)
+        # Get the portal-wide basemaps that have been selected for the current app
+        app_basemaps = get_app_basemaps(app)
+
+        capture = {}
+        if self.basemap_capture:
+            if app is not None and can_capture(getattr(request, "user", None)):
+                # Pass the basemap capture information to the front-end
+                capture["basemap_capture_schedulers"] = self._capture_schedulers()
+                capture["basemap_capture_max_rate"] = (
+                    settings.BASEMAP_CAPTURE_SECURE_MAX_RATE
+                )
+                capture["basemap_capture_app"] = getattr(app, "db_object", app).package
+            # If the user doesn't have capture permissions, don't show the basemap capture controls
+            else:
+                capture["basemap_capture"] = False
+
+        if not app_basemaps and not capture:
+            return self
+
+        options = copy(self)
+        options.__dict__ = options
+        if app_basemaps:
+            options["basemap"] = list(self.basemap or []) + app_basemaps
+        options.update(capture)
+
+        return options
+
+    @staticmethod
+    def _capture_schedulers():
+        from tethys_compute.models import DaskScheduler
+
+        return [
+            {"id": scheduler.id, "name": scheduler.name}
+            for scheduler in DaskScheduler.objects.all()
+        ]
 
     @classmethod
     def get_vendor_js(cls):
@@ -425,6 +473,8 @@ class MapView(TethysGizmoOptions):
             "tethys_sdk/js/csrf.js",
             "tethys_gizmos/js/gizmo_utilities.js",
             "tethys_gizmos/js/tethys_map_view.js",
+            "tethys_basemaps/js/basemap_capture.js",
+            "tethys_basemaps/js/tethys_map_view_capture_control.js",
         )
 
     @classmethod
@@ -445,7 +495,10 @@ class MapView(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block content_dependent_styles %} block
         """
-        return ("tethys_gizmos/css/tethys_map_view.min.css",)
+        return (
+            "tethys_gizmos/css/tethys_map_view.min.css",
+            "tethys_basemaps/css/tethys_map_view_capture_control.css",
+        )
 
 
 class MVView(SecondaryGizmoOptions):

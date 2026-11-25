@@ -165,6 +165,17 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Result
         self.assertEqual('["foo", {"bar": ["baz", null, 1.0, 2]}]', result)
 
+    @mock.patch(
+        "tethys_gizmos.templatetags.tethys_gizmos.json.dumps", side_effect=Exception
+    )
+    @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.log")
+    def test_jsonify_exception(self, mock_log, mock_dumps):
+        with self.assertRaises(Exception):
+            gizmos_templatetags.jsonify("test_data")
+        mock_log.exception.assert_called_with(
+            "Failed to serialize Gizmo data. type %s, Data %r", (str, "test_data")
+        )
+
     def test_divide(self):
         value = 10
         divisor = 2
@@ -265,6 +276,26 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         # We need to delete this extension path map to avoid template not exist error on the
         # previous test
         del gizmos_templatetags.EXTENSION_PATH_MAP[CustomGizmo.gizmo_name]
+
+    @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.log")
+    @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.get_template")
+    @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.template")
+    def test_render_get_render_options_error(self, mock_template, mock_gt, mock_log):
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
+        mock_options = mock.MagicMock()
+        mock_options.get_render_options.side_effect = Exception("render options error")
+        mock_template.Variable.return_value.resolve.return_value = mock_options
+
+        result = gizmos_templatetags.TethysGizmoIncludeNode(
+            options="foo", gizmo_name=CustomGizmo.gizmo_name
+        )
+        result.render(Context({}))
+
+        mock_options.get_render_options.assert_called_with(None)
+        mock_log.exception.assert_called_with(
+            "Error occurred while getting render options for gizmo."
+        )
+        mock_gt.return_value.render.assert_called_with(mock_options)
 
     @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.settings")
     @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.template")

@@ -674,3 +674,13 @@ class SecureMapService(models.Model):
             )
         resp.raise_for_status()
         return resp
+
+    def _server_request(self, user=None):
+        headers = {}
+        if self.authentication_method == "oauth2":
+            if user is None:
+                raise ValueError(
+                    f'"{self.name}" uses OAuth2, so a user is needed to get the necessary OAuth2 token.'
+                )
+            headers["Authorization"] = f"Bearer {self._get_oauth_token(user)}"
+        return self.endpoint, self._get_resolved_params(), headers
